@@ -4,8 +4,9 @@ public final class SubCell {
 
     private int x;
     private int y;
-    private static final int COLUMNS = 239;
-    private static final int ROWS = 207;
+    private static final int GRANULARITY = 16;
+    private static final int COLUMNS = GRANULARITY * Cell.COLUMNS;
+    private static final int ROWS = GRANULARITY * Cell.ROWS;
 
 
     public SubCell(int x, int y) {
@@ -16,7 +17,10 @@ public final class SubCell {
     }
 
     public static SubCell centralSubCellOf (Cell cell) {
-        return new SubCell((cell.x() * 16) + 8, (cell.y() * 16) + 8);
+        int xSubCell = (cell.x() * GRANULARITY) + (GRANULARITY / 2);
+        int ySubCell = (cell.y() * GRANULARITY) + (GRANULARITY / 2);
+        
+        return new SubCell(xSubCell, ySubCell);
 
     }
 
@@ -61,8 +65,8 @@ public final class SubCell {
     }
 
     public Cell containingCell() {
-        int xCell = x / Cell.COLUMNS;
-        int yCell = y / Cell.ROWS;
+        int xCell = x / GRANULARITY;
+        int yCell = y / GRANULARITY;
 
         return new Cell(xCell, yCell);
     }
