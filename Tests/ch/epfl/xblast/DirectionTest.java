@@ -9,13 +9,13 @@ import org.junit.Test;
 public class DirectionTest {
     @Test
     public void oppositeOfOppositeIsIdentity() {
-        for (Direction d: Direction.values())
+        for (Direction d : Direction.values())
             assertEquals(d, d.opposite().opposite());
     }
 
     @Test
     public void oppositeIsTwoStepsAway() {
-        for (Direction d: Direction.values())
+        for (Direction d : Direction.values())
             assertEquals(2, Math.abs(d.ordinal() - d.opposite().ordinal()));
     }
 
@@ -29,8 +29,8 @@ public class DirectionTest {
 
     @Test
     public void isParallelIsTrueOnlyForOppositeAndSelf() {
-        for (Direction d1: Direction.values()) {
-            for (Direction d2: Direction.values()) {
+        for (Direction d1 : Direction.values()) {
+            for (Direction d2 : Direction.values()) {
                 if (d1 == d2 || d1 == d2.opposite())
                     assertTrue(d1.isParallelTo(d2));
                 else
