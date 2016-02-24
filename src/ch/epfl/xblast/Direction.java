@@ -8,7 +8,25 @@ package ch.epfl.xblast;
  *
  */
 public enum Direction {
-    N, E, S, W;
+    /**
+     * Direction nord
+     */
+    N,
+
+    /**
+     * Direction est
+     */
+    E,
+
+    /**
+     * Direction sud
+     */
+    S,
+
+    /**
+     * Direction ouest (west en anglais)
+     */
+    W;
 
     /**
      * Calcul l'opposé de la direction a celle ou la méthode est appliqué
