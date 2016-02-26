@@ -1,19 +1,29 @@
 package ch.epfl.xblast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Tests {
 
     public static void main(String[] args) {
-        System.out.println(Direction.N.ordinal());
-        System.out.println(Direction.S.ordinal());
-        for (Direction d: Direction.values())
-            System.out.println((Math.abs(d.ordinal() - d.opposite().ordinal())));
+        ArrayList<String> test = new ArrayList<String>();
+        test.add("k");
+        //test.add("a");
+        //test.add("y");
         
-        int i = 0;
+        List<String> testReversed = Lists.mirrored(test);
         
-        for (Cell c : Cell.SPIRAL_ORDER){
-            System.out.println(i + " = " + c);
-            i++;
+        for (String string : testReversed) {
+            System.out.println(string);
         }
+        
+        System.out.println("Ne devrait pas changer :");
+        
+        for (String string : test) {
+            System.out.println(string);
+        }
+        
+        
     }
     
     
