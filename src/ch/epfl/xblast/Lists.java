@@ -33,11 +33,12 @@ public final class Lists {
         
         List<List<T>> copied = new ArrayList<List<T>>();
         
-        for (List<T> list : copied) {
+        for (List<T> list : l) {
             List<T> temporary = new ArrayList<T>();
             
             for (T t : list) {
                 temporary.add(t);
+                
             }
             
             copied.add(temporary);

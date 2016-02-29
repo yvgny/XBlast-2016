@@ -15,6 +15,7 @@ public enum Block {
     public boolean isFree(){
         if (this == Block.FREE) {
             return true;
+            
         } else {
             return false;
         }
@@ -24,17 +25,20 @@ public enum Block {
     public boolean canHostPlayer() {
         if (this == Block.FREE) {
             return true;
+            
         } else {
             return false;
         }
     }
     
     public boolean castsShadow() {
-        if (this == Block.INDESTRUCTIBLE_WALL || this == Block.CRUMBLING_WALL || this == Block.INDESTRUCTIBLE_WALL) {
+        if (this.toString().endsWith("_WALL")) {
             return true;
+            
         } else {
             return false;
         }
+        
     }
     
 }
