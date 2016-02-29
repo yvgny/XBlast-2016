@@ -67,7 +67,7 @@ public final class Board {
         }
         
         copiedInnerBlocks.add(0, rowOfWall);
-        copiedInnerBlocks.add(0, rowOfWall);
+        copiedInnerBlocks.add(rowOfWall);
         
         return ofRows(copiedInnerBlocks);
     }
@@ -75,8 +75,16 @@ public final class Board {
     public static Board ofQuadrantNWBlocksWalled(
             List<List<Block>> quadrantNWBlocks)
                     throws IllegalArgumentException {
+        
+        checkBlockMatrix(quadrantNWBlocks, ((Cell.ROWS - 2) / 2) + 1, ((Cell.COLUMNS - 2) / 2) + 1);
+        
+        List<List<Block>> quadrantNWBlocksWalled = new ArrayList<List<Block>>();
+        
+        for (List<Block> list : quadrantNWBlocks) {
+            quadrantNWBlocks.add(Lists.mirrored(list));
+        }
 
-        return null;
+        return ofInnerBlocksWalled(Lists.mirrored(quadrantNWBlocksWalled));
     }
 
     private static void checkBlockMatrix(List<List<Block>> matrix, int rows,
@@ -93,6 +101,14 @@ public final class Board {
             }
         }
 
+    }
+    
+    public Sq<Block> blocksAt(Cell c) {
+        return boardList.get((c.y() * Cell.COLUMNS) + c.x());
+    }
+    
+    public Block blockAt (Cell c) {
+        return blocksAt(c).head();
     }
 
 }
