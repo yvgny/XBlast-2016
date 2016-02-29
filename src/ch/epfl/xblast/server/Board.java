@@ -6,6 +6,7 @@ import java.util.List;
 
 import ch.epfl.cs108.Sq;
 import ch.epfl.xblast.Cell;
+import ch.epfl.xblast.Lists;
 
 /**
  * 
@@ -18,6 +19,7 @@ public final class Board {
     private List<Sq<Block>> boardList;
 
     public Board(List<Sq<Block>> blocks) throws IllegalArgumentException {
+        
         if (blocks.size() != Cell.COUNT) {
             throw new IllegalArgumentException(
                     "La liste ne contient pas " + Cell.COUNT + " éléments.");
@@ -51,48 +53,46 @@ public final class Board {
 
     public static Board ofInnerBlocksWalled(List<List<Block>> innerBlocks)
             throws IllegalArgumentException {
-        if (innerBlocks.size() != Cell.ROWS - 2) {
-            throw new IllegalArgumentException(
-                    "La liste doit contenir " + (Cell.ROWS - 2) + " lignes.");
+
+        checkBlockMatrix(innerBlocks, Cell.ROWS - 2, Cell.COLUMNS - 2);
+
+        List<List<Block>> copiedInnerBlocks = Lists.copy(innerBlocks);
+        
+        List<Block> rowOfWall = Collections.nCopies(Cell.COLUMNS, Block.INDESTRUCTIBLE_WALL);
+        
+        
+        for (List<Block> list : copiedInnerBlocks) {
+            list.add(0, Block.INDESTRUCTIBLE_WALL);
+            list.add(0, Block.INDESTRUCTIBLE_WALL);
         }
-
-        List<Sq<Block>> sqBlockList = new ArrayList<Sq<Block>>();
-
-        for (List<Block> list : innerBlocks) {
-            if (list.size() != Cell.COLUMNS - 2) {
-                throw new IllegalArgumentException("La liste doit contenir "
-                        + (Cell.COLUMNS - 2) + " colonnes.");
-
-            } else {
-                sqBlockList.add(Sq.constant(Block.INDESTRUCTIBLE_WALL));
-
-                for (Block block : list) {
-                    sqBlockList.add(Sq.constant(block));
-                }
-
-                sqBlockList.add(Sq.constant(Block.INDESTRUCTIBLE_WALL));
-
-            }
-
-            sqBlockList.addAll(Collections.nCopies(Cell.COLUMNS,
-                    Sq.constant(Block.INDESTRUCTIBLE_WALL))); // ajoute le mur
-                                                              // sud
-
-            sqBlockList.addAll(0, Collections.nCopies(Cell.COLUMNS,
-                    Sq.constant(Block.INDESTRUCTIBLE_WALL))); // ajoute le mur
-                                                              // nord
-
-        }
-
-        return new Board(sqBlockList);
+        
+        copiedInnerBlocks.add(0, rowOfWall);
+        copiedInnerBlocks.add(0, rowOfWall);
+        
+        return ofRows(copiedInnerBlocks);
     }
 
-    public static Board ofQuadrantNWBlocksWalled(List<List<Block>> quadrantNWBlocks)
+    public static Board ofQuadrantNWBlocksWalled(
+            List<List<Block>> quadrantNWBlocks)
                     throws IllegalArgumentException {
-        
-        //TODO
 
         return null;
+    }
+
+    private static void checkBlockMatrix(List<List<Block>> matrix, int rows,
+            int columns) throws IllegalArgumentException {
+        if (matrix.size() != rows) {
+            throw new IllegalArgumentException(
+                    "La liste doit contenir " + rows + " lignes.");
+        } else {
+            for (List<Block> list : matrix) {
+                if (list.size() != columns) {
+                    throw new IllegalArgumentException(
+                            "La liste doit contenir " + columns + " colonnes.");
+                }
+            }
+        }
+
     }
 
 }

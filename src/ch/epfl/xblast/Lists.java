@@ -25,4 +25,24 @@ public final class Lists {
         
         return mirrored;
     }
+    
+    public static <T> List<List<T>> copy(List<List<T>> l) throws IllegalArgumentException{
+        if (l.isEmpty()) {
+            throw new IllegalArgumentException("List is empty !");
+        }
+        
+        List<List<T>> copied = new ArrayList<List<T>>();
+        
+        for (List<T> list : copied) {
+            List<T> temporary = new ArrayList<T>();
+            
+            for (T t : list) {
+                temporary.add(t);
+            }
+            
+            copied.add(temporary);
+        }
+        
+        return copied;
+    }
 }
