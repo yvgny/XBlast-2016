@@ -36,15 +36,13 @@ public final class Cell {
      * Liste de toutes les cases du plateau de jeu, classé dans l'ordre de
      * lecture (Row Major Order)
      */
-    public static List<Cell> ROW_MAJOR_ORDER = Collections
-            .unmodifiableList(rowMajorOrder());
+    public static List<Cell> ROW_MAJOR_ORDER = Collections.unmodifiableList(rowMajorOrder());
 
     /**
      * Liste de toutes les cases du plateau de jeu, classé en spirale (Spiral
      * Order)
      */
-    public static List<Cell> SPIRAL_ORDER = Collections
-            .unmodifiableList(spiralOrder());
+    public static List<Cell> SPIRAL_ORDER = Collections.unmodifiableList(spiralOrder());
 
     /**
      * Construit une case avec coordonnées à choix

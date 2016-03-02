@@ -13,32 +13,13 @@ public class Tests {
         Block II = Block.INDESTRUCTIBLE_WALL;
         Block xx = Block.DESTRUCTIBLE_WALL;
         List<List<Block>> array;
-        
-        array = Arrays.asList(
-                Arrays.asList(__, __, __, __, __, xx, __, __, __, __, __, xx, __),
-                Arrays.asList(__, II, xx, II, xx, II, xx, __, __, __, __, xx, __),
-                Arrays.asList(__, xx, __, __, __, xx, __, __, __, __, __, __, __),
-                Arrays.asList(xx, II, __, II, II, II, II, __, __, __, __, __, __),
-                Arrays.asList(__, xx, __, xx, __, __, __, __, __, __, __, xx, __),
-                Arrays.asList(__, __, __, __, __, xx, __, __, __, __, __, xx, II),
-                Arrays.asList(__, II, xx, II, xx, II, xx, __, __, __, __, xx, __),
-                Arrays.asList(__, xx, __, __, __, xx, __, __, __, __, __, __, __),
-                Arrays.asList(xx, II, __, II, II, II, II, __, __, __, __, __, __),
-                Arrays.asList(__, xx, __, xx, __, __, __, __, __, __, __, xx, __),
-                Arrays.asList(xx, II, xx, II, xx, II, __, __, __, __, __, __, xx));
-        
+
+        array = Arrays.asList(Arrays.asList(__, __, __, __, __, xx, __, __, __, __, __, xx, __), Arrays.asList(__, II, xx, II, xx, II, xx, __, __, __, __, xx, __), Arrays.asList(__, xx, __, __, __, xx, __, __, __, __, __, __, __), Arrays.asList(xx, II, __, II, II, II, II, __, __, __, __, __, __), Arrays.asList(__, xx, __, xx, __, __, __, __, __, __, __, xx, __), Arrays.asList(__, __, __, __, __, xx, __, __, __, __, __, xx, II), Arrays.asList(__, II, xx, II, xx, II, xx, __, __, __, __, xx, __), Arrays.asList(__, xx, __, __, __, xx, __, __, __, __, __, __, __), Arrays.asList(xx, II, __, II, II, II, II, __, __, __, __, __, __), Arrays.asList(__, xx, __, xx, __, __, __, __, __, __, __, xx, __), Arrays.asList(xx, II, xx, II, xx, II, __, __, __, __, __, __, xx));
+
         Board board = Board.ofInnerBlocksWalled(array);
-        
-        Board board2 = Board.ofQuadrantNWBlocksWalled(
-                Arrays.asList(
-                  Arrays.asList(__, __, __, __, __, xx, __),
-                  Arrays.asList(__, II, xx, II, xx, II, xx),
-                  Arrays.asList(__, xx, __, __, __, xx, __),
-                  Arrays.asList(xx, II, __, II, II, II, II),
-                  Arrays.asList(__, xx, __, xx, __, __, __),
-                  Arrays.asList(xx, II, xx, II, xx, II, __)));
-        
-            
+
+        Board board2 = Board.ofQuadrantNWBlocksWalled(Arrays.asList(Arrays.asList(__, __, __, __, __, xx, __), Arrays.asList(__, II, xx, II, xx, II, xx), Arrays.asList(__, xx, __, __, __, xx, __), Arrays.asList(xx, II, __, II, II, II, II), Arrays.asList(__, xx, __, xx, __, __, __), Arrays.asList(xx, II, xx, II, xx, II, __)));
+
         for (int i = 0; i < Cell.ROWS; i++) {
             for (int j = 0; j < Cell.COLUMNS; j++) {
                 if (board.blockAt(new Cell(j, i)) == Block.FREE) {
@@ -51,13 +32,13 @@ public class Tests {
                     System.out.print("??");
                 }
                 System.out.print(", ");
-                
+
             }
             System.out.println();
         }
-        
+
         System.out.println("Tableau array : ");
-        
+
         for (int i = 0; i < array.size(); i++) {
             for (int j = 0; j < array.get(i).size(); j++) {
                 if (array.get(i).get(j) == Block.FREE) {
@@ -70,14 +51,11 @@ public class Tests {
                     System.out.print("??");
                 }
                 System.out.print(", ");
-                
+
             }
             System.out.println();
         }
-        
-        
+
     }
-    
-    
 
 }
