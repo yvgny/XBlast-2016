@@ -36,7 +36,7 @@ abstract class NameCheck01 {
     }
 
     void checkSubCell() {
-        SubCell c = SubCell.centralSubCellOf(new Cell(0,0));
+        SubCell c = SubCell.centralSubCellOf(new Cell(0, 0));
         c = new SubCell(0, 0);
         int t = c.x() + c.y() + c.distanceToCentral();
         if (t < 10 && c.isCentral())

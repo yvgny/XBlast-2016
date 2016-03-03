@@ -18,13 +18,13 @@ public class ListsTest {
         List<Character> testList = Lists.mirrored(myList);
         List<Character> result = Arrays.asList('r');
         assertEquals(result, testList);
-        
+
         // two elements
         myList.add('a');
         testList = Lists.mirrored(myList);
         result = Arrays.asList('r', 'a', 'r');
         assertEquals(result, testList);
-        
+
         // more elements
         myList.add('c');
         myList.add('e');
