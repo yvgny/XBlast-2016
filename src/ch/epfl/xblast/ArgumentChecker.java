@@ -1,6 +1,11 @@
 package ch.epfl.xblast;
 
+import java.util.Objects;
+
 /**
+ * La classe ArgumentChecker a pour but de fournir une méthode similaire à
+ * {@link Objects#requireNonNull(Object) requireNonNull()} mais pour les valeurs
+ * entières qui doivent être positives ou nulles
  * 
  * @author Sacha Kozma, 260391
  * @author Alexia Bogaert, 258330
