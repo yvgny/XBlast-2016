@@ -1,7 +1,6 @@
 package ch.epfl.xblast.server;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -12,6 +11,7 @@ import ch.epfl.xblast.Direction;
 import ch.epfl.xblast.PlayerID;
 
 /**
+ * Représente une bombe
  * 
  * @author Sacha Kozma, 260391
  * @author Alexia Bogaert, 258330
@@ -62,7 +62,7 @@ public final class Bomb {
      *            Le propriétaire de la bombe
      * @param position
      *            La position de la bombe
-     * @param fuseLengths
+     * @param fuseLength
      *            La séquence de longueurs de mèche
      * @param range
      *            La portée de la bombe
@@ -120,26 +120,26 @@ public final class Bomb {
 
     /**
      * 
-     * @return L'explosion correspondant à la bombe, sous la forme d'un
-     *         tableau de 4 éléments, chacun représentant un bras ; la durée de
-     *         cette explosion est donnée par la constante
+     * @return L'explosion correspondant à la bombe, sous la forme d'un tableau
+     *         de 4 éléments, chacun représentant un bras ; la durée de cette
+     *         explosion est donnée par la constante
      *         {@value ch.epfl.xblast.Ticks#Ticks.EXPLOSION_TICKS}
      */
     public List<Sq<Sq<Cell>>> explosion() {
         List<Sq<Sq<Cell>>> explosion = new ArrayList<Sq<Sq<Cell>>>();
-        
+
         for (Direction direction : Direction.values()) {
             explosion.add(explosionArmTowards(direction));
         }
-        
+
         return explosion;
     }
 
     private Sq<Sq<Cell>> explosionArmTowards(Direction dir) {
-        
+
         Sq<Cell> explosionArmInSpace = (Sq.iterate(position, c -> position.neighbor(dir))).limit(range);
         Sq<Sq<Cell>> explosionArmInTime = Sq.repeat(Ticks.EXPLOSION_TICKS, explosionArmInSpace);
-        
+
         return explosionArmInTime;
     }
 }
