@@ -17,7 +17,12 @@ import ch.epfl.xblast.server.Ticks;
 
 abstract class NameCheck02 {
     void checkTicks() {
-        int x = Ticks.PLAYER_DYING_TICKS + Ticks.PLAYER_INVULNERABLE_TICKS + Ticks.BOMB_FUSE_TICKS + Ticks.EXPLOSION_TICKS + Ticks.WALL_CRUMBLING_TICKS + Ticks.BONUS_DISAPPEARING_TICKS;
+        int x = Ticks.PLAYER_DYING_TICKS
+                + Ticks.PLAYER_INVULNERABLE_TICKS
+                + Ticks.BOMB_FUSE_TICKS
+                + Ticks.EXPLOSION_TICKS
+                + Ticks.WALL_CRUMBLING_TICKS
+                + Ticks.BONUS_DISAPPEARING_TICKS;
         System.out.println(x);
     }
 
@@ -34,9 +39,9 @@ abstract class NameCheck02 {
         List<Integer> l1 = null;
         List<String> l2 = null;
         List<List<String>> l3 = null;
-        List<Integer> l1m = Lists.<Integer> mirrored(l1);
-        List<String> l2m = Lists.<String> mirrored(l2);
-        List<List<String>> l3m = Lists.<List<String>> mirrored(l3);
+        List<Integer> l1m = Lists.<Integer>mirrored(l1);
+        List<String> l2m = Lists.<String>mirrored(l2);
+        List<List<String>> l3m = Lists.<List<String>>mirrored(l3);
         System.out.println("" + l1m + l2m + l3m);
     }
 

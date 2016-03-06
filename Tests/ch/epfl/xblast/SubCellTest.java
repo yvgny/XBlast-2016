@@ -15,13 +15,13 @@ public class SubCellTest {
 
     @Test
     public void centralSubCellIsCentral() {
-        for (Cell c : Cell.ROW_MAJOR_ORDER)
+        for (Cell c: Cell.ROW_MAJOR_ORDER)
             assertTrue(SubCell.centralSubCellOf(c).isCentral());
     }
 
     @Test
     public void distanceToCentralOfCentralIsZero() {
-        for (Cell c : Cell.ROW_MAJOR_ORDER)
+        for (Cell c: Cell.ROW_MAJOR_ORDER)
             assertEquals(0, SubCell.centralSubCellOf(c).distanceToCentral());
     }
 
@@ -43,17 +43,17 @@ public class SubCellTest {
     @Test
     public void neighborsOfOriginAreCorrect() {
         SubCell c = new SubCell(0, 0);
-        assertEquals(new SubCell(0, 207), c.neighbor(Direction.N));
-        assertEquals(new SubCell(1, 0), c.neighbor(Direction.E));
-        assertEquals(new SubCell(0, 1), c.neighbor(Direction.S));
-        assertEquals(new SubCell(239, 0), c.neighbor(Direction.W));
+        assertEquals(new SubCell(  0, 207), c.neighbor(Direction.N));
+        assertEquals(new SubCell(  1,   0), c.neighbor(Direction.E));
+        assertEquals(new SubCell(  0,   1), c.neighbor(Direction.S));
+        assertEquals(new SubCell(239,   0), c.neighbor(Direction.W));
     }
 
     @Test
     public void containingCellOfCentralsNeighborIsCorrect() {
-        for (Cell c : Cell.ROW_MAJOR_ORDER) {
+        for (Cell c: Cell.ROW_MAJOR_ORDER) {
             SubCell s = SubCell.centralSubCellOf(c);
-            for (Direction d : Direction.values())
+            for (Direction d: Direction.values())
                 assertEquals(c, s.neighbor(d).containingCell());
         }
     }
