@@ -1,8 +1,13 @@
-package ch.epfl.xblast;
+package ch.epfl.xblast.server;
 
 import java.util.Objects;
 
 import ch.epfl.cs108.Sq;
+import ch.epfl.xblast.ArgumentChecker;
+import ch.epfl.xblast.Cell;
+import ch.epfl.xblast.Direction;
+import ch.epfl.xblast.PlayerID;
+import ch.epfl.xblast.SubCell;
 
 /**
  * Représente un joueur
@@ -46,8 +51,164 @@ public final class Player {
         this.maxBombs = ArgumentChecker.requireNonNegative(maxBombs);
         this.bombRange = ArgumentChecker.requireNonNegative(bombRange);
     }
-    
-    
+
+    /**
+     * Construit un joueur avec les attributs donnés
+     * 
+     * @param id
+     *            L'identifiant du joueur
+     * @param lives
+     *            Le nombre de vie que le joueur posssède.
+     * @param position
+     *            La position du joueur
+     * @param maxBombs
+     *            Le nombre de bombes maximum que le joueur possède
+     * @param bombRange
+     *            La portée des bombes du joueu
+     * @throws IllegalArgumentException
+     *             Si au moins un des entiers passé en argument est strictement
+     *             négatifs
+     * @throws NullPointerException
+     *             Si au moins un des objets passé en arguments est nul
+     */
+    public Player(PlayerID id, int lives, Cell position, int maxBombs,
+            int bombRange) throws IllegalArgumentException, NullPointerException {
+
+        this(Objects.requireNonNull(id), createLifeSequence(lives), Sq.constant(new DirectedPosition(SubCell.centralSubCellOf(Objects.requireNonNull(position)), Direction.S)), maxBombs, bombRange);
+    }
+
+    /**
+     * @return L'identifiant du joueur
+     */
+    public PlayerID id() {
+        return id;
+    }
+
+    /**
+     * @return La séquence des couples (nombre de vies, état) du joueur
+     */
+    public Sq<LifeState> lifeStates() {
+        return lifeStates;
+    }
+
+    /**
+     * @return Le couple (nombre de vies, état) actuel du joueur
+     */
+    public LifeState lifeState() {
+        return lifeStates().head();
+    }
+
+    /**
+     * @return La séquence d'états pour la prochaine vie du joueur
+     */
+    public Sq<LifeState> statesForNextLife() {
+        int newLives = lives() - 1;
+        Sq<LifeState> nextLifeSequence = Sq.repeat(Ticks.PLAYER_DYING_TICKS, new LifeState(lives(), LifeState.State.DYING));
+
+        if (!isAlive()) {
+            nextLifeSequence.concat(Sq.constant(new LifeState(0, LifeState.State.DEAD)));
+        } else {
+            nextLifeSequence.concat(Sq.repeat(Ticks.PLAYER_INVULNERABLE_TICKS, new LifeState(newLives, LifeState.State.INVULNERABLE)));
+            nextLifeSequence.concat(Sq.constant(new LifeState(newLives, LifeState.State.VULNERABLE)));
+        }
+
+        return nextLifeSequence;
+    }
+
+    /**
+     * @return Vrai si et seulement si le joueur est vivant, c-à-d si son nombre
+     *         de vies actuel est supérieur à 0
+     */
+    public boolean isAlive() {
+        return lifeState().lives() > 0;
+    }
+
+    /**
+     * @return Le nombre de vies actuel du joueur
+     */
+    public int lives() {
+        return lifeState().lives();
+    }
+
+    /**
+     * @return La séquence des positions dirigées du joueur
+     */
+    public Sq<DirectedPosition> directedPositions() {
+        return directedPos;
+    }
+
+    /**
+     * @return La position actuelle du joueur
+     */
+    public SubCell position() {
+        return directedPositions().head().position();
+    }
+
+    /**
+     * @return La direction vers laquelle le joueur regarde actuellement
+     */
+    public Direction direction() {
+        return directedPositions().head().direction();
+    }
+
+    /**
+     * @return Le nombre maximum de bombes que le joueur peut déposer
+     */
+    public int maxBombs() {
+        return maxBombs;
+    }
+
+    /**
+     * Retourne un joueur identique à celui auquel on l'applique, si ce n'est
+     * que son nombre maximum de bombes est celui donné
+     * 
+     * @param newMaxBombs
+     *            Le nombre de bombes maximum que peut poser le nouveau joueur
+     * @return Le nouveau joueur
+     */
+    public Player withMaxBombs(int newMaxBombs) {
+        return new Player(id, lifeStates, directedPos, newMaxBombs, bombRange);
+    }
+
+    /**
+     * @return La portée (en nombre de cases) des explosions produites par les
+     *         bombes du joueur
+     */
+    public int bombRange() {
+        return bombRange;
+    }
+
+    /**
+     * Retourne un joueur identique à celui auquel on l'applique, si ce n'est
+     * que la portée de ses bombes est celle donnée
+     * 
+     * @param newBombRange
+     *            La portée des bombes du nouveau joueur
+     * @return Le nouveau joueur
+     */
+    public Player withBombRange(int newBombRange) {
+        return new Player(id, lifeStates, directedPos, maxBombs, newBombRange);
+    }
+
+    /**
+     * @return Une bombe positionnée sur la case sur laquelle le joueur se
+     *         trouve actuellement, dont la mèche a la longueur donnée par la
+     *         constante {@value ch.epfl.xblast.server.Ticks#BOMB_FUSE_TICKS} et
+     *         dont la portée est celle des bombes du joueur.
+     */
+    public Bomb newBomb() {
+        return new Bomb(id, position().containingCell(), Ticks.BOMB_FUSE_TICKS, bombRange);
+    }
+
+    private static Sq<LifeState> createLifeSequence(int lives) throws IllegalArgumentException {
+        ArgumentChecker.requireNonNegative(lives);
+
+        Sq<LifeState> lifeSequence = Sq.repeat(Ticks.PLAYER_INVULNERABLE_TICKS, new LifeState(lives, LifeState.State.INVULNERABLE));
+        Sq<LifeState> constantVulnerable = Sq.constant(new LifeState(lives, LifeState.State.VULNERABLE));
+        lifeSequence.concat(constantVulnerable);
+
+        return lifeSequence;
+    }
 
     /**
      * Représente un couple (nombre de vies, état) du joueur
@@ -56,7 +217,7 @@ public final class Player {
      * @author Alexia Bogaert, 258330
      *
      */
-    public final class LifeState {
+    public final static class LifeState {
         private int lives;
         private State state;
 
@@ -104,6 +265,38 @@ public final class Player {
             return state == State.INVULNERABLE || state == State.VULNERABLE;
         }
 
+
+        /**
+         * Représente les états des joueurs
+         * 
+         * @author Sacha Kozma, 260391
+         * @author Alexia Bogaert, 258330
+         *
+         */
+        public enum State {
+            /**
+             * L'état du joueur invulnérable aux explosions, et ne peut donc pas
+             * perdre de vie
+             */
+            INVULNERABLE,
+
+            /**
+             * L'état du joueur vulnérable (son état normal) et peut donc perdre une
+             * vie s'il est atteint par une explosion
+             */
+            VULNERABLE,
+
+            /**
+             * L'état du joueur mourant
+             */
+            DYING,
+
+            /**
+             * L'état du joueur mort et qui ne participe donc plus au jeu
+             */
+            DEAD;
+
+        }
     }
 
     /**
@@ -202,36 +395,5 @@ public final class Player {
         }
     }
 
-    /**
-     * Représente les états des joueurs
-     * 
-     * @author Sacha Kozma, 260391
-     * @author Alexia Bogaert, 258330
-     *
-     */
-    public enum State {
-        /**
-         * L'état du joueur invulnérable aux explosions, et ne peut donc pas
-         * perdre de vie
-         */
-        INVULNERABLE,
-
-        /**
-         * L'état du joueur vulnérable (son état normal) et peut donc perdre une
-         * vie s'il est atteint par une explosion
-         */
-        VULNERABLE,
-
-        /**
-         * L'état du joueur mourant
-         */
-        DYING,
-
-        /**
-         * L'état du joueur mort et qui ne participe donc plus au jeu
-         */
-        DEAD;
-
-    }
 
 }
