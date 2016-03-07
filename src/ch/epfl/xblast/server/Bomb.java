@@ -75,7 +75,7 @@ public final class Bomb {
     public Bomb(PlayerID ownerId, Cell position, int fuseLength,
             int range) throws NullPointerException, IllegalArgumentException {
 
-        this(ownerId, position, Sq.iterate(fuseLength, x -> x - 1).limit(fuseLength), range);
+        this(ownerId, position, Sq.iterate(Objects.requireNonNull(fuseLength), x -> x - 1).limit(fuseLength), range);
     }
 
     /**
@@ -123,7 +123,7 @@ public final class Bomb {
      * @return L'explosion correspondant à la bombe, sous la forme d'un tableau
      *         de 4 éléments, chacun représentant un bras ; la durée de cette
      *         explosion est donnée par la constante
-     *         {@value ch.epfl.xblast.Ticks#Ticks.EXPLOSION_TICKS}
+     *         {@value ch.epfl.xblast.server.Ticks#EXPLOSION_TICKS}
      */
     public List<Sq<Sq<Cell>>> explosion() {
         List<Sq<Sq<Cell>>> explosion = new ArrayList<Sq<Sq<Cell>>>();
