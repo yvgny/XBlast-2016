@@ -80,7 +80,7 @@ public final class Bomb {
 
     /**
      * 
-     * @return Le propriétaire de la bombe
+     * @return Le propriétaire de la bombe;
      */
     public PlayerID ownerId() {
         return ownerId;
