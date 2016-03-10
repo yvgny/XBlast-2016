@@ -74,7 +74,7 @@ public final class Player {
     public Player(PlayerID id, int lives, Cell position, int maxBombs,
             int bombRange) throws IllegalArgumentException, NullPointerException {
 
-        this(Objects.requireNonNull(id), createLifeSequence(lives), Sq.constant(new DirectedPosition(SubCell.centralSubCellOf(Objects.requireNonNull(position)), Direction.S)), maxBombs, bombRange);
+        this(id, createLifeSequence(lives), Sq.constant(new DirectedPosition(SubCell.centralSubCellOf(Objects.requireNonNull(position)), Direction.S)), maxBombs, bombRange);
     }
 
     /**
@@ -105,11 +105,11 @@ public final class Player {
         int newLives = lives() - 1;
         Sq<LifeState> nextLifeSequence = Sq.repeat(Ticks.PLAYER_DYING_TICKS, new LifeState(lives(), LifeState.State.DYING));
 
-        if (!isAlive()) {
-            nextLifeSequence.concat(Sq.constant(new LifeState(0, LifeState.State.DEAD)));
+        if (newLives <= 0) {
+            nextLifeSequence = nextLifeSequence.concat(Sq.constant(new LifeState(0, LifeState.State.DEAD)));
         } else {
-            nextLifeSequence.concat(Sq.repeat(Ticks.PLAYER_INVULNERABLE_TICKS, new LifeState(newLives, LifeState.State.INVULNERABLE)));
-            nextLifeSequence.concat(Sq.constant(new LifeState(newLives, LifeState.State.VULNERABLE)));
+            nextLifeSequence = nextLifeSequence.concat(Sq.repeat(Ticks.PLAYER_INVULNERABLE_TICKS, new LifeState(newLives, LifeState.State.INVULNERABLE)));
+            nextLifeSequence = nextLifeSequence.concat(Sq.constant(new LifeState(newLives, LifeState.State.VULNERABLE)));
         }
 
         return nextLifeSequence;
@@ -205,7 +205,7 @@ public final class Player {
 
         Sq<LifeState> lifeSequence = Sq.repeat(Ticks.PLAYER_INVULNERABLE_TICKS, new LifeState(lives, LifeState.State.INVULNERABLE));
         Sq<LifeState> constantVulnerable = Sq.constant(new LifeState(lives, LifeState.State.VULNERABLE));
-        lifeSequence.concat(constantVulnerable);
+        lifeSequence = lifeSequence.concat(constantVulnerable);
 
         return lifeSequence;
     }

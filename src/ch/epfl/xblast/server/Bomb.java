@@ -75,7 +75,7 @@ public final class Bomb {
     public Bomb(PlayerID ownerId, Cell position, int fuseLength,
             int range) throws NullPointerException, IllegalArgumentException {
 
-        this(ownerId, position, Sq.iterate(Objects.requireNonNull(fuseLength), x -> x - 1).limit(fuseLength), range);
+        this(ownerId, position, Sq.iterate(ArgumentChecker.requireNonNegative(fuseLength), x -> x - 1).limit(fuseLength), range);
     }
 
     /**
@@ -137,7 +137,7 @@ public final class Bomb {
 
     private Sq<Sq<Cell>> explosionArmTowards(Direction dir) {
 
-        Sq<Cell> explosionArmInSpace = (Sq.iterate(position, c -> position.neighbor(dir))).limit(range);
+        Sq<Cell> explosionArmInSpace = (Sq.iterate(position, c -> c.neighbor(dir))).limit(range);
         Sq<Sq<Cell>> explosionArmInTime = Sq.repeat(Ticks.EXPLOSION_TICKS, explosionArmInSpace);
 
         return explosionArmInTime;
