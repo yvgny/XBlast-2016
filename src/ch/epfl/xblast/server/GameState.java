@@ -142,4 +142,33 @@ public final class GameState {
         
         return alivePlayers;
     }
+    
+    private static List<Sq<Cell>> nextBlasts(List<Sq<Cell>> blasts0, Board board0, List<Sq<Sq<Cell>>> explosions0){
+        List<Sq<Cell>> blasts1 = new ArrayList<Sq<Cell>>();
+        
+        for (Sq<Cell> blastSq : blasts0) {
+            if (board0.blockAt(blastSq.head()).isFree()  && !blastSq.tail().isEmpty()) {
+                blasts1.add(blastSq.tail());
+            }
+        }
+        
+        for (Sq<Sq<Cell>> explosionSq : explosions0) {
+            blasts1.add(explosionSq.head());
+        }
+        
+        
+        return blasts1;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

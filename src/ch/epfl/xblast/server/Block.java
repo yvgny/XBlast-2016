@@ -1,5 +1,7 @@
 package ch.epfl.xblast.server;
 
+import java.util.NoSuchElementException;
+
 /**
  * 
  * @author Sacha Kozma, 260391
@@ -37,17 +39,16 @@ public enum Block {
      */
     BONUS_RANGE(Bonus.INC_RANGE);
 
-    @SuppressWarnings("unused")
     private Bonus maybeAssociatedBonus;
-    
-    private Block(Bonus maybeAssociatedBonus){
+
+    private Block(Bonus maybeAssociatedBonus) {
         this.maybeAssociatedBonus = maybeAssociatedBonus;
     }
-    
-    private Block(){
+
+    private Block() {
         this.maybeAssociatedBonus = null;
     }
-    
+
     /**
      * Vérifie si la case est libre
      * 
@@ -78,6 +79,20 @@ public enum Block {
      */
     public boolean isBonus() {
         return this.toString().startsWith("BONUS_");
+    }
+
+    /**
+     * 
+     * @return Le bonus associé à ce bloc
+     * @throws NoSuchElementException
+     *             Si aucun bonus n'est associé à ce bloc
+     */
+    public Bonus associatedBonus() throws NoSuchElementException {
+        if (maybeAssociatedBonus != null) {
+            return maybeAssociatedBonus;
+        } else {
+            throw new NoSuchElementException("Aucun bonus n'est associé à ce blog !");
+        }
     }
 
 }
