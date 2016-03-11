@@ -44,6 +44,43 @@ public final class Lists {
     }
 
     /**
+     * Retourne les permutations de la liste donnée en argument, dans un ordre
+     * quelconque.
+     * 
+     * @param l
+     *            La liste à utiliser pour calculer les permutations de ses
+     *            objets
+     * @param <T>
+     *            Le type de la liste passée en paramètre
+     * @return Une liste des permutations des objets de la liste
+     */
+    public static <T> List<List<T>> permutations(List<T> l) {
+        List<List<T>> permutations = new ArrayList<List<T>>();
+        List<List<T>> subListPermutations = new ArrayList<List<T>>();
+        ArrayList<T> copiedL = new ArrayList<T>(l);
+
+        if (l.isEmpty() || l.size() == 1) {
+            permutations.add(copiedL);
+            
+            return permutations;
+        } else {
+            
+            T firstElement = l.get(0);
+            subListPermutations = permutations(l.subList(1, l.size()));
+            
+            for (List<T> list : subListPermutations) {
+                for (int i = 0; i <= list.size(); i++) {
+                    ArrayList<T> tempList = new ArrayList<T>(list);
+                    tempList.add(i, firstElement);
+                    permutations.add(tempList);
+                }
+            }
+            
+            return permutations;
+        }
+    }
+
+    /**
      * Copie la liste de liste passée en paramètre. Il faut toutefois faire
      * attention que seul la référence l'objet de type T est copié, il se s'agit
      * donc pas de copie profonde

@@ -25,47 +25,59 @@ public enum Block {
     /**
      * Représente une case avec un mur en train de se casser
      */
-    CRUMBLING_WALL;
+    CRUMBLING_WALL,
 
+    /**
+     * Représente une case avec un bonus "bombe"
+     */
+    BONUS_BOMB(Bonus.INC_BOMB),
+
+    /**
+     * Représente une case avec un bonus "range"
+     */
+    BONUS_RANGE(Bonus.INC_RANGE);
+
+    @SuppressWarnings("unused")
+    private Bonus maybeAssociatedBonus;
+    
+    private Block(Bonus maybeAssociatedBonus){
+        this.maybeAssociatedBonus = maybeAssociatedBonus;
+    }
+    
+    private Block(){
+        this.maybeAssociatedBonus = null;
+    }
+    
     /**
      * Vérifie si la case est libre
      * 
      * @return true si elle est libre (FREE), false sinon
      */
     public boolean isFree() {
-        if (this == Block.FREE) {
-            return true;
-
-        } else {
-            return false;
-        }
-
+        return (this == Block.FREE);
     }
 
     /**
-     * Vérifie si le joueur peut venir sur cette case, donc si la case est libre
-     * (FREE)
-     * 
-     * @return true si la case est libre, false sinon
+     * @return true si la case est libre (de type FREE), false sinon
      */
     public boolean canHostPlayer() {
-        return isFree();
+        return isFree() || isBonus();
     }
 
     /**
-     * Vérifie si la case projette une ombre sur le tableau
-     * 
      * @return vrai si la case projette une ombre (si c'est une case de type
      *         mur), flase sinon
      */
     public boolean castsShadow() {
-        if (this.toString().endsWith("_WALL")) {
-            return true;
+        return this.toString().endsWith("_WALL");
 
-        } else {
-            return false;
-        }
+    }
 
+    /**
+     * @return Vrai si et seulement si la case est un bonus
+     */
+    public boolean isBonus() {
+        return this.toString().startsWith("BONUS_");
     }
 
 }
