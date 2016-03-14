@@ -21,6 +21,7 @@ public final class GameState {
     private int ticks;
     private Board board;
     private List<Player> players;
+    private List<Bomb> bombs;
     private List<Sq<Sq<Cell>>> explosions;
     private List<Sq<Cell>> blasts;
 
@@ -50,13 +51,14 @@ public final class GameState {
             List<Sq<Cell>> blasts) throws IllegalArgumentException, NullPointerException {
 
         this.ticks = ArgumentChecker.requireNonNegative(ticks);
-        this.board = Objects.requireNonNull(board);
-        this.players = Objects.requireNonNull(players);
+        this.board = Objects.requireNonNull(board, "board must not be null");
+        this.players = Objects.requireNonNull(players, "players must not be null");
         if (players.size() != 4) {
             throw new IllegalArgumentException("La liste de joueurs ne contient pas 4 éléments !");
         }
         this.explosions = Objects.requireNonNull(explosions, "explosions must not be null");
         this.blasts = Objects.requireNonNull(blasts, "blasts must not be null");
+        this.bombs = Objects.requireNonNull(bombs, "bombs must not be null");
     }
 
     /**
@@ -65,7 +67,7 @@ public final class GameState {
      * 
      * @param board
      *            Le plateau de jeu à utiliser
-     * @param player
+     * @param players
      *            La liste de joueur à utiliser
      * @throws IllegalArgumentException
      *             Si il n'y a pas quatre joueurs dans la liste de joueurs
@@ -99,8 +101,8 @@ public final class GameState {
      * @return Le temps restant dans la partie, en secondes
      */
     public double remainingTime() {
-        double remainingTime = (Ticks.TOTAL_TICKS - ticks) / Ticks.TICKS_PER_SECOND;
-        if (remainingTime < 0) {
+        double remainingTime = (Ticks.TOTAL_TICKS - ticks) / (double)Ticks.TICKS_PER_SECOND;
+        if (remainingTime < 0.0) {
             return 0.0;
         } else {
             return remainingTime;
