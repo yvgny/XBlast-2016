@@ -18,12 +18,12 @@ public final class Cell {
     private int y;
 
     /**
-     * Nombre de colonnes du plateau de jeu
+     * Nombre de colonnes du plateau de jeu (doit être un nombre impair !)
      */
     public static final int COLUMNS = 15;
 
     /**
-     * Nombre de lignes du plateau de jeu
+     * Nombre de lignes du plateau de jeu (doit être un nombre impair !)
      */
     public static final int ROWS = 13;
 
