@@ -174,4 +174,13 @@ public final class SubCell {
         return y;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return (COLUMNS * x) + (y);
+    }
+
+    
 }

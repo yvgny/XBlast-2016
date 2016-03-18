@@ -3,6 +3,7 @@ package ch.epfl.xblast;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.lang.Math;
 
 /**
@@ -211,5 +212,15 @@ public final class Cell {
     public String toString() {
         return "(" + x + "," + y + ")";
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return this.rowMajorIndex();
+    }
+    
+    
 
 }
