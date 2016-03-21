@@ -14,8 +14,22 @@ public final class GameStatePrinter {
     public static void printGameState(GameState s) {
         List<Player> ps = s.alivePlayers();
         Board board = s.board();
-
+        System.out.print("  ");
+        for (int i = 0; i < Cell.COLUMNS; i++) {
+            if (i < 10) {
+                System.out.print(i + " ");
+            } else {
+                System.out.print(i);
+            }
+        }
+        System.out.println();
+        
         for (int y = 0; y < Cell.ROWS; ++y) {
+            if (y < 10) {
+                System.out.print(y+ " ");
+            } else {
+                System.out.print(y);
+            }
             xLoop: for (int x = 0; x < Cell.COLUMNS; ++x) {
                 Cell c = new Cell(x, y);
                 for (Player p: ps) {
