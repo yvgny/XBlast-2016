@@ -3,8 +3,6 @@ package ch.epfl.xblast;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.lang.Math;
 
 /**
  * Une case du plateau du jeu
