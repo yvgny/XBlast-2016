@@ -232,19 +232,26 @@ public final class GameState {
             List<PlayerID> currentPermutation = playerIdPermutations.get(ticks % playerIdPermutations.size());
             if (currentPermutation.indexOf(player1.id()) < currentPermutation.indexOf(player2.id())) {
                 return -1;
-                
+
             } else if (currentPermutation.indexOf(player1.id()) > currentPermutation.indexOf(player2.id())) {
                 return 1;
-                
+
             } else {
                 return 0;
             }
         };
-        
-        players.sort(playerSort);
 
+        for (Player player : players) {
+            System.out.println(player.id());
+        }
+        players.sort(playerSort);
+        for (Player player : players) {
+            System.err.println(player.id());
+        }
+        
         List<Sq<Cell>> blasts1 = nextBlasts(blasts, board, explosions);
 
+        // Création de playerBonuses et consumedBonuses
         Map<PlayerID, Bonus> playerBonuses = new HashMap<>();
         Set<Cell> consumedBonuses = new HashSet<>();
         for (Player player : players) {
@@ -254,6 +261,7 @@ public final class GameState {
             }
         }
 
+        // Création de blastedCells
         Set<Cell> blastedCells = new HashSet<>();
         for (Sq<Cell> sq : blasts1) {
             while (!sq.isEmpty()) {
@@ -268,18 +276,28 @@ public final class GameState {
 
         List<Bomb> bombs1 = newlyDroppedBombs(players, bombDropEvents, bombs);
 
+        // Evolution des bombes présente a ce moment-la
+        for (Bomb bomb : bombs) {
+            if (blastedCells.contains(bomb.position())) {
+                explosions1.addAll(bomb.explosion());
+            } else if (bomb.fuseLength() - 1 <= 0) {
+                explosions1.addAll(bomb.explosion());
+            } else {
+                bombs1.add(new Bomb(bomb.ownerId(), bomb.position(), bomb.fuseLengths().tail(), bomb.range()));
+            }
+        }
+
         Set<Cell> bombedCells = new HashSet<>();
         for (Bomb bomb : bombs1) {
             bombedCells.add(bomb.position());
         }
-        
+
         List<Player> players1 = nextPlayers(players, playerBonuses, bombedCells, board1, blastedCells, speedChangeEvents);
 
         return new GameState(++ticks, board1, players1, bombs1, explosions1, blasts1);
     }
 
     private static Board nextBoard(Board board0, Set<Cell> consumedBonuses, Set<Cell> blastedCells1) {
-
         List<Sq<Block>> blocksList = new ArrayList<Sq<Block>>();
         Block tempBlock;
         Cell currentPosition;
@@ -299,8 +317,10 @@ public final class GameState {
                     Sq<Block> crumblingWall = Sq.repeat(Ticks.WALL_CRUMBLING_TICKS, Block.CRUMBLING_WALL);
 
                     // Concaténation avec une séquence infinie d'un bloc pris au
-                    // hasard dans la liste de bonus ou de case libre disponible
-                    crumblingWall = crumblingWall.concat(Sq.constant(appearableBonus.get(RANDOM.nextInt(4))));
+                    // hasard dans la liste de bonus/case libre disponible
+                    Block chosenBlock = appearableBonus.get(RANDOM.nextInt(appearableBonus.size()));
+                    crumblingWall = crumblingWall.concat(Sq.constant(chosenBlock));
+                    
                     blocksList.add(crumblingWall);
 
                 } else if (tempBlock.isBonus() && blastedCells1.contains(currentPosition)) {
@@ -309,7 +329,7 @@ public final class GameState {
                     blocksList.add(disappearingBonus);
 
                 } else {
-                    blocksList.add(Sq.constant(tempBlock));
+                    blocksList.add(board0.blocksAt(currentPosition).tail());
                 }
 
             }
@@ -365,6 +385,14 @@ public final class GameState {
                 boolean bombAlreadyHere = false;
 
                 for (Bomb bomb : bombs1) {
+
+                    if (bomb.position() == player.position().containingCell()) {
+                        bombAlreadyHere = true;
+
+                    }
+                }
+
+                for (Bomb bomb : bombs0) {
 
                     if (bomb.position() == player.position().containingCell()) {
                         bombAlreadyHere = true;
