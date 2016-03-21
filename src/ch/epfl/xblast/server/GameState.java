@@ -2,6 +2,8 @@ package ch.epfl.xblast.server;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,7 +12,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
-import java.util.Collections;
 
 import ch.epfl.cs108.Sq;
 import ch.epfl.xblast.ArgumentChecker;
@@ -35,8 +36,7 @@ public final class GameState {
     private List<Sq<Cell>> blasts;
     public List<List<PlayerID>> playerIdPermutations;
     private static final Random RANDOM = new Random(2016);
-    private static final List<Block> appearableBonus = Collections.unmodifiableList(
-            Arrays.asList(Block.BONUS_BOMB, Block.BONUS_RANGE, Block.FREE));
+    private static final List<Block> appearableBonus = Collections.unmodifiableList(Arrays.asList(Block.BONUS_BOMB, Block.BONUS_RANGE, Block.FREE));
 
     /**
      * Construit l'état du jeu pour le coup d'horloge, le plateau de jeu, les
@@ -59,8 +59,8 @@ public final class GameState {
      * @throws NullPointerException
      *             Si un des objets est null
      */
-    public GameState(int ticks, Board board, List<Player> players, List<Bomb> bombs,
-            List<Sq<Sq<Cell>>> explosions,
+    public GameState(int ticks, Board board, List<Player> players,
+            List<Bomb> bombs, List<Sq<Sq<Cell>>> explosions,
             List<Sq<Cell>> blasts) throws IllegalArgumentException, NullPointerException {
 
         this.ticks = ArgumentChecker.requireNonNegative(ticks);
@@ -128,8 +128,7 @@ public final class GameState {
      *         valeur optionnelle vide
      */
     public Optional<PlayerID> winner() {
-        return alivePlayers().size() == 1 ? Optional.of(
-                alivePlayers().get(0).id()) : Optional.empty();
+        return alivePlayers().size() == 1 ? Optional.of(alivePlayers().get(0).id()) : Optional.empty();
     }
 
     /**
@@ -171,8 +170,7 @@ public final class GameState {
      *            Les explosions courantes
      * @return Les particuels d'explosions pour l'état suivant
      */
-    public static List<Sq<Cell>> nextBlasts(List<Sq<Cell>> blasts0, Board board0,
-            List<Sq<Sq<Cell>>> explosions0) {
+    public static List<Sq<Cell>> nextBlasts(List<Sq<Cell>> blasts0, Board board0, List<Sq<Sq<Cell>>> explosions0) {
         List<Sq<Cell>> blasts1 = new ArrayList<Sq<Cell>>();
 
         for (Sq<Cell> blastSq : blasts0) {
@@ -228,8 +226,22 @@ public final class GameState {
      *            La liste des identifiants joueurs qui ont posé une bombe
      * @return l'état du jeu pour le coup d'horloge suivant
      */
-    public GameState next(Map<PlayerID, Optional<Direction>> speedChangeEvents,
-            Set<PlayerID> bombDropEvents) {
+    public GameState next(Map<PlayerID, Optional<Direction>> speedChangeEvents, Set<PlayerID> bombDropEvents) {
+
+        Comparator<Player> playerSort = (player1, player2) -> {
+            List<PlayerID> currentPermutation = playerIdPermutations.get(ticks % playerIdPermutations.size());
+            if (currentPermutation.indexOf(player1.id()) < currentPermutation.indexOf(player2.id())) {
+                return -1;
+                
+            } else if (currentPermutation.indexOf(player1.id()) > currentPermutation.indexOf(player2.id())) {
+                return 1;
+                
+            } else {
+                return 0;
+            }
+        };
+        
+        players.sort(playerSort);
 
         List<Sq<Cell>> blasts1 = nextBlasts(blasts, board, explosions);
 
@@ -238,8 +250,7 @@ public final class GameState {
         for (Player player : players) {
             if (board.blockAt(player.position().containingCell()).isBonus()) {
                 consumedBonuses.add(player.position().containingCell());
-                playerBonuses.put(player.id(),
-                        board.blockAt(player.position().containingCell()).associatedBonus());
+                playerBonuses.put(player.id(), board.blockAt(player.position().containingCell()).associatedBonus());
             }
         }
 
@@ -261,14 +272,13 @@ public final class GameState {
         for (Bomb bomb : bombs1) {
             bombedCells.add(bomb.position());
         }
-        List<Player> players1 = nextPlayers(players, playerBonuses, bombedCells, board1,
-                blastedCells, speedChangeEvents);
+        
+        List<Player> players1 = nextPlayers(players, playerBonuses, bombedCells, board1, blastedCells, speedChangeEvents);
 
-        return new GameState(ticks + 1, board1, players1, bombs1, explosions1, blasts1);
+        return new GameState(++ticks, board1, players1, bombs1, explosions1, blasts1);
     }
 
-    private static Board nextBoard(Board board0, Set<Cell> consumedBonuses,
-            Set<Cell> blastedCells1) {
+    private static Board nextBoard(Board board0, Set<Cell> consumedBonuses, Set<Cell> blastedCells1) {
 
         List<Sq<Block>> blocksList = new ArrayList<Sq<Block>>();
         Block tempBlock;
@@ -285,20 +295,16 @@ public final class GameState {
 
                     // Transforme les murs destructible atteints par une
                     // explosion en mur en train de se détruire
-                } else if (tempBlock == Block.DESTRUCTIBLE_WALL && blastedCells1.contains(
-                        currentPosition)) {
-                    Sq<Block> crumblingWall = Sq.repeat(Ticks.WALL_CRUMBLING_TICKS,
-                            Block.CRUMBLING_WALL);
+                } else if (tempBlock == Block.DESTRUCTIBLE_WALL && blastedCells1.contains(currentPosition)) {
+                    Sq<Block> crumblingWall = Sq.repeat(Ticks.WALL_CRUMBLING_TICKS, Block.CRUMBLING_WALL);
 
                     // Concaténation avec une séquence infinie d'un bloc pris au
                     // hasard dans la liste de bonus ou de case libre disponible
-                    crumblingWall = crumblingWall.concat(
-                            Sq.constant(appearableBonus.get(RANDOM.nextInt(4))));
+                    crumblingWall = crumblingWall.concat(Sq.constant(appearableBonus.get(RANDOM.nextInt(4))));
                     blocksList.add(crumblingWall);
 
                 } else if (tempBlock.isBonus() && blastedCells1.contains(currentPosition)) {
-                    Sq<Block> disappearingBonus = board0.blocksAt(currentPosition).limit(
-                            Ticks.BONUS_DISAPPEARING_TICKS);
+                    Sq<Block> disappearingBonus = board0.blocksAt(currentPosition).limit(Ticks.BONUS_DISAPPEARING_TICKS);
                     disappearingBonus = disappearingBonus.concat(Sq.constant(Block.FREE));
                     blocksList.add(disappearingBonus);
 
@@ -312,9 +318,7 @@ public final class GameState {
         return new Board(blocksList);
     }
 
-    private static List<Player> nextPlayers(List<Player> players0,
-            Map<PlayerID, Bonus> playerBonuses, Set<Cell> bombedCells1, Board board1,
-            Set<Cell> blastedCells1, Map<PlayerID, Optional<Direction>> speedChangeEvents) {
+    private static List<Player> nextPlayers(List<Player> players0, Map<PlayerID, Bonus> playerBonuses, Set<Cell> bombedCells1, Board board1, Set<Cell> blastedCells1, Map<PlayerID, Optional<Direction>> speedChangeEvents) {
 
         return players0;
     }
@@ -329,8 +333,7 @@ public final class GameState {
         return explosions1;
     }
 
-    private static List<Bomb> newlyDroppedBombs(List<Player> players0, Set<PlayerID> bombDropEvents,
-            List<Bomb> bombs0) {
+    private static List<Bomb> newlyDroppedBombs(List<Player> players0, Set<PlayerID> bombDropEvents, List<Bomb> bombs0) {
 
         List<Player> authorisedPlayers = new ArrayList<>(players0);
         int playerBombsOnBoard;
@@ -370,8 +373,7 @@ public final class GameState {
                 }
 
                 if (!bombAlreadyHere) {
-                    bombs1.add(
-                            new Bomb(player.id(), player.position().containingCell(), Ticks.BOMB_FUSE_TICKS, player.bombRange()));
+                    bombs1.add(new Bomb(player.id(), player.position().containingCell(), Ticks.BOMB_FUSE_TICKS, player.bombRange()));
                 }
 
             }
