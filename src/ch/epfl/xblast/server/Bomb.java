@@ -139,7 +139,7 @@ public final class Bomb {
 
         Sq<Cell> explosionArmInSpace = (Sq.iterate(position, c -> c.neighbor(dir))).limit(range);
         Sq<Sq<Cell>> explosionArmInTime = Sq.repeat(Ticks.EXPLOSION_TICKS, explosionArmInSpace);
-
+        
         return explosionArmInTime;
     }
 }
