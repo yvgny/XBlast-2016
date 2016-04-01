@@ -91,7 +91,7 @@ public enum Block {
         if (maybeAssociatedBonus != null) {
             return maybeAssociatedBonus;
         } else {
-            throw new NoSuchElementException("Aucun bonus n'est associé à ce blog !");
+            throw new NoSuchElementException("Aucun bonus n'est associé à ce bloc !");
         }
     }
 
