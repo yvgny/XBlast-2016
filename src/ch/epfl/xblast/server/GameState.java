@@ -19,6 +19,10 @@ import ch.epfl.xblast.Cell;
 import ch.epfl.xblast.Direction;
 import ch.epfl.xblast.Lists;
 import ch.epfl.xblast.PlayerID;
+import ch.epfl.xblast.SubCell;
+import ch.epfl.xblast.server.Player.DirectedPosition;
+import ch.epfl.xblast.server.Player.LifeState;
+import sun.text.normalizer.UBiDiProps;
 
 /**
  * Représente l'état d'une partie
@@ -34,7 +38,7 @@ public final class GameState {
     private List<Bomb> bombs;
     private List<Sq<Sq<Cell>>> explosions;
     private List<Sq<Cell>> blasts;
-    public List<List<PlayerID>> playerIdPermutations;
+    private List<List<PlayerID>> playerIdPermutations;
     private static final Random RANDOM = new Random(2016);
     private static final List<Block> appearableBonus = Collections.unmodifiableList(Arrays.asList(Block.BONUS_BOMB, Block.BONUS_RANGE, Block.FREE));
 
@@ -193,6 +197,14 @@ public final class GameState {
         return bombedCells(bombs);
     }
 
+    /**
+     * Calule l'ensemble des cases sur lesqeulles se trouve une bombe
+     * 
+     * @param bombs0
+     *            La liste des bombes de l'état actuel
+     * @return Les cases sur lesquelles se trouvent une bombe
+     * 
+     */
     private static Map<Cell, Bomb> bombedCells(List<Bomb> bombs0) {
         Map<Cell, Bomb> bombedCellsMap = new HashMap<>();
         for (Bomb bomb : bombs0) {
@@ -210,6 +222,15 @@ public final class GameState {
         return blastedCells(this.blasts);
     }
 
+    /**
+     * Calule l'ensemble des cases sur lesquelles se trouve au moins une
+     * particule d'explosion
+     * 
+     * @param blasts0
+     *            Les branches d'explosions de l'état actuel
+     * @return Les cases sur lesquelles se trouvent au moins une particule
+     *         d'explosion
+     */
     private static Set<Cell> blastedCells(List<Sq<Cell>> blasts0) {
         Set<Cell> blastedCells = new HashSet<>();
 
@@ -227,7 +248,8 @@ public final class GameState {
      * l'actuel
      * 
      * @param speedChangeEvents
-     *            //TODO
+     *            Les événements de changement de direction pour les joueurs
+     *            désirant changer de direction
      * @param bombDropEvents
      *            La liste des identifiants joueurs qui ont posé une bombe
      * @return l'état du jeu pour le coup d'horloge suivant
@@ -298,10 +320,21 @@ public final class GameState {
 
         List<Player> players1 = nextPlayers(players, playerBonuses, bombedCells, board1, blastedCells1, speedChangeEvents);
 
-        
         return new GameState(++ticks, board1, players1, bombs1, explosions1, blasts1);
     }
 
+    /**
+     * Calcule le prochain état du plateau
+     * 
+     * @param board0
+     *            Le plateau actuel
+     * @param consumedBonuses
+     *            Les bonus consommés par les joueurs
+     * @param blastedCells1
+     *            Les cases du prochain états qui contiennent une particule
+     *            d'explosion
+     * @return
+     */
     private static Board nextBoard(Board board0, Set<Cell> consumedBonuses, Set<Cell> blastedCells1) {
         List<Sq<Block>> blocksList = new ArrayList<Sq<Block>>();
         Block tempBlock;
@@ -343,11 +376,152 @@ public final class GameState {
         return new Board(blocksList);
     }
 
+    /**
+     * Fait évoluer les joueurs pour le prochain état
+     * 
+     * @param players0
+     *            Les joueurs actuels
+     * @param playerBonuses
+     *            Associe les bonus collectés à leurs identités
+     * @param bombedCells1
+     *            Les cellules sur lesquelles se trouvent une bombe
+     * @param board1
+     *            Le plateau de jeu du prochain état
+     * @param blastedCells1
+     *            Les cases du prochain état qui contiennent une particule
+     *            d'explosion
+     * @param speedChangeEvents
+     *            Les événements de changement de direction pour les joueurs
+     *            désirant changer de direction
+     * @return Les joueurs pour le prochain état
+     */
     private static List<Player> nextPlayers(List<Player> players0, Map<PlayerID, Bonus> playerBonuses, Set<Cell> bombedCells1, Board board1, Set<Cell> blastedCells1, Map<PlayerID, Optional<Direction>> speedChangeEvents) {
 
-        return players0;
+        List<Player> players1 = new ArrayList<>();
+        boolean evolve = true;
+
+        for (Player player : players0) {
+            SubCell centralSubCell1;
+            DirectedPosition directedPosition1;
+            Sq<DirectedPosition> directedPositions1 = player.directedPositions();
+
+            //
+            // Evolution de la position
+            //
+
+            // Si le joueur veut changer de direction/s'arrêter quand on
+            // retourne en arrière
+            if (speedChangeEvents.containsKey(player.id())) {
+                Optional<Direction> chosenDirection = speedChangeEvents.get(player.id());
+
+                // On trouve les coordonnées de la SubCell centrale
+                centralSubCell1 = (directedPositions1.findFirst(u -> u.position().isCentral())).position();
+
+                
+                if (chosenDirection.isPresent()) {
+
+                    if (chosenDirection.get() != player.direction().opposite()) {
+                        // On coupe la séquence quand on arrive à la prochaine
+                        // case centrale (case centrale exclue)
+                        directedPositions1 = directedPositions1.takeWhile(u -> !u.position().isCentral());
+                        
+                        // On rajoute la séquence après la changement de
+                        // direction s'il y en a une
+                        directedPosition1 = new DirectedPosition(centralSubCell1, chosenDirection.get());
+                        directedPositions1 = directedPositions1.concat(DirectedPosition.moving(directedPosition1));
+
+                    } else {
+
+                        // Si le joueur retourne en arrière il peut direct
+                        directedPosition1 = new DirectedPosition(player.position(), chosenDirection.get());
+                        directedPositions1 = DirectedPosition.moving(directedPosition1);
+                    }
+
+                } else {
+                    evolve = false;
+                }
+            }
+
+            SubCell subCell0 = player.position();
+            Cell cell0 = subCell0.containingCell();
+
+            Cell cell1;
+
+
+            
+            
+            // Test si le joueur a une séquence constante (ne bouge pas)
+            DirectedPosition directedPos1 = directedPositions1.head();
+            DirectedPosition directedPos2 = directedPositions1.tail().head();
+            
+            if (directedPos1.position().equals(directedPos2.position())) {
+                cell1 = cell0;
+            } else {
+                // Prend la première case qui n'est pas égale a la case actuelle
+                cell1 =  directedPositions1.findFirst(u -> !u.position().containingCell().equals(cell0)).position().containingCell();
+            }
+            // Test si il y a un mur
+            if (!board1.blockAt(cell1).canHostPlayer()) {
+                if (subCell0.isCentral()) {
+                    evolve = false;
+                }
+            }
+            // Test si il y une bombe
+            if (bombedCells1.contains(cell0)) {
+                // On calcule si il se trouve sur la case sur laquelle il doit
+                // s'arrêter si il y a une bombe
+
+                SubCell blockedSubCell = SubCell.centralSubCellOf(cell0);
+
+                while (blockedSubCell.distanceToCentral() < 6) {
+                    blockedSubCell = blockedSubCell.neighbor(player.direction().opposite());
+                }
+
+                if (subCell0.equals(blockedSubCell)) {
+                    evolve = false;
+                }
+            }
+
+            // On fait évoluer la séquence de position dirigée
+            if (evolve) {
+                directedPositions1 = directedPositions1.tail();
+            }
+
+            //
+            // Evolution de l'état
+            //
+
+            Sq<LifeState> lifeStates1 = player.lifeStates();
+            if (blastedCells1.contains(directedPositions1.head().position().containingCell()) && player.lifeState().state() == Player.LifeState.State.VULNERABLE) {
+                lifeStates1 = player.statesForNextLife();
+            } else {
+                lifeStates1 = lifeStates1.tail();
+            }
+
+            //
+            // Evolution des capacités
+            //
+
+            Player playerWithBonus = player;
+            if (playerBonuses.containsKey(player.id())) {
+                playerWithBonus = playerBonuses.get(player.id()).applyTo(player);
+            }
+
+            // Rajout du joueur dans la nouvelle liste
+            players1.add(new Player(player.id(), lifeStates1, directedPositions1, playerWithBonus.maxBombs(), playerWithBonus.bombRange()));
+
+        }
+
+        return players1;
     }
 
+    /**
+     * Calcule les explosions pour le prochain état en fonction des actuelles
+     * 
+     * @param explosions0
+     *            Les explosions actuelles
+     * @return Les explosions pour le prochain état
+     */
     private static List<Sq<Sq<Cell>>> nextExplosions(List<Sq<Sq<Cell>>> explosions0) {
         List<Sq<Sq<Cell>>> explosions1 = new ArrayList<>();
 
@@ -360,6 +534,18 @@ public final class GameState {
         return explosions1;
     }
 
+    /**
+     * Calule les nouvelles bombes posée en fonction des règles (qui a le droit
+     * de poser une bombe, a quel endroit, etc...)
+     * 
+     * @param players0
+     *            La liste des joueurs actuels
+     * @param bombDropEvents
+     *            Les événements de dépôts de bombes
+     * @param bombs0
+     *            La liste des bombes actuelles
+     * @return La liste des bombes nouvellement posées
+     */
     private static List<Bomb> newlyDroppedBombs(List<Player> players0, Set<PlayerID> bombDropEvents, List<Bomb> bombs0) {
         List<Player> authorisedPlayers = new ArrayList<>(players0);
         int playerBombsOnBoard;
@@ -385,7 +571,6 @@ public final class GameState {
                 authorisedPlayers.remove(player);
             }
         }
-        
 
         for (Player player : authorisedPlayers) {
             if (bombDropEvents.contains(player.id())) {
@@ -402,8 +587,7 @@ public final class GameState {
                         bombAlreadyHere = true;
                     }
                 }
-                
-                
+
                 if (!bombAlreadyHere) {
                     bombs1.add(new Bomb(player.id(), player.position().containingCell(), Ticks.BOMB_FUSE_TICKS, player.bombRange()));
                 }
