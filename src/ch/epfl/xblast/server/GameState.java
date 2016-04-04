@@ -32,13 +32,13 @@ import sun.text.normalizer.UBiDiProps;
  *
  */
 public final class GameState {
-    private int ticks;
-    private Board board;
-    private List<Player> players;
-    private List<Bomb> bombs;
-    private List<Sq<Sq<Cell>>> explosions;
-    private List<Sq<Cell>> blasts;
-    private List<List<PlayerID>> playerIdPermutations;
+    private final int ticks;
+    private final Board board;
+    private final List<Player> players;
+    private final List<Bomb> bombs;
+    private final List<Sq<Sq<Cell>>> explosions;
+    private final List<Sq<Cell>> blasts;
+    private static final List<List<PlayerID>> playerIdPermutations = unmodifiableList(Lists.permutations(Arrays.asList(PlayerID.values())));
     private static final Random RANDOM = new Random(2016);
     private static final List<Block> appearableBonus = Collections.unmodifiableList(Arrays.asList(Block.BONUS_BOMB, Block.BONUS_RANGE, Block.FREE));
 
@@ -69,14 +69,14 @@ public final class GameState {
 
         this.ticks = ArgumentChecker.requireNonNegative(ticks);
         this.board = Objects.requireNonNull(board, "board must not be null");
-        this.players = Objects.requireNonNull(players, "players must not be null");
+        this.players = Collections.unmodifiableList(Objects.requireNonNull(players, "players must not be null"));
         if (players.size() != 4) {
             throw new IllegalArgumentException("La liste de joueurs ne contient pas 4 éléments !");
         }
-        this.explosions = Objects.requireNonNull(explosions, "explosions must not be null");
-        this.blasts = Objects.requireNonNull(blasts, "blasts must not be null");
-        this.bombs = Objects.requireNonNull(bombs, "bombs must not be null");
-        this.playerIdPermutations = Lists.permutations(Arrays.asList(PlayerID.values()));
+        this.explosions = Collections.unmodifiableList(Objects.requireNonNull(explosions, "explosions must not be null"));
+        this.blasts = Collections.unmodifiableList(Objects.requireNonNull(blasts, "blasts must not be null"));
+        this.bombs = Collections.unmodifiableList(Objects.requireNonNull(bombs, "bombs must not be null"));
+        Lists.permutations(Arrays.asList(PlayerID.values()));
     }
 
     /**
@@ -96,6 +96,23 @@ public final class GameState {
             List<Player> players) throws IllegalArgumentException, NullPointerException {
 
         this(0, board, players, new ArrayList<Bomb>(), new ArrayList<Sq<Sq<Cell>>>(), new ArrayList<Sq<Cell>>());
+    }
+
+    /**
+     * Calcule une liste non-modifiable en prodondeur
+     * 
+     * @param list
+     *            La liste à rendre non-modifiable
+     * @return La liste non-modifiable de liste(s) non-modifibale(s)
+     */
+    private static <E> List<List<E>> unmodifiableList(List<List<E>> list) {
+        List<List<E>> copiedList = new ArrayList<>();
+
+        for (List<E> eachList : list) {
+            copiedList.add(Collections.unmodifiableList(eachList));
+        }
+
+        return Collections.unmodifiableList(copiedList);
     }
 
     /**
@@ -268,8 +285,8 @@ public final class GameState {
                 return 0;
             }
         };
-
-        players.sort(playerComparator);
+        List<Player> playersSorted = new ArrayList<>(players);
+        playersSorted.sort(playerComparator);
 
         List<Sq<Cell>> blasts1 = nextBlasts(blasts, board, explosions);
 
@@ -291,7 +308,7 @@ public final class GameState {
         List<Sq<Sq<Cell>>> explosions1 = nextExplosions(explosions);
 
         List<Bomb> bombs1 = new ArrayList<>();
-        List<Bomb> newlyDroppedBombs = newlyDroppedBombs(players, bombDropEvents, bombs);
+        List<Bomb> newlyDroppedBombs = newlyDroppedBombs(playersSorted, bombDropEvents, bombs);
 
         // Evolution et ajout des bombes nouvellement créer
         for (Bomb bomb : newlyDroppedBombs) {
@@ -320,7 +337,7 @@ public final class GameState {
 
         List<Player> players1 = nextPlayers(players, playerBonuses, bombedCells, board1, blastedCells1, speedChangeEvents);
 
-        return new GameState(++ticks, board1, players1, bombs1, explosions1, blasts1);
+        return new GameState(ticks + 1, board1, players1, bombs1, explosions1, blasts1);
     }
 
     /**
@@ -357,6 +374,7 @@ public final class GameState {
                     // Concaténation avec une séquence infinie d'un bloc pris au
                     // hasard dans la liste de bonus/case libre disponible
                     Block chosenBlock = appearableBonus.get(RANDOM.nextInt(appearableBonus.size()));
+
                     crumblingWall = crumblingWall.concat(Sq.constant(chosenBlock));
 
                     blocksList.add(crumblingWall);
@@ -398,7 +416,7 @@ public final class GameState {
     private static List<Player> nextPlayers(List<Player> players0, Map<PlayerID, Bonus> playerBonuses, Set<Cell> bombedCells1, Board board1, Set<Cell> blastedCells1, Map<PlayerID, Optional<Direction>> speedChangeEvents) {
 
         List<Player> players1 = new ArrayList<>();
-        boolean evolve = true;
+        boolean evolve;
 
         for (Player player : players0) {
             SubCell centralSubCell1;
@@ -409,22 +427,24 @@ public final class GameState {
             // Evolution de la position
             //
 
+            evolve = true;
+
+            // On trouve les coordonnées de la prochaine SubCell centrale
+            centralSubCell1 = (directedPositions1.findFirst(u -> u.position().isCentral())).position();
+
             // Si le joueur veut changer de direction/s'arrêter quand on
             // retourne en arrière
             if (speedChangeEvents.containsKey(player.id())) {
                 Optional<Direction> chosenDirection = speedChangeEvents.get(player.id());
 
-                // On trouve les coordonnées de la SubCell centrale
-                centralSubCell1 = (directedPositions1.findFirst(u -> u.position().isCentral())).position();
+                // On coupe la séquence quand on arrive à la prochaine
+                // case centrale (case centrale exclue)
+                directedPositions1 = directedPositions1.takeWhile(u -> !u.position().isCentral());
 
-                
                 if (chosenDirection.isPresent()) {
 
-                    if (chosenDirection.get() != player.direction().opposite()) {
-                        // On coupe la séquence quand on arrive à la prochaine
-                        // case centrale (case centrale exclue)
-                        directedPositions1 = directedPositions1.takeWhile(u -> !u.position().isCentral());
-                        
+                    if (!chosenDirection.get().isParallelTo(player.direction())) {
+
                         // On rajoute la séquence après la changement de
                         // direction s'il y en a une
                         directedPosition1 = new DirectedPosition(centralSubCell1, chosenDirection.get());
@@ -432,34 +452,25 @@ public final class GameState {
 
                     } else {
 
-                        // Si le joueur retourne en arrière il peut direct
+                        // Si le joueur retourne en arrière il peut directement
+                        // le faire
                         directedPosition1 = new DirectedPosition(player.position(), chosenDirection.get());
                         directedPositions1 = DirectedPosition.moving(directedPosition1);
                     }
 
                 } else {
-                    evolve = false;
+                    // On rajoute la séquence après la changement de
+                    // direction s'il y en a une
+                    directedPosition1 = new DirectedPosition(centralSubCell1, player.direction());
+                    directedPositions1 = directedPositions1.concat(DirectedPosition.stopped(directedPosition1));
                 }
             }
 
             SubCell subCell0 = player.position();
             Cell cell0 = subCell0.containingCell();
 
-            Cell cell1;
+            Cell cell1 = directedPositions1.head().position().containingCell().neighbor(directedPositions1.head().direction());
 
-
-            
-            
-            // Test si le joueur a une séquence constante (ne bouge pas)
-            DirectedPosition directedPos1 = directedPositions1.head();
-            DirectedPosition directedPos2 = directedPositions1.tail().head();
-            
-            if (directedPos1.position().equals(directedPos2.position())) {
-                cell1 = cell0;
-            } else {
-                // Prend la première case qui n'est pas égale a la case actuelle
-                cell1 =  directedPositions1.findFirst(u -> !u.position().containingCell().equals(cell0)).position().containingCell();
-            }
             // Test si il y a un mur
             if (!board1.blockAt(cell1).canHostPlayer()) {
                 if (subCell0.isCentral()) {
