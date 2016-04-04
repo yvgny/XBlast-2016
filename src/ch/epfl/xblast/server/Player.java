@@ -17,11 +17,11 @@ import ch.epfl.xblast.SubCell;
  *
  */
 public final class Player {
-    private PlayerID id;
-    private Sq<LifeState> lifeStates;
-    private Sq<DirectedPosition> directedPos;
-    private int maxBombs;
-    private int bombRange;
+    private final PlayerID id;
+    private final Sq<LifeState> lifeStates;
+    private final Sq<DirectedPosition> directedPos;
+    private final int maxBombs;
+    private final int bombRange;
 
     /**
      * Construit un joueur avec les attributs donnés

@@ -9,8 +9,8 @@ package ch.epfl.xblast;
  */
 public final class SubCell {
 
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
     private static final int GRANULARITY = 16;
     private static final int COLUMNS = GRANULARITY * Cell.COLUMNS;
     private static final int ROWS = GRANULARITY * Cell.ROWS;
@@ -24,10 +24,8 @@ public final class SubCell {
      *            La coordonnées y de la sous-case
      */
     public SubCell(int x, int y) {
-        this.x = x;
-        this.y = y;
-
-        normalize();
+        this.x = Math.floorMod(x, COLUMNS);
+        this.y = Math.floorMod(y, ROWS);
     }
 
     /**
@@ -149,11 +147,6 @@ public final class SubCell {
     @Override
     public String toString() {
         return "(" + x + "," + y + ")";
-    }
-
-    private void normalize() {
-        x = Math.floorMod(x, COLUMNS);
-        y = Math.floorMod(y, ROWS);
     }
 
     /**

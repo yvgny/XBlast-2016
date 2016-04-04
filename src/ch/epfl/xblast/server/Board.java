@@ -16,7 +16,7 @@ import ch.epfl.xblast.Lists;
  */
 public final class Board {
 
-    private List<Sq<Block>> boardList;
+    private final List<Sq<Block>> boardList;
     private final static int quadrantNWBlocksRows = (((Cell.ROWS - 2) / 2) + 1);
     private final static int quadrantNWBlocksColumns = (((Cell.COLUMNS - 2) / 2) + 1);
 
@@ -36,7 +36,7 @@ public final class Board {
             throw new IllegalArgumentException("La liste ne contient pas " + Cell.COUNT + " éléments.");
         }
 
-        boardList = new ArrayList<Sq<Block>>(blocks);
+        boardList = Collections.unmodifiableList(new ArrayList<Sq<Block>>(blocks));
     }
 
     /**
@@ -54,7 +54,7 @@ public final class Board {
 
         checkBlockMatrix(rows, Cell.ROWS, Cell.COLUMNS);
         
-        List<List<Block>> rowsCopied = Lists.copy(rows);
+        List<List<Block>> rowsCopied = copyList(rows);
 
         List<Sq<Block>> sqBlockList = new ArrayList<Sq<Block>>();
 
@@ -64,7 +64,7 @@ public final class Board {
             }
         }
 
-        return new Board(sqBlockList);
+        return new Board(Collections.unmodifiableList(sqBlockList));
     }
 
     /**
@@ -83,7 +83,7 @@ public final class Board {
 
         checkBlockMatrix(innerBlocks, Cell.ROWS - 2, Cell.COLUMNS - 2);
 
-        List<List<Block>> innerBlocksCopied = Lists.copy(innerBlocks);
+        List<List<Block>> innerBlocksCopied = copyList(innerBlocks);
 
         List<Block> rowOfWall = Collections.nCopies(Cell.COLUMNS, Block.INDESTRUCTIBLE_WALL);
 
@@ -95,7 +95,7 @@ public final class Board {
         innerBlocksCopied.add(0, rowOfWall);
         innerBlocksCopied.add(rowOfWall);
 
-        return ofRows(innerBlocksCopied);
+        return ofRows(Collections.unmodifiableList(innerBlocksCopied));
     }
 
     /**
@@ -115,7 +115,7 @@ public final class Board {
 
         checkBlockMatrix(quadrantNWBlocks, quadrantNWBlocksRows, quadrantNWBlocksColumns);
         
-        List<List<Block>> quadrantNWBlocksCopied = Lists.copy(quadrantNWBlocks);
+        List<List<Block>> quadrantNWBlocksCopied = copyList(quadrantNWBlocks);
 
         List<List<Block>> quadrantNWBlocksWalled = new ArrayList<List<Block>>();
 
@@ -123,7 +123,7 @@ public final class Board {
             quadrantNWBlocksWalled.add(Lists.mirrored(list));
         }
 
-        return ofInnerBlocksWalled(Lists.mirrored(quadrantNWBlocksWalled));
+        return ofInnerBlocksWalled(Collections.unmodifiableList(Lists.mirrored(quadrantNWBlocksWalled)));
     }
 
     /**
@@ -175,6 +175,41 @@ public final class Board {
      */
     public Block blockAt(Cell c) {
         return blocksAt(c).head();
+    }
+    
+    /**
+     * Copie la liste de liste passée en paramètre. Il faut toutefois faire
+     * attention que seul la référence l'objet de type T est copié, il se s'agit
+     * donc pas de copie profonde
+     * 
+     * @param l
+     *            La liste de liste à copier
+     * @param <T>
+     *            Le type de la liste passée en paramètre
+     * @return Une nouvelle liste de liste de même contenu que celle passée en
+     *         paramètre
+     * @throws IllegalArgumentException
+     *             Si la liste est vide ou si l'objet est nul
+     */
+    private static <T> List<List<T>> copyList(List<List<T>> l) throws IllegalArgumentException {
+        if (l == null || l.isEmpty()) {
+            throw new IllegalArgumentException("List is empty or not inizializated !");
+        }
+
+        List<List<T>> copied = new ArrayList<List<T>>();
+
+        for (List<T> list : l) {
+            List<T> temporary = new ArrayList<T>();
+
+            for (T t : list) {
+                temporary.add(t);
+
+            }
+
+            copied.add(temporary);
+        }
+
+        return copied;
     }
 
 }

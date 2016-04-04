@@ -18,10 +18,10 @@ import ch.epfl.xblast.PlayerID;
  *
  */
 public final class Bomb {
-    private PlayerID ownerId;
-    private Cell position;
-    private Sq<Integer> fuseLenghts;
-    private int range;
+    private final PlayerID ownerId;
+    private final Cell position;
+    private final Sq<Integer> fuseLenghts;
+    private final int range;
 
     /**
      * Construit une bombe avec le propriétaire, la position, la séquence de

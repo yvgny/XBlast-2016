@@ -13,8 +13,8 @@ import java.util.List;
  */
 public final class Cell {
 
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
 
     /**
      * Nombre de colonnes du plateau de jeu (doit être un nombre impair !)
@@ -52,10 +52,9 @@ public final class Cell {
      *            Coordonnées y de la case
      */
     public Cell(int x, int y) {
-        this.x = x;
-        this.y = y;
+        this.x = Math.floorMod(x, COLUMNS);
+        this.y = Math.floorMod(y, ROWS);
 
-        normalize();
     }
 
     private static ArrayList<Cell> rowMajorOrder() {
@@ -109,12 +108,6 @@ public final class Cell {
         }
 
         return spiral;
-    }
-
-    private void normalize() {
-        x = Math.floorMod(x, COLUMNS);
-        y = Math.floorMod(y, ROWS);
-
     }
 
     /**
