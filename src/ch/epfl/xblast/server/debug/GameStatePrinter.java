@@ -15,12 +15,12 @@ import ch.epfl.xblast.server.Bomb;
 import ch.epfl.xblast.server.GameState;
 import ch.epfl.xblast.server.Player;
 
+
 public final class GameStatePrinter {
     private static String blackBgd = "\u001b[40m";
     private static String stdBgd = "\u001b[49m";
     private static String cyanBgd = "\u001b[46m";
     private static String redBgd = "\u001b[41m";
-    private static String redBoldBgd = "\u001b[41;1m";
     private static String greyBgd = "\u001b[47m";
 
     private static String blinkSlow = "\u001b[5m";
@@ -28,7 +28,7 @@ public final class GameStatePrinter {
 
     private static String underlineSingle = "\u001b[4m";
     private static String underlineNone = "\u001b[24m";
-
+    
     private GameStatePrinter() {
     }
 
@@ -52,12 +52,12 @@ public final class GameStatePrinter {
 
         // Effacer le terminal
         System.out.println("\033[2J");
-
+        
         // Affiche des ticks
         System.out.println("Tick : " + s.ticks());
         
         //Affiche le temps restant :
-        System.out.println("Temps restant : " + (int)s.remainingTime() + " sec."  + "\n");
+        System.out.println("Temps restant : " + s.remainingTime() + " sec."  + "\n");
 
         // Ajout des coordonnées pour x
         System.out.print("  ");
@@ -114,8 +114,9 @@ public final class GameStatePrinter {
             System.out.println(underlineSingle + "Joueur n°" + player.id().toString().charAt(7) + underlineNone);
             System.out.println("     " + player.lives() + " vies (" + player.lifeState().state() + ")");
             System.out.println("     bombes max : " + player.maxBombs() + ", portée bombes : " + player.bombRange());
-            System.out.println("     position : " + player.position());
-            
+            System.out.println("     position : sous-case " + player.position() + " dans la case " + player.position().containingCell());
+            System.out.println("     Est sur une sous-case centrale : " + (player.position().isCentral() ? "oui" : "non"));
+            System.out.println("     Distance à la sous-case centrale la plus proche : " + player.position().distanceToCentral());
             for (Bomb bomb : s.bombedCells().values()) {
                 if (bomb.ownerId().equals(player.id())) {
                     numberOfCurrentBombs++;
