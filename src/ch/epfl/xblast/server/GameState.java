@@ -181,33 +181,6 @@ public final class GameState {
     }
 
     /**
-     * Calcule les particules d'explosion pour l'état suivant
-     * 
-     * @param blasts0
-     *            L'état courant du jeu
-     * @param board0
-     *            Le plateau de jeu courant
-     * @param explosions0
-     *            Les explosions courantes
-     * @return Les particuels d'explosions pour l'état suivant
-     */
-    public static List<Sq<Cell>> nextBlasts(List<Sq<Cell>> blasts0, Board board0, List<Sq<Sq<Cell>>> explosions0) {
-        List<Sq<Cell>> blasts1 = new ArrayList<Sq<Cell>>();
-
-        for (Sq<Cell> blastSq : blasts0) {
-            if (!blastSq.isEmpty() && board0.blockAt(blastSq.head()).isFree() && !blastSq.tail().isEmpty()) {
-                blasts1.add(blastSq.tail());
-            }
-        }
-
-        for (Sq<Sq<Cell>> explosionSq : explosions0) {
-            blasts1.add(explosionSq.head());
-        }
-
-        return blasts1;
-    }
-
-    /**
      * @return Une table associant les bombes aux cases qu'elles occupent
      */
     public Map<Cell, Bomb> bombedCells() {
@@ -341,6 +314,33 @@ public final class GameState {
     }
 
     /**
+     * Calcule les particules d'explosion pour l'état suivant
+     * 
+     * @param blasts0
+     *            L'état courant du jeu
+     * @param board0
+     *            Le plateau de jeu courant
+     * @param explosions0
+     *            Les explosions courantes
+     * @return Les particuels d'explosions pour l'état suivant
+     */
+    public static List<Sq<Cell>> nextBlasts(List<Sq<Cell>> blasts0, Board board0, List<Sq<Sq<Cell>>> explosions0) {
+        List<Sq<Cell>> blasts1 = new ArrayList<Sq<Cell>>();
+
+        for (Sq<Cell> blastSq : blasts0) {
+            if (!blastSq.isEmpty() && board0.blockAt(blastSq.head()).isFree() && !blastSq.tail().isEmpty()) {
+                blasts1.add(blastSq.tail());
+            }
+        }
+
+        for (Sq<Sq<Cell>> explosionSq : explosions0) {
+            blasts1.add(explosionSq.head());
+        }
+
+        return blasts1;
+    }
+
+    /**
      * Calcule le prochain état du plateau
      * 
      * @param board0
@@ -471,6 +471,10 @@ public final class GameState {
 
             Cell cell1 = directedPositions1.head().position().containingCell().neighbor(directedPositions1.head().direction());
 
+            // Test si le joueur est mourant
+            if (player.lifeState().state().equals(Player.LifeState.State.DYING)) {
+                evolve = false;
+            }
             // Test si il y a un mur
             if (!board1.blockAt(cell1).canHostPlayer()) {
                 if (subCell0.isCentral()) {
