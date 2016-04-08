@@ -64,7 +64,7 @@ public final class Board {
             }
         }
 
-        return new Board(Collections.unmodifiableList(sqBlockList));
+        return new Board(sqBlockList);
     }
 
     /**
@@ -95,7 +95,7 @@ public final class Board {
         innerBlocksCopied.add(0, rowOfWall);
         innerBlocksCopied.add(rowOfWall);
 
-        return ofRows(Collections.unmodifiableList(innerBlocksCopied));
+        return ofRows(innerBlocksCopied);
     }
 
     /**
@@ -123,7 +123,7 @@ public final class Board {
             quadrantNWBlocksWalled.add(Lists.mirrored(list));
         }
 
-        return ofInnerBlocksWalled(Collections.unmodifiableList(Lists.mirrored(quadrantNWBlocksWalled)));
+        return ofInnerBlocksWalled(Lists.mirrored(quadrantNWBlocksWalled));
     }
 
     /**
