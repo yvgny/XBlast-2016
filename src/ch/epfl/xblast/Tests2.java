@@ -47,20 +47,20 @@ public class Tests2 {
         players.add(new Player(PlayerID.PLAYER_4, 30, new Cell(1, Cell.ROWS - 2), 1, 3));
         
         
-        List<Bomb> bombs = Arrays.asList(new Bomb(PlayerID.PLAYER_1, new Cell(7, 11), 100000000, 5));
+        List<Bomb> bombs = Arrays.asList(new Bomb(PlayerID.PLAYER_1, new Cell(7, 11), 1, 5));
         
         GameState GS2 = new GameState(0, board2, players, bombs, new ArrayList<>(), new ArrayList<>());
 
         Map<PlayerID, Optional<Direction>> player3SpeedChangeEvent = new HashMap<>();
         
-        player3SpeedChangeEvent.put(PlayerID.PLAYER_3, Optional.of(Direction.W));
+        // player3SpeedChangeEvent.put(PlayerID.PLAYER_3, Optional.of(Direction.W));
         
         while (!GS2.isGameOver()) {
             
             GameStatePrinter.printGameState(GS2);
             GS2 = GS2.next(player3SpeedChangeEvent, new HashSet<PlayerID>());
             
-            Thread.sleep(200);
+            Thread.sleep(2000);
         }
         
     }
