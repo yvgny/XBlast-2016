@@ -22,7 +22,6 @@ import ch.epfl.xblast.PlayerID;
 import ch.epfl.xblast.SubCell;
 import ch.epfl.xblast.server.Player.DirectedPosition;
 import ch.epfl.xblast.server.Player.LifeState;
-import sun.text.normalizer.UBiDiProps;
 
 /**
  * Représente l'état d'une partie
@@ -267,7 +266,7 @@ public final class GameState {
         Map<PlayerID, Bonus> playerBonuses = new HashMap<>();
         Set<Cell> consumedBonuses = new HashSet<>();
         for (Player player : players) {
-            if (board.blockAt(player.position().containingCell()).isBonus()) {
+            if (player.position().isCentral() && board.blockAt(player.position().containingCell()).isBonus()) {
                 consumedBonuses.add(player.position().containingCell());
                 playerBonuses.put(player.id(), board.blockAt(player.position().containingCell()).associatedBonus());
             }
@@ -287,7 +286,7 @@ public final class GameState {
         for (Bomb bomb : newlyDroppedBombs) {
             if (blastedCells1.contains(bomb.position())) {
                 explosions1.addAll(bomb.explosion());
-            } else if (bomb.fuseLength() - 1 <= 1) {
+            } else if (bomb.fuseLength() <= 1) {
                 explosions1.addAll(bomb.explosion());
             } else {
                 bombs1.add(new Bomb(bomb.ownerId(), bomb.position(), bomb.fuseLengths().tail(), bomb.range()));
@@ -298,7 +297,7 @@ public final class GameState {
         for (Bomb bomb : bombs) {
             if (blastedCells1.contains(bomb.position())) {
                 explosions1.addAll(bomb.explosion());
-            } else if (bomb.fuseLength() - 1 <= 1) {
+            } else if (bomb.fuseLength() <= 1) {
                 List<Sq<Sq<Cell>>> bombExplosion = bomb.explosion();
                 explosions1.addAll(bombExplosion);
             } else {
@@ -419,9 +418,10 @@ public final class GameState {
         boolean evolve;
 
         for (Player player : players0) {
-            SubCell centralSubCell1;
+            SubCell centralSubCell1Position;
             DirectedPosition directedPosition1;
             Sq<DirectedPosition> directedPositions1 = player.directedPositions();
+            DirectedPosition centralSubCell1;
 
             //
             // Evolution de la position
@@ -430,7 +430,8 @@ public final class GameState {
             evolve = true;
 
             // On trouve les coordonnées de la prochaine SubCell centrale
-            centralSubCell1 = (directedPositions1.findFirst(u -> u.position().isCentral())).position();
+            centralSubCell1 = (directedPositions1.findFirst(u -> u.position().isCentral()));
+            centralSubCell1Position = centralSubCell1.position();
 
             // Si le joueur veut changer de direction/s'arrêter quand on
             // retourne en arrière
@@ -447,7 +448,7 @@ public final class GameState {
 
                         // On rajoute la séquence après la changement de
                         // direction s'il y en a une
-                        directedPosition1 = new DirectedPosition(centralSubCell1, chosenDirection.get());
+                        directedPosition1 = new DirectedPosition(centralSubCell1Position, chosenDirection.get());
                         directedPositions1 = directedPositions1.concat(DirectedPosition.moving(directedPosition1));
 
                     } else {
@@ -459,9 +460,8 @@ public final class GameState {
                     }
 
                 } else {
-                    // On rajoute la séquence après la changement de
-                    // direction s'il y en a une
-                    directedPosition1 = new DirectedPosition(centralSubCell1, player.direction());
+                    // On rajoute la séquence constante pour le joueur stoppé
+                    directedPosition1 = new DirectedPosition(centralSubCell1Position, centralSubCell1.direction());
                     directedPositions1 = directedPositions1.concat(DirectedPosition.stopped(directedPosition1));
                 }
             }
@@ -472,17 +472,17 @@ public final class GameState {
             Cell cell1 = directedPositions1.head().position().containingCell().neighbor(directedPositions1.head().direction());
 
             // Test si le joueur est mourant
-            if (player.lifeState().state().equals(Player.LifeState.State.DYING)) {
+            if (!player.lifeState().canMove()) {
                 evolve = false;
             }
-            // Test si il y a un mur
-            if (!board1.blockAt(cell1).canHostPlayer()) {
+            if (!board1.blockAt(cell1).canHostPlayer()) { // Test si il y
+                // a un mur
                 if (subCell0.isCentral()) {
                     evolve = false;
                 }
             }
-            // Test si il y une bombe
-            if (bombedCells1.contains(cell0)) {
+            if (bombedCells1.contains(cell0)) { // Test si il y une bombe
+
                 // On calcule si il se trouve sur la case sur laquelle il doit
                 // s'arrêter si il y a une bombe
 
