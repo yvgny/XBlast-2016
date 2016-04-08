@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.Set;
 
 import ch.epfl.xblast.server.Block;
@@ -52,17 +53,20 @@ public class RandomGameSimulator {
 
         ArrayList<Player> players = new ArrayList<>();
         
-        players.add(new Player(PlayerID.PLAYER_1, 30000, new Cell(1, 1), 2, 3));
-        players.add(new Player(PlayerID.PLAYER_2, 30000, new Cell(Cell.COLUMNS - 2, 1), 2, 3));
-        players.add(new Player(PlayerID.PLAYER_3, 30000, new Cell(Cell.COLUMNS - 2, Cell.ROWS - 2), 2, 3));
-        players.add(new Player(PlayerID.PLAYER_4, 30000, new Cell(1, Cell.ROWS - 2), 2, 3));
+        Scanner scanner = new Scanner(System.in);
+        
+        players.add(new Player(PlayerID.PLAYER_1, 3, new Cell(1, 1), 2, 3));
+        players.add(new Player(PlayerID.PLAYER_2, 3, new Cell(Cell.COLUMNS - 2, 1), 2, 3));
+        players.add(new Player(PlayerID.PLAYER_3, 3, new Cell(Cell.COLUMNS - 2, Cell.ROWS - 2), 2, 3));
+        players.add(new Player(PlayerID.PLAYER_4, 3, new Cell(1, Cell.ROWS - 2), 2, 3));
         
         
         GameState GS = new GameState(board3, players);
 
+        
+
         while (!GS.isGameOver()) {
             
-            GameStatePrinter.printGameState(GS);
 
             Map<PlayerID, Optional<Direction>> randomSpeedChangeEvents = randomEvent.randomSpeedChangeEvents();
             Set<PlayerID> randomBombDropEvents = randomEvent.randomBombDropEvents();
@@ -85,14 +89,20 @@ public class RandomGameSimulator {
                     
                 }
 
-                Thread.sleep(1000);
+               Thread.sleep(1000);
             }
             
-            GS = GS.next(randomSpeedChangeEvents, randomBombDropEvents);
+            GameStatePrinter.printGameState(GS);
             
+            scanner.nextLine();
+            
+            GS = GS.next(randomSpeedChangeEvents, randomBombDropEvents);
 
             
-            Thread.sleep(50);
+           Thread.sleep(0);
         }
+        
+        GameStatePrinter.printGameState(GS);
+        
     }
 }
