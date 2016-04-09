@@ -94,12 +94,12 @@ public class RandomGameSimulator {
             
             GameStatePrinter.printGameState(GS);
             
-            scanner.nextLine();
+            // scanner.nextLine();
             
             GS = GS.next(randomSpeedChangeEvents, randomBombDropEvents);
 
             
-           Thread.sleep(0);
+           Thread.sleep(10);
         }
         
         GameStatePrinter.printGameState(GS);
