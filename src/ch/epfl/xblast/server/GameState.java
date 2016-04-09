@@ -68,13 +68,13 @@ public final class GameState {
 
         this.ticks = ArgumentChecker.requireNonNegative(ticks);
         this.board = Objects.requireNonNull(board, "board must not be null");
-        this.players = Collections.unmodifiableList(Objects.requireNonNull(players, "players must not be null"));
+        this.players = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(players, "players must not be null")));
         if (players.size() != 4) {
             throw new IllegalArgumentException("La liste de joueurs ne contient pas 4 éléments !");
         }
-        this.explosions = Collections.unmodifiableList(Objects.requireNonNull(explosions, "explosions must not be null"));
-        this.blasts = Collections.unmodifiableList(Objects.requireNonNull(blasts, "blasts must not be null"));
-        this.bombs = Collections.unmodifiableList(Objects.requireNonNull(bombs, "bombs must not be null"));
+        this.explosions = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(explosions, "explosions must not be null")));
+        this.blasts = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(blasts, "blasts must not be null")));
+        this.bombs = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(bombs, "bombs must not be null")));
         Lists.permutations(Arrays.asList(PlayerID.values()));
     }
 
@@ -128,7 +128,7 @@ public final class GameState {
      *         s'il n'y a pas plus d'un joueur vivant.
      */
     public boolean isGameOver() {
-        return ticks > Ticks.TOTAL_TICKS || alivePlayers().size() < 2;
+        return ticks >= Ticks.TOTAL_TICKS || alivePlayers().size() < 2;
     }
 
     /**
@@ -208,7 +208,7 @@ public final class GameState {
      *         particule d'explosion
      */
     public Set<Cell> blastedCells() {
-        return blastedCells(this.blasts);
+        return blastedCells(blasts);
     }
 
     /**
@@ -265,7 +265,7 @@ public final class GameState {
         // Création de playerBonuses et consumedBonuses
         Map<PlayerID, Bonus> playerBonuses = new HashMap<>();
         Set<Cell> consumedBonuses = new HashSet<>();
-        for (Player player : players) {
+        for (Player player : playersSorted) {
             if (player.position().isCentral() && board.blockAt(player.position().containingCell()).isBonus()) {
                 consumedBonuses.add(player.position().containingCell());
                 playerBonuses.put(player.id(), board.blockAt(player.position().containingCell()).associatedBonus());
@@ -298,8 +298,7 @@ public final class GameState {
             if (blastedCells1.contains(bomb.position())) {
                 explosions1.addAll(bomb.explosion());
             } else if (bomb.fuseLength() <= 1) {
-                List<Sq<Sq<Cell>>> bombExplosion = bomb.explosion();
-                explosions1.addAll(bombExplosion);
+                explosions1.addAll(bomb.explosion());
             } else {
                 bombs1.add(new Bomb(bomb.ownerId(), bomb.position(), bomb.fuseLengths().tail(), bomb.range()));
             }
@@ -333,7 +332,9 @@ public final class GameState {
         }
 
         for (Sq<Sq<Cell>> explosionSq : explosions0) {
-            blasts1.add(explosionSq.head());
+            if (!explosions0.isEmpty()) {
+                blasts1.add(explosionSq.head());
+            }
         }
 
         return blasts1;
