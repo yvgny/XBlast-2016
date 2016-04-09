@@ -128,7 +128,7 @@ public final class GameState {
      *         s'il n'y a pas plus d'un joueur vivant.
      */
     public boolean isGameOver() {
-        return ticks >= Ticks.TOTAL_TICKS || alivePlayers().size() < 2;
+        return ticks > Ticks.TOTAL_TICKS || alivePlayers().size() < 2;
     }
 
     /**
