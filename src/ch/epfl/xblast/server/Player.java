@@ -202,10 +202,16 @@ public final class Player {
 
     private static Sq<LifeState> createLifeSequence(int lives) throws IllegalArgumentException {
         ArgumentChecker.requireNonNegative(lives);
+        Sq<LifeState> lifeSequence;
 
-        Sq<LifeState> lifeSequence = Sq.repeat(Ticks.PLAYER_INVULNERABLE_TICKS, new LifeState(lives, LifeState.State.INVULNERABLE));
-        Sq<LifeState> constantVulnerable = Sq.constant(new LifeState(lives, LifeState.State.VULNERABLE));
-        lifeSequence = lifeSequence.concat(constantVulnerable);
+        if (lives > 0) {
+            lifeSequence = Sq.repeat(Ticks.PLAYER_INVULNERABLE_TICKS, new LifeState(lives, LifeState.State.INVULNERABLE));
+            Sq<LifeState> constantVulnerable = Sq.constant(new LifeState(lives, LifeState.State.VULNERABLE));
+            lifeSequence = lifeSequence.concat(constantVulnerable);
+        } else {
+            lifeSequence = Sq.constant(new LifeState(0, Player.LifeState.State.DEAD));
+        }
+        
 
         return lifeSequence;
     }
