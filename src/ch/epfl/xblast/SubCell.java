@@ -65,11 +65,7 @@ public final class SubCell {
     public boolean isCentral() {
         SubCell centralSubCell = centralSubCellOf(containingCell());
 
-        if (centralSubCell.equals(this)) {
-            return true;
-        } else {
-            return false;
-        }
+        return centralSubCell.equals(this);
     }
 
     /**
@@ -125,17 +121,10 @@ public final class SubCell {
     @Override
     public boolean equals(Object that) {
         if (that.getClass() == SubCell.class) {
-            if (((SubCell) that).x == x && ((SubCell) that).y == y) {
+            if (((SubCell) that).x == x && ((SubCell) that).y == y)
                 return true;
-
-            } else {
-                return false;
-
-            }
-        } else {
-            return false;
-
         }
+        return false;
     }
 
     /**
@@ -167,13 +156,14 @@ public final class SubCell {
         return y;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
     public int hashCode() {
-        return (COLUMNS * x) + (y);
+        return COLUMNS * x + y;
     }
 
-    
 }
