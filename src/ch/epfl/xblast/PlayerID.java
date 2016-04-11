@@ -1,7 +1,7 @@
 package ch.epfl.xblast;
 
 /**
- * Représente les identifients de quatre joueurs différents
+ * Représente les identifiants de quatre joueurs différents
  * 
  * @author Sacha Kozma, 260391
  * @author Alexia Bogaert, 258330

@@ -24,7 +24,7 @@ public final class ArgumentChecker {
      *            La valeur à tester
      * @return La valeur donnée si elle est positive ou nulle
      * @throws IllegalArgumentException
-     *             Si la valeur est strictement inférieure à zéro
+     *             Si la valeur est strictement inférieur à zéro
      */
     public static int requireNonNegative(int value) throws IllegalArgumentException {
         if (value >= 0) {

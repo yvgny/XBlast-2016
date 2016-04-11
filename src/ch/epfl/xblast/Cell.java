@@ -96,11 +96,7 @@ public final class Cell {
             i2.remove(0);
 
             for (Integer c1 : i1) {
-                if (horizontal) {
-                    spiral.add(new Cell(c1, c2));
-                } else {
-                    spiral.add(new Cell(c2, c1));
-                }
+                spiral.add(horizontal ? new Cell(c1, c2) : new Cell(c2, c1));
             }
 
             Collections.reverse(i1);
@@ -174,8 +170,8 @@ public final class Cell {
      * 
      * @param that
      *            L'objet a comparer avec la case
-     * @return true si l'objet est une case possédant les mêmes coordonnées,
-     *         false sinon
+     * @return vrai si l'objet est une case possédant les mêmes coordonnées,
+     *         faux sinon
      */
     @Override
     public boolean equals(Object that) {

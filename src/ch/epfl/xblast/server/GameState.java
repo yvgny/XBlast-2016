@@ -48,7 +48,7 @@ public final class GameState {
      * @param ticks
      *            Le coup d'horloge de l'état du jeu
      * @param board
-     *            La plaeatu de jeu
+     *            La plateau de jeu
      * @param players
      *            La liste des quatre joueurs
      * @param bombs
@@ -56,11 +56,11 @@ public final class GameState {
      * @param explosions
      *            Les explosions du jeu
      * @param blasts
-     *            Les particules d'epxlosion
+     *            Les particules d'explosion
      * @throws IllegalArgumentException
      *             Si le coup d'horloge est strcitement négatif
      * @throws NullPointerException
-     *             Si un des objets est null
+     *             Si un des objets est nul
      */
     public GameState(int ticks, Board board, List<Player> players,
             List<Bomb> bombs, List<Sq<Sq<Cell>>> explosions,
@@ -89,7 +89,7 @@ public final class GameState {
      * @throws IllegalArgumentException
      *             Si il n'y a pas quatre joueurs dans la liste de joueurs
      * @throws NullPointerException
-     *             Si un des objets est null
+     *             Si un des objets est nul
      */
     public GameState(Board board,
             List<Player> players) throws IllegalArgumentException, NullPointerException {
@@ -187,7 +187,7 @@ public final class GameState {
     }
 
     /**
-     * Calule l'ensemble des cases sur lesqeulles se trouve une bombe
+     * Calcule l'ensemble des cases sur lesquelles se trouvent une bombe
      * 
      * @param bombs0
      *            La liste des bombes de l'état actuel
@@ -212,7 +212,7 @@ public final class GameState {
     }
 
     /**
-     * Calule l'ensemble des cases sur lesquelles se trouve au moins une
+     * Calcule l'ensemble des cases sur lesquelles se trouvent au moins une
      * particule d'explosion
      * 
      * @param blasts0
@@ -320,7 +320,7 @@ public final class GameState {
      *            Le plateau de jeu courant
      * @param explosions0
      *            Les explosions courantes
-     * @return Les particuels d'explosions pour l'état suivant
+     * @return Les particules d'explosion pour l'état suivant
      */
     public static List<Sq<Cell>> nextBlasts(List<Sq<Cell>> blasts0, Board board0, List<Sq<Sq<Cell>>> explosions0) {
         List<Sq<Cell>> blasts1 = new ArrayList<Sq<Cell>>();
@@ -551,7 +551,7 @@ public final class GameState {
     }
 
     /**
-     * Calule les nouvelles bombes posée en fonction des règles (qui a le droit
+     * Calcule les nouvelles bombes posée en fonction des règles (qui a le droit
      * de poser une bombe, a quel endroit, etc...)
      * 
      * @param players0

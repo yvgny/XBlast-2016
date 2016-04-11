@@ -36,10 +36,10 @@ public final class Bomb {
      * @param range
      *            La portée de la bombe
      * @throws NullPointerException
-     *             Si soit le propiètaire, la position ou la portée est un objet
+     *             Si soit le propriétaire, la position ou la portée est un objet
      *             nul
      * @throws IllegalArgumentException
-     *             Si la portée est strictement ingérieure à zéro
+     *             Si la portée est strictement inférieure à zéro
      */
     public Bomb(PlayerID ownerId, Cell position, Sq<Integer> fuseLengths,
             int range) throws NullPointerException, IllegalArgumentException {
@@ -67,10 +67,10 @@ public final class Bomb {
      * @param range
      *            La portée de la bombe
      * @throws NullPointerException
-     *             Si soit le propiètaire, la position ou la portée est un objet
+     *             Si soit le propriétaire, la position ou la portée est un objet
      *             nul
      * @throws IllegalArgumentException
-     *             Si la portée est strictement ingérieure à zéro
+     *             Si la portée est strictement inférieure à zéro
      */
     public Bomb(PlayerID ownerId, Cell position, int fuseLength,
             int range) throws NullPointerException, IllegalArgumentException {

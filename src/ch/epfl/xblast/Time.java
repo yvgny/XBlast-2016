@@ -14,7 +14,7 @@ public interface Time {
     public static final int S_PER_MIN = 60;
 
     /**
-     * Le nombre de milisecondes par seconde
+     * Le nombre de millisecondes par seconde
      */
     public static final int MS_PER_S = 1000;
 

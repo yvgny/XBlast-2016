@@ -52,14 +52,14 @@ public enum Block {
     /**
      * Vérifie si la case est libre
      * 
-     * @return true si elle est libre (FREE), false sinon
+     * @return vrai si elle est libre (FREE), faux sinon
      */
     public boolean isFree() {
         return (this == Block.FREE);
     }
 
     /**
-     * @return true si la case est libre (de type FREE), false sinon
+     * @return vrai si la case est libre (de type FREE), faux sinon
      */
     public boolean canHostPlayer() {
         return isFree() || isBonus();
@@ -67,7 +67,7 @@ public enum Block {
 
     /**
      * @return vrai si la case projette une ombre (si c'est une case de type
-     *         mur), flase sinon
+     *         mur), faux sinon
      */
     public boolean castsShadow() {
         return this.toString().endsWith("_WALL");
