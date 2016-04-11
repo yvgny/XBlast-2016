@@ -42,14 +42,12 @@ public final class Player {
      *             Si un objet passé en argument est nul
      */
     public Player(PlayerID id, Sq<LifeState> lifeStates,
-            Sq<DirectedPosition> directedPos, int maxBombs, int bombRange)
-            throws IllegalArgumentException, NullPointerException {
+            Sq<DirectedPosition> directedPos, int maxBombs,
+            int bombRange) throws IllegalArgumentException, NullPointerException {
 
         this.id = Objects.requireNonNull(id, "id must not be null");
-        this.lifeStates = Objects.requireNonNull(lifeStates,
-                "lifeStates must not be null");
-        this.directedPos = Objects.requireNonNull(directedPos,
-                "directedPos must not be null");
+        this.lifeStates = Objects.requireNonNull(lifeStates, "lifeStates must not be null");
+        this.directedPos = Objects.requireNonNull(directedPos, "directedPos must not be null");
         this.maxBombs = ArgumentChecker.requireNonNegative(maxBombs);
         this.bombRange = ArgumentChecker.requireNonNegative(bombRange);
     }
@@ -74,15 +72,9 @@ public final class Player {
      *             Si au moins un des objets passé en arguments est nul
      */
     public Player(PlayerID id, int lives, Cell position, int maxBombs,
-            int bombRange)
-            throws IllegalArgumentException, NullPointerException {
+            int bombRange) throws IllegalArgumentException, NullPointerException {
 
-        this(id, createLifeSequence(lives),
-                Sq.constant(new DirectedPosition(
-                        SubCell.centralSubCellOf(
-                                Objects.requireNonNull(position)),
-                        Direction.S)),
-                maxBombs, bombRange);
+        this(id, createLifeSequence(lives), Sq.constant(new DirectedPosition(SubCell.centralSubCellOf(Objects.requireNonNull(position)), Direction.S)), maxBombs, bombRange);
     }
 
     /**
@@ -111,19 +103,9 @@ public final class Player {
      */
     public Sq<LifeState> statesForNextLife() {
         int newLives = lives() - 1;
-        Sq<LifeState> nextLifeSequence = Sq.repeat(Ticks.PLAYER_DYING_TICKS,
-                new LifeState(lives(), LifeState.State.DYING));
+        Sq<LifeState> nextLifeSequence = Sq.repeat(Ticks.PLAYER_DYING_TICKS, new LifeState(lives(), LifeState.State.DYING));
 
-        if (newLives <= 0) {
-            nextLifeSequence = nextLifeSequence.concat(
-                    Sq.constant(new LifeState(0, LifeState.State.DEAD)));
-        } else {
-            nextLifeSequence = nextLifeSequence.concat(Sq.repeat(
-                    Ticks.PLAYER_INVULNERABLE_TICKS,
-                    new LifeState(newLives, LifeState.State.INVULNERABLE)));
-            nextLifeSequence = nextLifeSequence.concat(Sq.constant(
-                    new LifeState(newLives, LifeState.State.VULNERABLE)));
-        }
+        nextLifeSequence = nextLifeSequence.concat(createLifeSequence(newLives));
 
         return nextLifeSequence;
     }
@@ -210,24 +192,18 @@ public final class Player {
      *         dont la portée est celle des bombes du joueur.
      */
     public Bomb newBomb() {
-        return new Bomb(id, position().containingCell(), Ticks.BOMB_FUSE_TICKS,
-                bombRange);
+        return new Bomb(id, position().containingCell(), Ticks.BOMB_FUSE_TICKS, bombRange);
     }
 
-    private static Sq<LifeState> createLifeSequence(int lives)
-            throws IllegalArgumentException {
+    private static Sq<LifeState> createLifeSequence(int lives) throws IllegalArgumentException {
         ArgumentChecker.requireNonNegative(lives);
         Sq<LifeState> lifeSequence;
 
         if (lives > 0) {
-            lifeSequence = Sq.repeat(Ticks.PLAYER_INVULNERABLE_TICKS,
-                    new LifeState(lives, LifeState.State.INVULNERABLE));
-            Sq<LifeState> constantVulnerable = Sq
-                    .constant(new LifeState(lives, LifeState.State.VULNERABLE));
-            lifeSequence = lifeSequence.concat(constantVulnerable);
+            lifeSequence = Sq.repeat(Ticks.PLAYER_INVULNERABLE_TICKS, new LifeState(lives, LifeState.State.INVULNERABLE));
+            lifeSequence = lifeSequence.concat(Sq.constant(new LifeState(lives, LifeState.State.VULNERABLE)));
         } else {
-            lifeSequence = Sq
-                    .constant(new LifeState(0, Player.LifeState.State.DEAD));
+            lifeSequence = Sq.constant(new LifeState(0, Player.LifeState.State.DEAD));
         }
 
         return lifeSequence;
@@ -256,8 +232,8 @@ public final class Player {
          * @throws NullPointerException
          *             Si l'état de l'objet est nul
          */
-        public LifeState(int lives, State state)
-                throws IllegalArgumentException, NullPointerException {
+        public LifeState(int lives,
+                State state) throws IllegalArgumentException, NullPointerException {
             this.lives = ArgumentChecker.requireNonNegative(lives);
             this.state = Objects.requireNonNull(state);
         }
@@ -322,8 +298,8 @@ public final class Player {
     }
 
     /**
-     * Représente la «position dirigée» d'un joueur, c-à-d une paire
-     * (sous-case, direction).
+     * Représente la «position dirigée» d'un joueur, c-à-d une paire (sous-case,
+     * direction).
      * 
      * @author Sacha Kozma, 260391
      * @author Alexia Bogaert, 258330
@@ -344,12 +320,10 @@ public final class Player {
          * @throws NullPointerException
          *             Si au moins un des objets passé en paramètre est nul
          */
-        public DirectedPosition(SubCell position, Direction direction)
-                throws NullPointerException {
-            this.position = Objects.requireNonNull(position,
-                    "position must not be null");
-            this.direction = Objects.requireNonNull(direction,
-                    "direction must not be null");
+        public DirectedPosition(SubCell position,
+                Direction direction) throws NullPointerException {
+            this.position = Objects.requireNonNull(position, "position must not be null");
+            this.direction = Objects.requireNonNull(direction, "direction must not be null");
         }
 
         /**
@@ -376,8 +350,7 @@ public final class Player {
          * @return La séquence de position calculée
          */
         public static Sq<DirectedPosition> moving(DirectedPosition p) {
-            return Sq.iterate(p,
-                    x -> x.withPosition(x.position().neighbor(x.direction())));
+            return Sq.iterate(p, x -> x.withPosition(x.position().neighbor(x.direction())));
         }
 
         /**

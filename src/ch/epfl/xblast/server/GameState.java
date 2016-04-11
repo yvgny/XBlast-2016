@@ -106,10 +106,7 @@ public final class GameState {
      */
     private static <E> List<List<E>> createUnmodifiableView(List<List<E>> list) {
         List<List<E>> copiedList = new ArrayList<>();
-
-        for (List<E> eachList : list) {
-            copiedList.add(Collections.unmodifiableList(eachList));
-        }
+        list.forEach(subList -> copiedList.add(Collections.unmodifiableList(subList)));
 
         return Collections.unmodifiableList(copiedList);
     }
@@ -193,7 +190,7 @@ public final class GameState {
      */
     private static Map<Cell, Bomb> bombedCells(List<Bomb> bombs) {
         Map<Cell, Bomb> bombedCellsMap = new HashMap<>();
-        bombs.forEach(u -> bombedCellsMap.put(u.position(), u));
+        bombs.forEach(bomb -> bombedCellsMap.put(bomb.position(), bomb));
 
         return bombedCellsMap;
     }
@@ -261,9 +258,11 @@ public final class GameState {
         Map<PlayerID, Bonus> playerBonuses = new HashMap<>();
         Set<Cell> consumedBonuses = new HashSet<>();
         for (Player player : playersSorted) {
-            if (player.position().isCentral() && board.blockAt(player.position().containingCell()).isBonus()) {
-                consumedBonuses.add(player.position().containingCell());
-                playerBonuses.put(player.id(), board.blockAt(player.position().containingCell()).associatedBonus());
+            Cell position0 = player.position().containingCell();
+
+            if (player.position().isCentral() && board.blockAt(position0).isBonus()) {
+                consumedBonuses.add(position0);
+                playerBonuses.put(player.id(), board.blockAt(position0).associatedBonus());
             }
         }
 
@@ -274,22 +273,13 @@ public final class GameState {
 
         List<Sq<Sq<Cell>>> explosions1 = nextExplosions(explosions);
 
+        // Ajout des nouvelles bombes
         List<Bomb> bombs1 = new ArrayList<>();
-        List<Bomb> newlyDroppedBombs = newlyDroppedBombs(playersSorted, bombDropEvents, bombs);
+        List<Bomb> bombsToCheck = newlyDroppedBombs(playersSorted, bombDropEvents, bombs);
+        bombsToCheck.addAll(bombs);
 
-        // Evolution et ajout des bombes nouvellement créer
-        for (Bomb bomb : newlyDroppedBombs) {
-            if (blastedCells1.contains(bomb.position())) {
-                explosions1.addAll(bomb.explosion());
-            } else if (bomb.fuseLength() <= 1) {
-                explosions1.addAll(bomb.explosion());
-            } else {
-                bombs1.add(new Bomb(bomb.ownerId(), bomb.position(), bomb.fuseLengths().tail(), bomb.range()));
-            }
-        }
-
-        // Evolution des bombes présentes a ce moment-la
-        for (Bomb bomb : bombs) {
+        // Evolution des bombes actuelles et des nouvelles
+        for (Bomb bomb : bombsToCheck) {
             if (blastedCells1.contains(bomb.position())) {
                 explosions1.addAll(bomb.explosion());
             } else if (bomb.fuseLength() <= 1) {
@@ -321,15 +311,13 @@ public final class GameState {
         List<Sq<Cell>> blasts1 = new ArrayList<Sq<Cell>>();
 
         for (Sq<Cell> blastSq : blasts0) {
-            if (!blastSq.isEmpty() && board0.blockAt(blastSq.head()).isFree() && !blastSq.tail().isEmpty()) {
+            if (!blastSq.isEmpty() && board0.blockAt(blastSq.head()).isFree() && !blastSq.tail().isEmpty())
                 blasts1.add(blastSq.tail());
-            }
         }
 
         for (Sq<Sq<Cell>> explosionSq : explosions0) {
-            if (!explosions0.isEmpty()) {
+            if (!explosions0.isEmpty())
                 blasts1.add(explosionSq.head());
-            }
         }
 
         return blasts1;
@@ -473,14 +461,14 @@ public final class GameState {
             }
 
             // Test si il y a un mur
-            if (!board1.blockAt(cell1).canHostPlayer()) { 
+            if (!board1.blockAt(cell1).canHostPlayer()) {
                 if (subCell0.isCentral()) {
                     evolve = false;
                 }
             }
 
             // Test si il y une bombe
-            if (bombedCells1.contains(cell0)) { 
+            if (bombedCells1.contains(cell0)) {
 
                 // On calcule si il se trouve sur la case sur laquelle il doit
                 // s'arrêter si il y a une bombe
@@ -567,7 +555,8 @@ public final class GameState {
 
         // Iteration sur players0 pour trouver les joueurs à supprimer dans
         // authorisedPlayers pour ne laisser que ceux ayant le droit de poser
-        // des bombes
+        // des bombes (on ne supprime pas sur la liste ou on itère pour éviter
+        // tout problème
         for (Player player : players0) {
             playerBombsOnBoard = 0;
 
@@ -581,30 +570,32 @@ public final class GameState {
                 }
             }
 
-
             if (!player.isAlive() || (playerBombsOnBoard >= player.maxBombs())) {
                 authorisedPlayers.remove(player);
             }
         }
 
+        // On ajoute une bombe si et seulement si il n'y à pas une bombe déjà
+        // présente sur le terrain
         for (Player player : authorisedPlayers) {
+            Cell playerPosition = player.position().containingCell();
             if (bombDropEvents.contains(player.id())) {
                 boolean bombAlreadyHere = false;
 
                 for (Bomb bomb : bombs1) {
-                    if (bomb.position().equals(player.position().containingCell())) {
+                    if (bomb.position().equals(playerPosition)) {
                         bombAlreadyHere = true;
                     }
                 }
-
+                
                 for (Bomb bomb : bombs0) {
-                    if (bomb.position().equals(player.position().containingCell())) {
+                    if (bomb.position().equals(playerPosition)) {
                         bombAlreadyHere = true;
                     }
                 }
 
                 if (!bombAlreadyHere) {
-                    bombs1.add(new Bomb(player.id(), player.position().containingCell(), Ticks.BOMB_FUSE_TICKS, player.bombRange()));
+                    bombs1.add(new Bomb(player.id(), playerPosition, Ticks.BOMB_FUSE_TICKS, player.bombRange()));
                 }
 
             }
