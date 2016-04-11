@@ -1,7 +1,7 @@
 package ch.epfl.xblast;
 
 /**
- * Enumération des directions poisibles sur le plateau de jeu
+ * Enumération des directions possibles sur le plateau de jeu
  * 
  * @author Sacha Kozma, 260391
  * @author Alexia Bogaert, 258330
@@ -29,7 +29,7 @@ public enum Direction {
     W;
 
     /**
-     * Calcul l'opposé de la direction a celle ou la méthode est appliqué
+     * Calcule l'opposé de la direction a celle où la méthode est appliquée
      * 
      * @return La direction opposée
      */
@@ -52,9 +52,9 @@ public enum Direction {
     }
 
     /**
-     * Calcul si la direction est horizontale à l'écran (E ou W)
+     * Calcule si la direction est horizontale à l'écran (E ou W)
      * 
-     * @return true si la direction est horizontale, false sinon
+     * @return vrai si la direction est horizontale, faux sinon
      */
     public boolean isHorizontal() {
         if (this == E || this == W) {
@@ -66,14 +66,14 @@ public enum Direction {
     }
 
     /**
-     * Calcul si le direction est parrallèle est la direction passée en
+     * Calcule si la direction est parrallèle à la direction passée en
      * paramètre. (La direction est parallèle seulement à elle-même et à son
      * opposé)
      * 
      * @param that
      *            La direction a comparer
-     * @return true si la direction est parrallèle à celle passée en paramètre,
-     *         false sinon
+     * @return vrai si la direction est parrallèle à celle passée en paramètre,
+     *         faux sinon
      */
     public boolean isParallelTo(Direction that) {
         if (this == that || this.opposite() == that) {

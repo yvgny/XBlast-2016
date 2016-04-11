@@ -44,7 +44,7 @@ public final class Board {
      * 
      * @param rows
      *            La matrice de blocs utilisée pour construire le plateau
-     * @return La plateau construit a l'aide de la matrice passée en paramètre
+     * @return Le plateau construit a l'aide de la matrice passée en paramètre
      * @throws IllegalArgumentException
      *             Si la liste reçue n'est pas constituée de
      *             {@value ch.epfl.xblast.Cell#ROWS} listes de
@@ -70,7 +70,7 @@ public final class Board {
      * 
      * @param innerBlocks
      *            Les blocs intérieurs a utilisé pour construire le plateau
-     * @return La pleateua construit a l'aide des blocs intérieurs passé en
+     * @return La plateau construit a l'aide des blocs intérieurs passé en
      *         paramètre
      * @throws IllegalArgumentException
      *             si la liste reçue n'est pas constituée de (
@@ -175,7 +175,7 @@ public final class Board {
     
     /**
      * Copie la liste de liste passée en paramètre. Il faut toutefois faire
-     * attention que seul la référence l'objet de type T est copié, il se s'agit
+     * attention que seul la référence l'objet de type T est copié, il ne s'agit
      * donc pas de copie profonde
      * 
      * @param l

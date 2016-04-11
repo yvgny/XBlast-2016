@@ -170,8 +170,8 @@ public final class Cell {
      * 
      * @param that
      *            L'objet a comparer avec la case
-     * @return true si l'objet est une case possédant les mêmes coordonnées,
-     *         false sinon
+     * @return vrai si l'objet est une case possédant les mêmes coordonnées,
+     *         faux sinon
      */
     @Override
     public boolean equals(Object that) {

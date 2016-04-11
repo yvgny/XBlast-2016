@@ -29,7 +29,7 @@ public final class SubCell {
     }
 
     /**
-     * Calcul la sous-case d'une case donnée
+     * Calcule la sous-case d'une case donnée
      * 
      * @param cell
      *            La case dont la sous-case doit être trouvée
@@ -44,7 +44,7 @@ public final class SubCell {
     }
 
     /**
-     * Calcul la distance de Manhattan entre la sous-case et la sous-case
+     * Calcule la distance de Manhattan entre la sous-case et la sous-case
      * centrale la plus proche
      * 
      * @return La distance de Manhattan jusqu'à la sous-case la plus proche
@@ -58,9 +58,9 @@ public final class SubCell {
     }
 
     /**
-     * Calcul si cette sous-case est une sous-case centrale
+     * Calcule si cette sous-case est une sous-case centrale
      * 
-     * @return true si la sous-case est une sous-case centrale, false sinon
+     * @return vrai si la sous-case est une sous-case centrale, faux sinon
      */
     public boolean isCentral() {
         SubCell centralSubCell = centralSubCellOf(containingCell());
@@ -69,7 +69,7 @@ public final class SubCell {
     }
 
     /**
-     * Calcul la case voisine a cette sous-case dans la direction choisie
+     * Calcule la case voisine a cette sous-case dans la direction choisie
      * 
      * @param d
      *            La direction de la case-voisine ciblée
@@ -98,7 +98,7 @@ public final class SubCell {
     }
 
     /**
-     * Calcul la case contenant cette sous-case
+     * Calcule la case contenant cette sous-case
      * 
      * @return La case contenant cette sous-case
      */
@@ -115,8 +115,8 @@ public final class SubCell {
      * 
      * @param that
      *            L'objet à comparer avec cette sous-case
-     * @return true si l'objet ets une sous-case ayant les même coordonnées,
-     *         false sinon
+     * @return vrai si l'objet ets une sous-case ayant les même coordonnées,
+     *         faux sinon
      */
     @Override
     public boolean equals(Object that) {
@@ -131,7 +131,7 @@ public final class SubCell {
      * Retourne une représentation textuelle des coordonnées de la sous-case,
      * sous la forme (x,y)
      * 
-     * @return La représenattion textuelle de la sous-case
+     * @return La représentation textuelle de la sous-case
      */
     @Override
     public String toString() {

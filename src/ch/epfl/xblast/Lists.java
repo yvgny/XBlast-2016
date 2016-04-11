@@ -23,7 +23,7 @@ public final class Lists {
      *            La liste à transformer
      * @param <T>
      *            Le type de la liste passée en paramètre
-     * @return La version "mirroir" de la liste passée en paramètre
+     * @return La version "miroir" de la liste passée en paramètre
      * @throws IllegalArgumentException
      *             Si la liste est vide
      */
