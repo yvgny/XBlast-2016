@@ -37,7 +37,7 @@ public final class GameState {
     private final List<Bomb> bombs;
     private final List<Sq<Sq<Cell>>> explosions;
     private final List<Sq<Cell>> blasts;
-    private static final List<List<PlayerID>> playerIdPermutations = unmodifiableList(Lists.permutations(Arrays.asList(PlayerID.values())));
+    private static final List<List<PlayerID>> playerIdPermutations = createUnmodifiableView(Lists.permutations(Arrays.asList(PlayerID.values())));
     private static final Random RANDOM = new Random(2016);
     private static final List<Block> appearableBonus = Collections.unmodifiableList(Arrays.asList(Block.BONUS_BOMB, Block.BONUS_RANGE, Block.FREE));
 
@@ -104,7 +104,7 @@ public final class GameState {
      *            La liste à rendre non-modifiable
      * @return La liste non-modifiable de liste(s) non-modifibale(s)
      */
-    private static <E> List<List<E>> unmodifiableList(List<List<E>> list) {
+    private static <E> List<List<E>> createUnmodifiableView(List<List<E>> list) {
         List<List<E>> copiedList = new ArrayList<>();
 
         for (List<E> eachList : list) {
@@ -136,11 +136,8 @@ public final class GameState {
      */
     public double remainingTime() {
         double remainingTime = (Ticks.TOTAL_TICKS - ticks) / (double) Ticks.TICKS_PER_SECOND;
-        if (remainingTime < 0.0) {
-            return 0.0;
-        } else {
-            return remainingTime;
-        }
+
+        return remainingTime < 0.0 ? 0.0 : remainingTime;
     }
 
     /**
@@ -189,16 +186,14 @@ public final class GameState {
     /**
      * Calule l'ensemble des cases sur lesqeulles se trouve une bombe
      * 
-     * @param bombs0
+     * @param bombs
      *            La liste des bombes de l'état actuel
      * @return Les cases sur lesquelles se trouvent une bombe
      * 
      */
-    private static Map<Cell, Bomb> bombedCells(List<Bomb> bombs0) {
+    private static Map<Cell, Bomb> bombedCells(List<Bomb> bombs) {
         Map<Cell, Bomb> bombedCellsMap = new HashMap<>();
-        for (Bomb bomb : bombs0) {
-            bombedCellsMap.put(bomb.position(), bomb);
-        }
+        bombs.forEach(u -> bombedCellsMap.put(u.position(), u));
 
         return bombedCellsMap;
     }
@@ -476,13 +471,16 @@ public final class GameState {
             if (!player.lifeState().canMove()) {
                 evolve = false;
             }
-            if (!board1.blockAt(cell1).canHostPlayer()) { // Test si il y
-                // a un mur
+
+            // Test si il y a un mur
+            if (!board1.blockAt(cell1).canHostPlayer()) { 
                 if (subCell0.isCentral()) {
                     evolve = false;
                 }
             }
-            if (bombedCells1.contains(cell0)) { // Test si il y une bombe
+
+            // Test si il y une bombe
+            if (bombedCells1.contains(cell0)) { 
 
                 // On calcule si il se trouve sur la case sur laquelle il doit
                 // s'arrêter si il y a une bombe
@@ -582,6 +580,7 @@ public final class GameState {
                     authorisedPlayers.remove(player);
                 }
             }
+
 
             if (!player.isAlive() || (playerBombsOnBoard >= player.maxBombs())) {
                 authorisedPlayers.remove(player);
