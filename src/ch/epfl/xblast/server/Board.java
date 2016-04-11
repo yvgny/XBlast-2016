@@ -59,9 +59,7 @@ public final class Board {
         List<Sq<Block>> sqBlockList = new ArrayList<Sq<Block>>();
 
         for (List<Block> list : rowsCopied) {
-            for (Block block : list) {
-                sqBlockList.add(Sq.constant(block));
-            }
+            list.forEach(u -> sqBlockList.add(Sq.constant(u)));
         }
 
         return new Board(sqBlockList);
