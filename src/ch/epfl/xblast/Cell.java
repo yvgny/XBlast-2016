@@ -96,11 +96,7 @@ public final class Cell {
             i2.remove(0);
 
             for (Integer c1 : i1) {
-                if (horizontal) {
-                    spiral.add(new Cell(c1, c2));
-                } else {
-                    spiral.add(new Cell(c2, c1));
-                }
+                spiral.add(horizontal ? new Cell(c1, c2) : new Cell(c2, c1));
             }
 
             Collections.reverse(i1);
