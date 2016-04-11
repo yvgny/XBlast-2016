@@ -58,8 +58,8 @@ public final class Board {
 
         List<Sq<Block>> sqBlockList = new ArrayList<Sq<Block>>();
 
-        for (List<Block> list : rowsCopied) {
-            list.forEach(u -> sqBlockList.add(Sq.constant(u)));
+        for (List<Block> row : rowsCopied) {
+            row.forEach(block -> sqBlockList.add(Sq.constant(block)));
         }
 
         return new Board(sqBlockList);
@@ -117,9 +117,7 @@ public final class Board {
 
         List<List<Block>> quadrantNWBlocksWalled = new ArrayList<List<Block>>();
 
-        for (List<Block> list : quadrantNWBlocksCopied) {
-            quadrantNWBlocksWalled.add(Lists.mirrored(list));
-        }
+        quadrantNWBlocksCopied.forEach(row -> quadrantNWBlocksWalled.add(Lists.mirrored(row)));
 
         return ofInnerBlocksWalled(Lists.mirrored(quadrantNWBlocksWalled));
     }
@@ -194,20 +192,16 @@ public final class Board {
             throw new IllegalArgumentException("List is empty or not inizializated !");
         }
 
-        List<List<T>> copied = new ArrayList<List<T>>();
+        List<List<T>> copiedList = new ArrayList<List<T>>();
 
-        for (List<T> list : l) {
-            List<T> temporary = new ArrayList<T>();
-
-            for (T t : list) {
-                temporary.add(t);
-
-            }
-
-            copied.add(temporary);
+        for (List<T> subList : l) {
+            List<T> temporarySubList = new ArrayList<T>();
+            temporarySubList.addAll(subList);
+            
+            copiedList.add(temporarySubList);
         }
 
-        return copied;
+        return copiedList;
     }
 
 }

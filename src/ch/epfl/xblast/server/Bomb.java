@@ -47,11 +47,10 @@ public final class Bomb {
         this.ownerId = Objects.requireNonNull(ownerId, "ownerId must not be null");
         this.position = Objects.requireNonNull(position, "position must not be null");
         this.fuseLenghts = Objects.requireNonNull(fuseLengths, "fuseLengths must not be null");
+        if (fuseLengths.isEmpty())
+            throw new IllegalArgumentException();
         this.range = ArgumentChecker.requireNonNegative(range);
 
-        if (fuseLengths.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
     }
 
     /**
