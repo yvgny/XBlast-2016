@@ -19,7 +19,7 @@ import ch.epfl.xblast.SubCell;
 public final class Player {
     private final PlayerID id;
     private final Sq<LifeState> lifeStates;
-    private final Sq<DirectedPosition> directedPos;
+    private final Sq<DirectedPosition> directedPositions;
     private final int maxBombs;
     private final int bombRange;
 
@@ -47,7 +47,7 @@ public final class Player {
 
         this.id = Objects.requireNonNull(id, "id must not be null");
         this.lifeStates = Objects.requireNonNull(lifeStates, "lifeStates must not be null");
-        this.directedPos = Objects.requireNonNull(directedPos, "directedPos must not be null");
+        this.directedPositions = Objects.requireNonNull(directedPos, "directedPositions must not be null");
         this.maxBombs = ArgumentChecker.requireNonNegative(maxBombs);
         this.bombRange = ArgumentChecker.requireNonNegative(bombRange);
     }
@@ -74,7 +74,67 @@ public final class Player {
     public Player(PlayerID id, int lives, Cell position, int maxBombs,
             int bombRange) throws IllegalArgumentException, NullPointerException {
 
-        this(id, createLifeSequence(lives), Sq.constant(new DirectedPosition(SubCell.centralSubCellOf(Objects.requireNonNull(position)), Direction.S)), maxBombs, bombRange);
+        this(id, createLifeSequence(lives), Sq.constant(new DirectedPosition(SubCell.centralSubCellOf(Objects.requireNonNull(position, "position must not be null")), Direction.S)), maxBombs, bombRange);
+    }
+
+    /**
+     * @return La séquence d'états pour la prochaine vie du joueur
+     */
+    public Sq<LifeState> statesForNextLife() {
+        int newLives = lives() - 1;
+        Sq<LifeState> nextLifeSequence = Sq.repeat(Ticks.PLAYER_DYING_TICKS, new LifeState(lives(), LifeState.State.DYING));
+    
+        nextLifeSequence = nextLifeSequence.concat(createLifeSequence(newLives));
+    
+        return nextLifeSequence;
+    }
+
+    private static Sq<LifeState> createLifeSequence(int lives) throws IllegalArgumentException {
+        ArgumentChecker.requireNonNegative(lives);
+        Sq<LifeState> lifeSequence;
+    
+        if (lives > 0) {
+            lifeSequence = Sq.repeat(Ticks.PLAYER_INVULNERABLE_TICKS, new LifeState(lives, LifeState.State.INVULNERABLE));
+            lifeSequence = lifeSequence.concat(Sq.constant(new LifeState(lives, LifeState.State.VULNERABLE)));
+        } else {
+            lifeSequence = Sq.constant(new LifeState(0, Player.LifeState.State.DEAD));
+        }
+    
+        return lifeSequence;
+    }
+
+    /**
+     * Retourne un joueur identique à celui auquel on l'applique, si ce n'est
+     * que son nombre maximum de bombes est celui donné
+     * 
+     * @param newMaxBombs
+     *            Le nombre de bombes maximum que peut poser le nouveau joueur
+     * @return Le nouveau joueur
+     */
+    public Player withMaxBombs(int newMaxBombs) {
+        return new Player(id(), lifeStates(), directedPositions(), newMaxBombs, bombRange());
+    }
+
+    /**
+     * Retourne un joueur identique à celui auquel on l'applique, si ce n'est
+     * que la portée de ses bombes est celle donnée
+     * 
+     * @param newBombRange
+     *            La portée des bombes du nouveau joueur
+     * @return Le nouveau joueur
+     */
+    public Player withBombRange(int newBombRange) {
+        return new Player(id(), lifeStates(), directedPositions(), maxBombs(), newBombRange);
+    }
+
+    /**
+     * @return Une bombe positionnée sur la case sur laquelle le joueur se
+     *         trouve actuellement, dont la mèche a la longueur donnée par la
+     *         constante {@value ch.epfl.xblast.server.Ticks#BOMB_FUSE_TICKS} et
+     *         dont la portée est celle des bombes du joueur.
+     */
+    public Bomb newBomb() {
+        return new Bomb(id(), position().containingCell(), Ticks.BOMB_FUSE_TICKS, bombRange());
     }
 
     /**
@@ -99,18 +159,6 @@ public final class Player {
     }
 
     /**
-     * @return La séquence d'états pour la prochaine vie du joueur
-     */
-    public Sq<LifeState> statesForNextLife() {
-        int newLives = lives() - 1;
-        Sq<LifeState> nextLifeSequence = Sq.repeat(Ticks.PLAYER_DYING_TICKS, new LifeState(lives(), LifeState.State.DYING));
-
-        nextLifeSequence = nextLifeSequence.concat(createLifeSequence(newLives));
-
-        return nextLifeSequence;
-    }
-
-    /**
      * @return Vrai si et seulement si le joueur est vivant, c-à-d si son nombre
      *         de vies actuel est supérieur à 0
      */
@@ -129,7 +177,7 @@ public final class Player {
      * @return La séquence des positions dirigées du joueur
      */
     public Sq<DirectedPosition> directedPositions() {
-        return directedPos;
+        return directedPositions;
     }
 
     /**
@@ -154,59 +202,11 @@ public final class Player {
     }
 
     /**
-     * Retourne un joueur identique à celui auquel on l'applique, si ce n'est
-     * que son nombre maximum de bombes est celui donné
-     * 
-     * @param newMaxBombs
-     *            Le nombre de bombes maximum que peut poser le nouveau joueur
-     * @return Le nouveau joueur
-     */
-    public Player withMaxBombs(int newMaxBombs) {
-        return new Player(id, lifeStates, directedPos, newMaxBombs, bombRange);
-    }
-
-    /**
      * @return La portée (en nombre de cases) des explosions produites par les
      *         bombes du joueur
      */
     public int bombRange() {
         return bombRange;
-    }
-
-    /**
-     * Retourne un joueur identique à celui auquel on l'applique, si ce n'est
-     * que la portée de ses bombes est celle donnée
-     * 
-     * @param newBombRange
-     *            La portée des bombes du nouveau joueur
-     * @return Le nouveau joueur
-     */
-    public Player withBombRange(int newBombRange) {
-        return new Player(id, lifeStates, directedPos, maxBombs, newBombRange);
-    }
-
-    /**
-     * @return Une bombe positionnée sur la case sur laquelle le joueur se
-     *         trouve actuellement, dont la mèche a la longueur donnée par la
-     *         constante {@value ch.epfl.xblast.server.Ticks#BOMB_FUSE_TICKS} et
-     *         dont la portée est celle des bombes du joueur.
-     */
-    public Bomb newBomb() {
-        return new Bomb(id, position().containingCell(), Ticks.BOMB_FUSE_TICKS, bombRange);
-    }
-
-    private static Sq<LifeState> createLifeSequence(int lives) throws IllegalArgumentException {
-        ArgumentChecker.requireNonNegative(lives);
-        Sq<LifeState> lifeSequence;
-
-        if (lives > 0) {
-            lifeSequence = Sq.repeat(Ticks.PLAYER_INVULNERABLE_TICKS, new LifeState(lives, LifeState.State.INVULNERABLE));
-            lifeSequence = lifeSequence.concat(Sq.constant(new LifeState(lives, LifeState.State.VULNERABLE)));
-        } else {
-            lifeSequence = Sq.constant(new LifeState(0, Player.LifeState.State.DEAD));
-        }
-
-        return lifeSequence;
     }
 
     /**
@@ -235,7 +235,17 @@ public final class Player {
         public LifeState(int lives,
                 State state) throws IllegalArgumentException, NullPointerException {
             this.lives = ArgumentChecker.requireNonNegative(lives);
-            this.state = Objects.requireNonNull(state);
+            this.state = Objects.requireNonNull(state, "state must not be null");
+        }
+
+        /**
+         * Détermine si l'état permet au joueur de se déplacer, ce qui est le
+         * cas uniquement s'il est invulnérable ou vulnérable
+         * 
+         * @return vrai si il peut se déplacer, faux sinon
+         */
+        public boolean canMove() {
+            return state() == State.INVULNERABLE || state() == State.VULNERABLE;
         }
 
         /**
@@ -252,16 +262,6 @@ public final class Player {
          */
         public State state() {
             return state;
-        }
-
-        /**
-         * Détermine si l'état permet au joueur de se déplacer, ce qui est le
-         * cas uniquement s'il est invulnérable ou vulnérable
-         * 
-         * @return vrai si il peut se déplacer, faux sinon
-         */
-        public boolean canMove() {
-            return state == State.INVULNERABLE || state == State.VULNERABLE;
         }
 
         /**
@@ -354,13 +354,6 @@ public final class Player {
         }
 
         /**
-         * @return La position de la position dirigiée
-         */
-        public SubCell position() {
-            return position;
-        }
-
-        /**
          * Retourne une position dirigée dont la position est celle donnée, et
          * la direction est identique à celle du récepteur
          * 
@@ -369,14 +362,7 @@ public final class Player {
          * @return La position dirigée calculée avec la nouvelle position
          */
         public DirectedPosition withPosition(SubCell newPosition) {
-            return new DirectedPosition(newPosition, direction);
-        }
-
-        /**
-         * @return La direction de la position dirigée
-         */
-        public Direction direction() {
-            return direction;
+            return new DirectedPosition(newPosition, direction());
         }
 
         /**
@@ -389,7 +375,21 @@ public final class Player {
          *         donnée
          */
         public DirectedPosition withDirection(Direction newDirection) {
-            return new DirectedPosition(position, newDirection);
+            return new DirectedPosition(position(), newDirection);
+        }
+
+        /**
+         * @return La position de la position dirigiée
+         */
+        public SubCell position() {
+            return position;
+        }
+
+        /**
+         * @return La direction de la position dirigée
+         */
+        public Direction direction() {
+            return direction;
         }
     }
 

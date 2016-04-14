@@ -9,11 +9,11 @@ package ch.epfl.xblast;
  */
 public final class SubCell {
 
-    private final int x;
-    private final int y;
     private static final int GRANULARITY = 16;
     private static final int COLUMNS = GRANULARITY * Cell.COLUMNS;
     private static final int ROWS = GRANULARITY * Cell.ROWS;
+    private final int x;
+    private final int y;
 
     /**
      * Construit une sous-case avec les coordonnées choisies
@@ -51,8 +51,8 @@ public final class SubCell {
      */
     public int distanceToCentral() {
         SubCell centralSubcell = centralSubCellOf(containingCell());
-        int xDistance = Math.abs(centralSubcell.x() - x);
-        int yDistance = Math.abs(centralSubcell.y() - y);
+        int xDistance = Math.abs(centralSubcell.x() - x());
+        int yDistance = Math.abs(centralSubcell.y() - y());
 
         return xDistance + yDistance;
     }
@@ -79,19 +79,19 @@ public final class SubCell {
         SubCell neighbor;
         switch (d) {
         case N:
-            neighbor = new SubCell(x, y - 1);
+            neighbor = new SubCell(x(), y() - 1);
             break;
         case S:
-            neighbor = new SubCell(x, y + 1);
+            neighbor = new SubCell(x(), y() + 1);
             break;
         case E:
-            neighbor = new SubCell(x + 1, y);
+            neighbor = new SubCell(x() + 1, y());
             break;
         case W:
-            neighbor = new SubCell(x - 1, y);
+            neighbor = new SubCell(x() - 1, y());
             break;
         default:
-            neighbor = new SubCell(x, y);
+            neighbor = new SubCell(x(), y());
         }
 
         return neighbor;
@@ -103,39 +103,7 @@ public final class SubCell {
      * @return La case contenant cette sous-case
      */
     public Cell containingCell() {
-        int xCell = x / GRANULARITY;
-        int yCell = y / GRANULARITY;
-
-        return new Cell(xCell, yCell);
-    }
-
-    /**
-     * Permet de comparer cette sous-case à un objet pour voir si ce sont les
-     * mêmes. Deux sous-cases sont identiques si elles ont les même coordonnées.
-     * 
-     * @param that
-     *            L'objet à comparer avec cette sous-case
-     * @return vrai si l'objet ets une sous-case ayant les même coordonnées,
-     *         faux sinon
-     */
-    @Override
-    public boolean equals(Object that) {
-        if (that.getClass() == SubCell.class) {
-            if (((SubCell) that).x == x && ((SubCell) that).y == y)
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * Retourne une représentation textuelle des coordonnées de la sous-case,
-     * sous la forme (x,y)
-     * 
-     * @return La représentation textuelle de la sous-case
-     */
-    @Override
-    public String toString() {
-        return "(" + x + "," + y + ")";
+        return new Cell(x() / GRANULARITY, y() / GRANULARITY);
     }
 
     /**
@@ -156,6 +124,35 @@ public final class SubCell {
         return y;
     }
 
+    /**
+     * Permet de comparer cette sous-case à un objet pour voir si ce sont les
+     * mêmes. Deux sous-cases sont identiques si elles ont les même coordonnées.
+     * 
+     * @param that
+     *            L'objet à comparer avec cette sous-case
+     * @return vrai si l'objet ets une sous-case ayant les même coordonnées,
+     *         faux sinon
+     */
+    @Override
+    public boolean equals(Object that) {
+        if (that.getClass() == SubCell.class) {
+            if (((SubCell) that).x() == x() && ((SubCell) that).y() == y())
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Retourne une représentation textuelle des coordonnées de la sous-case,
+     * sous la forme (x,y)
+     * 
+     * @return La représentation textuelle de la sous-case
+     */
+    @Override
+    public String toString() {
+        return "(" + x() + "," + y() + ")";
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -163,7 +160,7 @@ public final class SubCell {
      */
     @Override
     public int hashCode() {
-        return COLUMNS * x + y;
+        return COLUMNS * x() + y();
     }
 
 }

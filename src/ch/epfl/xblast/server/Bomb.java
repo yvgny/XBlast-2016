@@ -48,7 +48,7 @@ public final class Bomb {
         this.position = Objects.requireNonNull(position, "position must not be null");
         this.fuseLenghts = Objects.requireNonNull(fuseLengths, "fuseLengths must not be null");
         if (fuseLengths.isEmpty())
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("fuseLengths must not be empty");
         this.range = ArgumentChecker.requireNonNegative(range);
 
     }
@@ -136,7 +136,7 @@ public final class Bomb {
 
     private Sq<Sq<Cell>> explosionArmTowards(Direction dir) {
 
-        Sq<Cell> explosionArmInSpace = (Sq.iterate(position, c -> c.neighbor(dir))).limit(range);
+        Sq<Cell> explosionArmInSpace = (Sq.iterate(position(), c -> c.neighbor(dir))).limit(range());
         Sq<Sq<Cell>> explosionArmInTime = Sq.repeat(Ticks.EXPLOSION_TICKS, explosionArmInSpace);
         
         return explosionArmInTime;

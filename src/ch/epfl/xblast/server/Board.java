@@ -16,9 +16,9 @@ import ch.epfl.xblast.Lists;
  */
 public final class Board {
 
+    private final static int QUADRANT_NW_BLOCKS_ROWS = (((Cell.ROWS - 2) / 2) + 1);
+    private final static int QUADRANT_NW_BLOCKS_COLUMNS = (((Cell.COLUMNS - 2) / 2) + 1);
     private final List<Sq<Block>> boardList;
-    private final static int quadrantNWBlocksRows = (((Cell.ROWS - 2) / 2) + 1);
-    private final static int quadrantNWBlocksColumns = (((Cell.COLUMNS - 2) / 2) + 1);
 
     /**
      * Construit un tableau a partir d'une liste de séquence de blocs
@@ -111,7 +111,7 @@ public final class Board {
      */
     public static Board ofQuadrantNWBlocksWalled(List<List<Block>> quadrantNWBlocks) throws IllegalArgumentException {
 
-        checkBlockMatrix(quadrantNWBlocks, quadrantNWBlocksRows, quadrantNWBlocksColumns);
+        checkBlockMatrix(quadrantNWBlocks, QUADRANT_NW_BLOCKS_ROWS, QUADRANT_NW_BLOCKS_COLUMNS);
         
         List<List<Block>> quadrantNWBlocksCopied = copyList(quadrantNWBlocks);
 

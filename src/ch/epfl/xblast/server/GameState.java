@@ -31,15 +31,15 @@ import ch.epfl.xblast.server.Player.LifeState;
  *
  */
 public final class GameState {
+    private static final List<List<PlayerID>> PLAYER_ID_PERMUTATIONS = createUnmodifiableView(Lists.permutations(Arrays.asList(PlayerID.values())));
+    private static final Random RANDOM = new Random(2016);
+    private static final List<Block> APPEARABLE_BONUS = Collections.unmodifiableList(Arrays.asList(Block.BONUS_BOMB, Block.BONUS_RANGE, Block.FREE));
     private final int ticks;
     private final Board board;
     private final List<Player> players;
     private final List<Bomb> bombs;
     private final List<Sq<Sq<Cell>>> explosions;
     private final List<Sq<Cell>> blasts;
-    private static final List<List<PlayerID>> playerIdPermutations = createUnmodifiableView(Lists.permutations(Arrays.asList(PlayerID.values())));
-    private static final Random RANDOM = new Random(2016);
-    private static final List<Block> appearableBonus = Collections.unmodifiableList(Arrays.asList(Block.BONUS_BOMB, Block.BONUS_RANGE, Block.FREE));
 
     /**
      * Construit l'état du jeu pour le coup d'horloge, le plateau de jeu, les
@@ -75,7 +75,6 @@ public final class GameState {
         this.explosions = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(explosions, "explosions must not be null")));
         this.blasts = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(blasts, "blasts must not be null")));
         this.bombs = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(bombs, "bombs must not be null")));
-        Lists.permutations(Arrays.asList(PlayerID.values()));
     }
 
     /**
@@ -107,34 +106,8 @@ public final class GameState {
     private static <E> List<List<E>> createUnmodifiableView(List<List<E>> list) {
         List<List<E>> copiedList = new ArrayList<>();
         list.forEach(subList -> copiedList.add(Collections.unmodifiableList(subList)));
-
+    
         return Collections.unmodifiableList(copiedList);
-    }
-
-    /**
-     * @return Le coup d'horloge correspondant à l'état
-     */
-    public int ticks() {
-        return ticks;
-    }
-
-    /**
-     * @return Retourne vrai si et seulement si l'état correspond à une partie
-     *         terminée, c-à-d si le nombre de coups d'horloge d'une partie (
-     *         {@value ch.epfl.xblast.server.Ticks#TOTAL_TICKS}) est écoulé, ou
-     *         s'il n'y a pas plus d'un joueur vivant.
-     */
-    public boolean isGameOver() {
-        return ticks > Ticks.TOTAL_TICKS || alivePlayers().size() < 2;
-    }
-
-    /**
-     * @return Le temps restant dans la partie, en secondes
-     */
-    public double remainingTime() {
-        double remainingTime = (Ticks.TOTAL_TICKS - ticks) / (double) Ticks.TICKS_PER_SECOND;
-
-        return remainingTime < 0.0 ? 0.0 : remainingTime;
     }
 
     /**
@@ -146,25 +119,11 @@ public final class GameState {
     }
 
     /**
-     * @return Le plateau de jeu
-     */
-    public Board board() {
-        return board;
-    }
-
-    /**
-     * @return La liste de joueurs
-     */
-    public List<Player> players() {
-        return new ArrayList<Player>(players);
-    }
-
-    /**
      * @return Les joueurs vivants, c-à-d ceux ayant au moins une vie
      */
     public List<Player> alivePlayers() {
         ArrayList<Player> alivePlayers = new ArrayList<Player>();
-        for (Player player : players) {
+        for (Player player : players()) {
             if (player.isAlive()) {
                 alivePlayers.add(player);
             }
@@ -191,7 +150,7 @@ public final class GameState {
     private static Map<Cell, Bomb> bombedCells(List<Bomb> bombs) {
         Map<Cell, Bomb> bombedCellsMap = new HashMap<>();
         bombs.forEach(bomb -> bombedCellsMap.put(bomb.position(), bomb));
-
+    
         return bombedCellsMap;
     }
 
@@ -212,15 +171,15 @@ public final class GameState {
      * @return Les cases sur lesquelles se trouvent au moins une particule
      *         d'explosion
      */
-    private static Set<Cell> blastedCells(List<Sq<Cell>> blasts0) {
+    private static Set<Cell> blastedCells(List<Sq<Cell>> blasts) {
         Set<Cell> blastedCells = new HashSet<>();
-
-        for (Sq<Cell> sq : blasts0) {
+    
+        for (Sq<Cell> sq : blasts) {
             if (!sq.isEmpty()) {
                 blastedCells.add(sq.head());
             }
         }
-
+    
         return blastedCells;
     }
 
@@ -238,7 +197,7 @@ public final class GameState {
     public GameState next(Map<PlayerID, Optional<Direction>> speedChangeEvents, Set<PlayerID> bombDropEvents) {
 
         Comparator<Player> playerComparator = (player1, player2) -> {
-            List<PlayerID> currentPermutation = playerIdPermutations.get(ticks % playerIdPermutations.size());
+            List<PlayerID> currentPermutation = PLAYER_ID_PERMUTATIONS.get(ticks() % PLAYER_ID_PERMUTATIONS.size());
             if (currentPermutation.indexOf(player1.id()) < currentPermutation.indexOf(player2.id())) {
                 return -1;
 
@@ -252,7 +211,7 @@ public final class GameState {
         List<Player> playersSorted = new ArrayList<>(players);
         playersSorted.sort(playerComparator);
 
-        List<Sq<Cell>> blasts1 = nextBlasts(blasts, board, explosions);
+        List<Sq<Cell>> blasts1 = nextBlasts(blasts, board(), explosions);
 
         // Création de playerBonuses et consumedBonuses
         Map<PlayerID, Bonus> playerBonuses = new HashMap<>();
@@ -269,7 +228,7 @@ public final class GameState {
         // Création de blastedCells
         Set<Cell> blastedCells1 = blastedCells(blasts1);
 
-        Board board1 = nextBoard(board, consumedBonuses, blastedCells1);
+        Board board1 = nextBoard(board(), consumedBonuses, blastedCells1);
 
         List<Sq<Sq<Cell>>> explosions1 = nextExplosions(explosions);
 
@@ -291,9 +250,9 @@ public final class GameState {
 
         Set<Cell> bombedCells = bombedCells(bombs1).keySet();
 
-        List<Player> players1 = nextPlayers(players, playerBonuses, bombedCells, board1, blastedCells1, speedChangeEvents);
+        List<Player> players1 = nextPlayers(players(), playerBonuses, bombedCells, board1, blastedCells1, speedChangeEvents);
 
-        return new GameState(ticks + 1, board1, players1, bombs1, explosions1, blasts1);
+        return new GameState(ticks() + 1, board1, players1, bombs1, explosions1, blasts1);
     }
 
     /**
@@ -356,7 +315,7 @@ public final class GameState {
 
                     // Concaténation avec une séquence infinie d'un bloc pris au
                     // hasard dans la liste de bonus/case libre disponible
-                    Block chosenBlock = appearableBonus.get(RANDOM.nextInt(appearableBonus.size()));
+                    Block chosenBlock = APPEARABLE_BONUS.get(RANDOM.nextInt(APPEARABLE_BONUS.size()));
 
                     crumblingWall = crumblingWall.concat(Sq.constant(chosenBlock));
 
@@ -417,8 +376,7 @@ public final class GameState {
             centralSubCell1 = (directedPositions1.findFirst(u -> u.position().isCentral()));
             centralSubCell1Position = centralSubCell1.position();
 
-            // Si le joueur veut changer de direction/s'arrêter quand on
-            // retourne en arrière
+            // Si le joueur veut changer de direction/s'arrêter
             if (speedChangeEvents.containsKey(player.id())) {
                 Optional<Direction> chosenDirection = speedChangeEvents.get(player.id());
 
@@ -602,6 +560,46 @@ public final class GameState {
         }
 
         return bombs1;
+    }
+
+    /**
+     * @return Le coup d'horloge correspondant à l'état
+     */
+    public int ticks() {
+        return ticks;
+    }
+
+    /**
+     * @return Le plateau de jeu
+     */
+    public Board board() {
+        return board;
+    }
+
+    /**
+     * @return La liste de joueurs
+     */
+    public List<Player> players() {
+        return new ArrayList<Player>(players);
+    }
+
+    /**
+     * @return Retourne vrai si et seulement si l'état correspond à une partie
+     *         terminée, c-à-d si le nombre de coups d'horloge d'une partie (
+     *         {@value ch.epfl.xblast.server.Ticks#TOTAL_TICKS}) est écoulé, ou
+     *         s'il n'y a pas plus d'un joueur vivant.
+     */
+    public boolean isGameOver() {
+        return ticks() > Ticks.TOTAL_TICKS || alivePlayers().size() < 2;
+    }
+
+    /**
+     * @return Le temps restant dans la partie, en secondes
+     */
+    public double remainingTime() {
+        double remainingTime = (Ticks.TOTAL_TICKS - ticks()) / (double) Ticks.TICKS_PER_SECOND;
+    
+        return remainingTime < 0.0 ? 0.0 : remainingTime;
     }
 
 }
