@@ -1,5 +1,7 @@
 package ch.epfl.xblast;
 
+import java.util.NoSuchElementException;
+
 /**
  * Enumération des directions possibles sur le plateau de jeu
  * 
@@ -32,8 +34,10 @@ public enum Direction {
      * Calcule l'opposé de la direction a celle où la méthode est appliquée
      * 
      * @return La direction opposée
+     * @throws NoSuchElementException
+     *             Si l'élément n'est pas trouvé dans l'énumération
      */
-    public Direction opposite() {
+    public Direction opposite() throws NoSuchElementException {
         switch (this) {
         case N:
             return S;
@@ -46,9 +50,10 @@ public enum Direction {
 
         case W:
             return E;
+        default:
+            throw new NoSuchElementException("No such " + this.name());
         }
 
-        return null;
     }
 
     /**
