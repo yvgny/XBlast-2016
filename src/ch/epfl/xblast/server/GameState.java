@@ -387,7 +387,6 @@ public final class GameState {
                 if (chosenDirection.isPresent()) {
 
                     if (!chosenDirection.get().isParallelTo(player.direction())) {
-
                         // On rajoute la séquence après la changement de
                         // direction s'il y en a une
                         directedPosition1 = new DirectedPosition(centralSubCell1Position, chosenDirection.get());

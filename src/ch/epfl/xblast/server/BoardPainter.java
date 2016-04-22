@@ -17,7 +17,7 @@ import ch.epfl.xblast.Direction;
  */
 public final class BoardPainter {
     private final Map<Block, BlockImage> palette;
-    private final BlockImage block;
+    private final BlockImage blockFreeShadowed;
 
     /**
      * Créer un peintre de plateau
@@ -25,12 +25,12 @@ public final class BoardPainter {
      * @param palette
      *            La palette (qui décrit quelles images utiliser pour les
      *            différents blocs) à utiliser
-     * @param block
+     * @param blockFreeShadowed
      *            Le bloc à utiliser pour les blocs libres ombrés
      */
-    public BoardPainter(Map<Block, BlockImage> palette, BlockImage block) {
+    public BoardPainter(Map<Block, BlockImage> palette, BlockImage blockFreeShadowed) {
         this.palette = new HashMap<>(Objects.requireNonNull(palette, "palette must not be null"));
-        this.block = Objects.requireNonNull(block, "block must not be null");
+        this.blockFreeShadowed = Objects.requireNonNull(blockFreeShadowed, "block must not be null");
     }
 
     /**

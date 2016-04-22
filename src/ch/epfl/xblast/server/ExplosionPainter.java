@@ -1,5 +1,10 @@
 package ch.epfl.xblast.server;
 
+import java.util.Set;
+
+import ch.epfl.xblast.Cell;
+import ch.epfl.xblast.Direction;
+
 /**
  * Représente un peintre de bombes et d'explosions
  * 
@@ -31,12 +36,12 @@ public final class ExplosionPainter {
 
     /**
      * Identifie l'image à utiliser pour la particule d'explosion en fonction de
-     * ses voisines
+     * ses voisines, sans tenir compte du cas ou la case n'est pas libre
      * 
      * @param northCellIsBlasted
      *            Indique si la cellule au nord de la particule contient une
      *            particule d'explosions
-     * @param eastCellisBlastedboolean
+     * @param eastCellIsBlasted
      *            Indique si la cellule au est de la particule contient une
      *            particule d'explosions
      * @param southCellIsBlasted
@@ -47,9 +52,9 @@ public final class ExplosionPainter {
      *            particule d'explosions
      * @return L'indentifiant de l'image à utiliser
      */
-    public static byte byteforBlast(boolean northCellIsBlasted, boolean eastCellisBlastedboolean, boolean southCellIsBlasted, boolean westCellIsBlasted) {
+    public static byte byteForBlast(boolean northCellIsBlasted, boolean eastCellIsBlasted, boolean southCellIsBlasted, boolean westCellIsBlasted) {
         byte byteForBlast = 0;
-        boolean[] neighboorBlast = { northCellIsBlasted, eastCellisBlastedboolean, southCellIsBlasted, westCellIsBlasted };
+        boolean[] neighboorBlast = { northCellIsBlasted, eastCellIsBlasted, southCellIsBlasted, westCellIsBlasted };
 
         for (int i = 0; i < neighboorBlast.length; i++) {
             byteForBlast = (byte) (byteForBlast << 1);
@@ -58,4 +63,33 @@ public final class ExplosionPainter {
 
         return byteForBlast;
     }
+
+    /**
+     * Identifie l'image à utiliser pour la particule d'explosion sur la case en
+     * fonction de ses voisines et en tenant compte du cas ou la case est libre
+     * 
+     * @param cell
+     *            La case occupant une particule d'explosion
+     * @param gameState
+     *            L'état de jeu actuel
+     * @return L'identifiant de l'image à utiliser, ou BYTE_FOR_EMPTY(
+     *         {@value #BYTE_FOR_EMPTY}) si la particule d'explosion est sur un
+     * 
+     */
+    public static byte byteForBlast(Cell cell, GameState gameState) {
+        Set<Cell> blastedCells = gameState.blastedCells();
+        Board board = gameState.board();
+        Block currentBlock = board.blockAt(cell);
+        
+        if (!currentBlock.isFree())
+            return BYTE_FOR_EMPTY;
+
+        boolean northCellIsBlasted = blastedCells.contains(board.blockAt(cell.neighbor(Direction.N)));
+        boolean eastCellIsBlasted = blastedCells.contains(board.blockAt(cell.neighbor(Direction.E)));
+        boolean southCellIsBlasted = blastedCells.contains(board.blockAt(cell.neighbor(Direction.S)));
+        boolean westCellIsBlasted = blastedCells.contains(board.blockAt(cell.neighbor(Direction.W)));
+
+        return byteForBlast(northCellIsBlasted, eastCellIsBlasted, southCellIsBlasted, westCellIsBlasted);
+    }
+
 }

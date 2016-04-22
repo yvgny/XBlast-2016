@@ -14,6 +14,7 @@ import ch.epfl.xblast.server.Board;
 import ch.epfl.xblast.server.Bomb;
 import ch.epfl.xblast.server.GameState;
 import ch.epfl.xblast.server.Player;
+import ch.epfl.xblast.server.PlayerPainter;
 
 
 public final class GameStatePrinter {
@@ -113,6 +114,7 @@ public final class GameStatePrinter {
             
             System.out.println(underlineSingle + "Joueur n°" + player.id().toString().charAt(7) + underlineNone);
             System.out.println("     " + player.lives() + " vies (" + player.lifeState().state() + ")");
+            System.out.println("     Image utilisée : " + PlayerPainter.byteForPlayer(s.ticks(), player));
             System.out.println("     bombes max : " + player.maxBombs() + ", portée bombes : " + player.bombRange());
             System.out.println("     position : sous-case " + player.position() + " dans la case " + player.position().containingCell());
             System.out.println("     Est sur une sous-case centrale : " + (player.position().isCentral() ? "oui" : "non"));
