@@ -29,47 +29,45 @@ public final class RunLengthEncoder {
      */
     public static List<Byte> encode(List<Byte> byteList) throws IllegalArgumentException {
         List<Byte> byteListEncoded = new ArrayList<>();
-        int numberOfRepetitions = 0;
-        Byte repeatedByte = byteList.isEmpty() ? null : byteList.get(0);
+        int numberOfRepetitions = 1;
         Byte currentByte;
-        Iterator<Byte> i = byteList.iterator();
+        boolean hasNext;
+        
+        loop: for (int j = 0; j < byteList.size(); j++) {
+            hasNext = j + 1 < byteList.size();
+            currentByte = byteList.get(j);
+            ArgumentChecker.requireNonNegative(currentByte);
 
-        while (i.hasNext()) {
-            
-            currentByte = i.next();
-            ArgumentChecker.requireNonNegative(repeatedByte);
-
-            if (currentByte == repeatedByte && i.hasNext()) {
+            while (hasNext && currentByte == byteList.get(j + 1)) {
                 numberOfRepetitions++;
-            } else {
-                if (currentByte == repeatedByte) 
-                    numberOfRepetitions++;
-                
-                int remainder = 0;
-
-                while (numberOfRepetitions != 0) {
-                    if (numberOfRepetitions > 130) {
-                        remainder = numberOfRepetitions - 130;
-                        numberOfRepetitions = 130;
-                    } else {
-                        remainder = 0;
-                    }
-                    if (numberOfRepetitions > 2) {
-
-                        byteListEncoded.add((byte) (2 - numberOfRepetitions));
-                        byteListEncoded.add(repeatedByte);
-
-                        numberOfRepetitions = remainder;
-
-                    } else {
-                        byteListEncoded.addAll(Collections.nCopies(numberOfRepetitions, repeatedByte));
-                        numberOfRepetitions = remainder;
-                    }
-                }
-                repeatedByte = currentByte;
-                numberOfRepetitions = 1;
-                
+                continue loop;
             }
+            
+
+            int remainder = 0;
+
+            while (numberOfRepetitions != 0) {
+                if (numberOfRepetitions > 130) {
+                    remainder = numberOfRepetitions - 130;
+                    numberOfRepetitions = 130;
+                } else {
+                    remainder = 0;
+                }
+                if (numberOfRepetitions > 2) {
+
+                    byteListEncoded.add((byte) (2 - numberOfRepetitions));
+                    byteListEncoded.add(currentByte);
+
+                    numberOfRepetitions = remainder;
+
+                } else {
+                    byteListEncoded.addAll(Collections.nCopies(numberOfRepetitions, currentByte));
+                    numberOfRepetitions = remainder;
+                }
+            }
+            
+            numberOfRepetitions = 1;
+
         }
 
         return byteListEncoded;
