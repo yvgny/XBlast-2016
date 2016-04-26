@@ -19,7 +19,6 @@ public class GameStateSerializerTest {
         List<Byte> gameStateSerialized = GameStateSerializer.serialize(defaultLevel.getBoardPainter(), defaultLevel.getGameState());
 
         Byte[] gameStateStatic = gameStateSerialized.toArray(new Byte[gameStateSerialized.size()]);
-        System.out.println("Size = " + gameStateSerialized.size());
         
         Byte[] verifiedList = {121, -50, 2, 1, -2, 0, 3, 1, 3, 1, -2, 0, 1, 1, 3, 1, 3,
                                       1, 3, 1, 1, -2, 0, 1, 3, 1, 3, -2, 0, -1, 1, 3, 1, 3, 1,
