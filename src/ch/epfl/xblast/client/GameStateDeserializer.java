@@ -19,6 +19,11 @@ import ch.epfl.xblast.client.GameState.Player;
  */
 public final class GameStateDeserializer {
 
+    private static ImageCollection blockImageCollection = new ImageCollection("block");
+    private static ImageCollection explosionImageCollection = new ImageCollection("explosion");
+    private static ImageCollection playerImageCollection = new ImageCollection("player");
+    private static ImageCollection scoreImageCollection = new ImageCollection("score");
+        
     private GameStateDeserializer() {
         // Non-instanciable
     }
@@ -53,10 +58,8 @@ public final class GameStateDeserializer {
         List<Byte> decodedBoard = RunLengthEncoder.decode(serializedBoard);
         List<Image> deserializedBoard = new ArrayList<>();
 
-        ImageCollection imageCollection = new ImageCollection("block");
-
         for (Byte byte1 : decodedBoard) {
-            deserializedBoard.add(imageCollection.image(byte1));
+            deserializedBoard.add(blockImageCollection.image(byte1));
         }
 
         return deserializedBoard;
@@ -66,10 +69,8 @@ public final class GameStateDeserializer {
         List<Byte> decodedExplosions = RunLengthEncoder.decode(serializedExplosions);
         List<Image> deserializedExplosions = new ArrayList<>();
 
-        ImageCollection imageCollection = new ImageCollection("explosion");
-
         for (Byte byte1 : decodedExplosions) {
-            deserializedExplosions.add(imageCollection.imageOrNull(byte1));
+            deserializedExplosions.add(explosionImageCollection.imageOrNull(byte1));
         }
 
         return deserializedExplosions;
@@ -78,8 +79,6 @@ public final class GameStateDeserializer {
     private static List<Player> deserializePlayers(List<Byte> serializedPlayers) {
         PlayerID[] playerIDs = PlayerID.values();
         List<Player> players = new ArrayList<>();
-
-        ImageCollection imageCollection = new ImageCollection("player");
 
         int lives, positionX, positionY, image;
         int index = 0;
@@ -90,7 +89,7 @@ public final class GameStateDeserializer {
             positionY = Byte.toUnsignedInt(serializedPlayers.get(index++));
             image = Byte.toUnsignedInt(serializedPlayers.get(index++));
 
-            players.add(new Player(playerIDs[i], lives, new SubCell(positionX, positionY), imageCollection.imageOrNull(image)));
+            players.add(new Player(playerIDs[i], lives, new SubCell(positionX, positionY), playerImageCollection.imageOrNull(image)));
         }
 
         return players;
@@ -98,24 +97,23 @@ public final class GameStateDeserializer {
 
     private static List<Image> deserializeTime(byte serializedTime) {
         int remainingTime = Byte.toUnsignedInt(serializedTime);
-        ImageCollection imageCollection = new ImageCollection("score");
         List<Image> deserializedTime = new ArrayList<>();
         
-        deserializedTime.addAll(Collections.nCopies(remainingTime, imageCollection.image(21)));
-        deserializedTime.addAll(Collections.nCopies(60 - remainingTime, imageCollection.image(20)));
+        deserializedTime.addAll(Collections.nCopies(remainingTime, scoreImageCollection.image(21)));
+        deserializedTime.addAll(Collections.nCopies(60 - remainingTime, scoreImageCollection.image(20)));
         
         return deserializedTime;
     }
     
     private static List<Image> deserializeScores (List<Player> players){
         List<Image> deserializedScores = new ArrayList<>();
-        ImageCollection imageCollection = new ImageCollection("score");
         PlayerID id;
+        
         for (Player player : players) {
             id = player.playerID();
-            deserializedScores.add(imageCollection.image((player.lives() > 0 ? 0 : 1) + (id.ordinal() * 2))); // add face
-            deserializedScores.add(imageCollection.image(10)); // add filling
-            deserializedScores.add(imageCollection.image(11)); // add filling for text
+            deserializedScores.add(scoreImageCollection.image((player.lives() > 0 ? 0 : 1) + (id.ordinal() * 2))); // add face
+            deserializedScores.add(scoreImageCollection.image(10)); // add filling
+            deserializedScores.add(scoreImageCollection.image(11)); // add filling for text
         }
         
         return deserializedScores;
