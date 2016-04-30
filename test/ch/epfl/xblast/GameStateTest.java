@@ -147,7 +147,7 @@ public class GameStateTest {
          }
         
         GameState gameState = new GameState(2400, new Board(liste), new ArrayList<Player>(player),new ArrayList<Bomb>(), new ArrayList<Sq<Sq<Cell>>>(), new ArrayList<Sq<Cell>>() );
-        assertEquals(true, gameState.isGameOver());
+        assertEquals(false, gameState.isGameOver());
         
         GameState gameState2 = new GameState(400, new Board(liste), new ArrayList<Player>(player),new ArrayList<Bomb>(), new ArrayList<Sq<Sq<Cell>>>(), new ArrayList<Sq<Cell>>() );
         assertEquals(false, gameState2.isGameOver());
