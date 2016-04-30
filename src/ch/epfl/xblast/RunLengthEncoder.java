@@ -32,7 +32,7 @@ public final class RunLengthEncoder {
         int numberOfRepetitions = 1;
         Byte currentByte;
         boolean hasNext;
-        
+
         loop: for (int j = 0; j < byteList.size(); j++) {
             hasNext = j + 1 < byteList.size();
             currentByte = byteList.get(j);
@@ -42,7 +42,6 @@ public final class RunLengthEncoder {
                 numberOfRepetitions++;
                 continue loop;
             }
-            
 
             int remainder = 0;
 
@@ -65,9 +64,8 @@ public final class RunLengthEncoder {
                     numberOfRepetitions = remainder;
                 }
             }
-            
-            numberOfRepetitions = 1;
 
+            numberOfRepetitions = 1;
         }
 
         return byteListEncoded;

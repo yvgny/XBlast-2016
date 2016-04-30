@@ -66,22 +66,24 @@ public final class ExplosionPainter {
 
     /**
      * Identifie l'image à utiliser pour la particule d'explosion sur la case en
-     * fonction de ses voisines et en tenant compte du cas ou la case est libre
+     * fonction de ses voisines et en tenant compte des cas ou la case est libre
+     * ou si aucune explosion n'est présente sur la case
      * 
      * @param cell
      *            La case occupant une particule d'explosion
      * @param gameState
      *            L'état de jeu actuel
      * @return L'identifiant de l'image à utiliser, ou BYTE_FOR_EMPTY(
-     *         {@value #BYTE_FOR_EMPTY}) si la particule d'explosion est sur un
+     *         {@value #BYTE_FOR_EMPTY}) si la particule d'explosion est sur une
+     *         case non libre (mur destructible ou non destructible)
      * 
      */
     public static byte byteForBlast(Cell cell, GameState gameState) {
         Set<Cell> blastedCells = gameState.blastedCells();
         Board board = gameState.board();
         Block currentBlock = board.blockAt(cell);
-        
-        if (!currentBlock.isFree())
+
+        if (!currentBlock.isFree() || !blastedCells.contains(cell))
             return BYTE_FOR_EMPTY;
 
         boolean northCellIsBlasted = blastedCells.contains(board.blockAt(cell.neighbor(Direction.N)));
