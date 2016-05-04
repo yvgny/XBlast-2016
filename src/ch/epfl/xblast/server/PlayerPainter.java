@@ -20,7 +20,7 @@ public final class PlayerPainter {
      * Identifie l'image à utiliser pour le joueur
      * 
      * @param tick
-     *            Le nombre de tick actuel
+     *            Le nombre de ticks actuels
      * @param player
      *            Le joueur à utiliser pour identifier l'image
      * @return L'identifiant de l'image, sous forme de byte
@@ -29,11 +29,11 @@ public final class PlayerPainter {
         byte byteForPlayer = 0;
         State playerState = player.lifeState().state();
 
-        // Selection selon l'indentité
+        // Selection selon l'identité
         byteForPlayer += player.id().ordinal() * 20;
 
         if (player.lifeState().canMove()) {
-            // Vérification si il faut utiliser le set blanc
+            // Vérification s'il faut utiliser le set blanc
             if (playerState == State.INVULNERABLE && ((tick & 1) == 1)) {
                 byteForPlayer = 80;
             }
@@ -42,7 +42,7 @@ public final class PlayerPainter {
             // direction
             byteForPlayer += player.direction().ordinal() * 3;
 
-            // Selection selon la position (pour les pieds, etc)
+            // Sélection selon la position (pour les pieds, etc)
             switch (player.direction().isHorizontal() ? player.position().x() % 4 : player.position().y() % 4) {
             case 1:
                 byteForPlayer += 1;

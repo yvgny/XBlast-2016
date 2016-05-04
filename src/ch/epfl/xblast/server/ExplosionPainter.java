@@ -14,7 +14,7 @@ import ch.epfl.xblast.Direction;
  */
 public final class ExplosionPainter {
     /**
-     * Indentifiant à utiliser pour les cases dénués de particules d'explosions
+     * Identifiant à utiliser pour les cases dénuées de particules d'explosions
      */
     public static final byte BYTE_FOR_EMPTY = 16;
 
@@ -28,7 +28,7 @@ public final class ExplosionPainter {
      * 
      * @param bomb
      *            La bombe à identifer
-     * @return L'indentifiant de l'image, sous forme de byte
+     * @return L'identifiant de l'image, sous forme de byte
      */
     public static byte byteForBomb(Bomb bomb) {
         return (byte) (Integer.bitCount(bomb.fuseLength()) == 1 ? 21 : 20);
@@ -42,15 +42,15 @@ public final class ExplosionPainter {
      *            Indique si la cellule au nord de la particule contient une
      *            particule d'explosions
      * @param eastCellIsBlasted
-     *            Indique si la cellule au est de la particule contient une
+     *            Indique si la cellule à l'est de la particule contient une
      *            particule d'explosions
      * @param southCellIsBlasted
      *            Indique si la cellule au sud de la particule contient une
      *            particule d'explosions
      * @param westCellIsBlasted
-     *            Indique si la cellule au ouest de la particule contient une
+     *            Indique si la cellule à l'ouest de la particule contient une
      *            particule d'explosions
-     * @return L'indentifiant de l'image à utiliser
+     * @return L'identifiant de l'image à utiliser
      */
     public static byte byteForBlast(boolean northCellIsBlasted, boolean eastCellIsBlasted, boolean southCellIsBlasted, boolean westCellIsBlasted) {
         byte byteForBlast = 0;

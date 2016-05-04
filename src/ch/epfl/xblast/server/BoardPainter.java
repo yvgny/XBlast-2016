@@ -23,14 +23,17 @@ public final class BoardPainter {
      * Créer un peintre de plateau
      * 
      * @param palette
-     *            La palette (qui décrit quelles images utiliser pour les
-     *            différents blocs) à utiliser
+     *            La palette à utilisé qui décrit quelles sont les images à
+     *            utiliser pour les différents blocs.
      * @param blockFreeShadowed
      *            Le bloc à utiliser pour les blocs libres ombrés
      */
-    public BoardPainter(Map<Block, BlockImage> palette, BlockImage blockFreeShadowed) {
-        this.palette = new HashMap<>(Objects.requireNonNull(palette, "palette must not be null"));
-        this.blockFreeShadowed = Objects.requireNonNull(blockFreeShadowed, "block must not be null");
+    public BoardPainter(Map<Block, BlockImage> palette,
+            BlockImage blockFreeShadowed) {
+        this.palette = new HashMap<>(
+                Objects.requireNonNull(palette, "palette must not be null"));
+        this.blockFreeShadowed = Objects.requireNonNull(blockFreeShadowed,
+                "block must not be null");
     }
 
     /**
@@ -41,10 +44,11 @@ public final class BoardPainter {
      * @param cell
      *            La cellule à représenter
      * @return L'image représentant la cellule, sous forme de byte
-     * @throws NoSuchElementException 
-     * Si l
+     * @throws NoSuchElementException
+     *             Si l
      */
-    public byte byteForCell(Board board, Cell cell) throws NoSuchElementException {
+    public byte byteForCell(Board board, Cell cell)
+            throws NoSuchElementException {
         Block block = board.blockAt(cell);
         Block leftNeighboorBlock = board.blockAt(cell.neighbor(Direction.W));
 
@@ -54,7 +58,7 @@ public final class BoardPainter {
 
         case INDESTRUCTIBLE_WALL:
             return (byte) 2;
-            
+
         case DESTRUCTIBLE_WALL:
             return (byte) 3;
 
@@ -68,7 +72,8 @@ public final class BoardPainter {
             return (byte) 6;
 
         default:
-            throw new NoSuchElementException("cannot find block " + block.name());
+            throw new NoSuchElementException(
+                    "cannot find block " + block.name());
         }
 
     }

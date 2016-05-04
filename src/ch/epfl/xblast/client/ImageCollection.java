@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
 import javax.imageio.ImageIO;
 
 /**
- * Représente une collection d'images provenant d'un répertoire et indexées par
+ * Représente une collection d'images provenant d'un répertoire, la collection est indexée par
  * un entier
  * 
  * @author Sacha Kozma, 260391
@@ -27,7 +27,7 @@ public final class ImageCollection {
      * 
      * @param dirName
      *            Le nom du dossier à partir duquel la collection doit être
-     *            créer
+     *            créée
      */
     public ImageCollection(String dirName) {
         File dir;
