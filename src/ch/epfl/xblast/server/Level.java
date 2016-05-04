@@ -79,14 +79,14 @@ public final class Level {
     /**
      * @return L'état du jeu actuel du niveau
      */
-    public GameState getGameState() {
+    public GameState gameState() {
         return gameState;
     }
 
     /**
      * @return Le peintre de plateau utilisé pour ce niveau
      */
-    public BoardPainter getBoardPainter() {
+    public BoardPainter boardPainter() {
         return boardPainter;
     }
 
