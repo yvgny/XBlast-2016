@@ -16,7 +16,7 @@ public class GameStateSerializerTest {
     public void SerialOfDefaultLevelIsCorrect() {
         Level defaultLevel = Level.DEFAULT_LEVEL;
 
-        List<Byte> gameStateSerialized = GameStateSerializer.serialize(defaultLevel.getBoardPainter(), defaultLevel.getGameState());
+        List<Byte> gameStateSerialized = GameStateSerializer.serialize(defaultLevel.boardPainter(), defaultLevel.gameState());
 
         Byte[] gameStateStatic = gameStateSerialized.toArray(new Byte[gameStateSerialized.size()]);
         
