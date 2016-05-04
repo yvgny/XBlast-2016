@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Représente un codeur/décodeur par plages
+ * Représente un codeur/décodeur par plage
  * 
  * @author Sacha Kozma, 260391
  * @author Alexia Bogaert, 258330
@@ -19,13 +19,13 @@ public final class RunLengthEncoder {
     }
 
     /**
-     * Permet de coder par plages une séquence de bytes
+     * Permet de coder par plage une séquence de bytes
      * 
      * @param byteList
      *            La séquence de byte à coder
-     * @return La liste codée par plages
+     * @return La liste codée par plage
      * @throws IllegalArgumentException
-     *             Si l'un des byte de byteList est négatif
+     *             Si l'un des bytes de byteList est négatif
      */
     public static List<Byte> encode(List<Byte> byteList) throws IllegalArgumentException {
         List<Byte> byteListEncoded = new ArrayList<>();
@@ -72,7 +72,7 @@ public final class RunLengthEncoder {
     }
 
     /**
-     * Décode une série de byte codée par plages
+     * Décode une série de bytes codée par plage
      * 
      * @param byteList
      *            La liste de bytes codée
