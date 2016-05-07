@@ -19,9 +19,9 @@ import ch.epfl.xblast.SubCell;
  */
 public final class GameState {
 
-    public final List<Player> players;
+    private final List<Player> players;
     private final List<Image> board;
-    private final List<Image> bombsAndExplosions;
+    private final List<Image> explosions;
     private final List<Image> scores;
     private final List<Image> time;
 
@@ -45,7 +45,7 @@ public final class GameState {
             List<Image> time) {
         this.players = Collections.unmodifiableList(new ArrayList<>(players));
         this.board = Collections.unmodifiableList(spiralToRowMajor(new ArrayList<>(board)));
-        this.bombsAndExplosions = Collections.unmodifiableList(new ArrayList<>(bombsAndExplosions));
+        this.explosions = Collections.unmodifiableList(new ArrayList<>(bombsAndExplosions));
         this.scores = Collections.unmodifiableList(new ArrayList<>(scores));
         this.time = Collections.unmodifiableList(new ArrayList<>(time));
     }
@@ -67,6 +67,41 @@ public final class GameState {
         }
 
         return Arrays.asList(rowMajorOrder);
+    }
+
+    /**
+     * @return the players
+     */
+    public List<Player> players() {
+        return new ArrayList<>(players);
+    }
+
+    /**
+     * @return the board
+     */
+    public List<Image> board() {
+        return new ArrayList<>(board);
+    }
+
+    /**
+     * @return the bombsAndExplosions
+     */
+    public List<Image> explosions() {
+        return new ArrayList<>(explosions);
+    }
+
+    /**
+     * @return the scores
+     */
+    public List<Image> scores() {
+        return new ArrayList<>(scores);
+    }
+
+    /**
+     * @return the time
+     */
+    public List<Image> getTime() {
+        return new ArrayList<>(time);
     }
 
     /**
@@ -114,6 +149,20 @@ public final class GameState {
          */
         public int lives() {
             return lives;
+        }
+
+        /**
+         * @return L'image du joueur
+         */
+        public Image image() {
+            return image;
+        }
+
+        /**
+         * @return La position du joueur
+         */
+        public SubCell position() {
+            return position;
         }
 
     }
