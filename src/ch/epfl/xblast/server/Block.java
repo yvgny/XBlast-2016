@@ -70,15 +70,14 @@ public enum Block {
      *         mur), faux sinon
      */
     public boolean castsShadow() {
-        return this.toString().endsWith("_WALL");
-
+        return this == Block.INDESTRUCTIBLE_WALL || this == DESTRUCTIBLE_WALL || this == Block.CRUMBLING_WALL;
     }
 
     /**
      * @return Vrai si et seulement si la case est un bonus
      */
     public boolean isBonus() {
-        return this.toString().startsWith("BONUS_");
+        return this == BONUS_BOMB || this == Block.BONUS_RANGE;
     }
 
     /**
