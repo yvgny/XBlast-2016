@@ -2,7 +2,6 @@ package ch.epfl.xblast.client;
 
 import java.awt.Image;
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
