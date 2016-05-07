@@ -74,7 +74,7 @@ public final class Player {
     public Player(PlayerID id, int lives, Cell position, int maxBombs,
             int bombRange) throws IllegalArgumentException, NullPointerException {
 
-        this(id, createLifeSequence(lives), Sq.constant(new DirectedPosition(SubCell.centralSubCellOf(Objects.requireNonNull(position, "position must not be null")), Direction.S)), maxBombs, bombRange);
+        this(id, createLifeSequence(lives), DirectedPosition.stopped(new DirectedPosition(SubCell.centralSubCellOf(Objects.requireNonNull(position, "position must not be null")), Direction.S)), maxBombs, bombRange);
     }
 
     /**
@@ -217,8 +217,8 @@ public final class Player {
      *
      */
     public final static class LifeState {
-        private int lives;
-        private State state;
+        private final int lives;
+        private final State state;
 
         /**
          * Construit le couple (nombre de vies, état) avec les valeurs données
@@ -306,8 +306,8 @@ public final class Player {
      *
      */
     public final static class DirectedPosition {
-        private SubCell position;
-        private Direction direction;
+        private final SubCell position;
+        private final Direction direction;
 
         /**
          * Construit une position dirigée avec la position et la direction

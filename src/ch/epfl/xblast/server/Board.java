@@ -53,12 +53,10 @@ public final class Board {
     public static Board ofRows(List<List<Block>> rows) throws IllegalArgumentException {
 
         checkBlockMatrix(rows, Cell.ROWS, Cell.COLUMNS);
-        
-        List<List<Block>> rowsCopied = copyList(rows);
 
         List<Sq<Block>> sqBlockList = new ArrayList<Sq<Block>>();
 
-        for (List<Block> row : rowsCopied) {
+        for (List<Block> row : rows) {
             row.forEach(block -> sqBlockList.add(Sq.constant(block)));
         }
 
@@ -81,19 +79,23 @@ public final class Board {
 
         checkBlockMatrix(innerBlocks, Cell.ROWS - 2, Cell.COLUMNS - 2);
 
-        List<List<Block>> innerBlocksCopied = copyList(innerBlocks);
+        List<List<Block>> innerBlocksWalled = new ArrayList<>();
 
         List<Block> rowOfWall = Collections.nCopies(Cell.COLUMNS, Block.INDESTRUCTIBLE_WALL);
 
-        for (List<Block> list : innerBlocksCopied) {
-            list.add(0, Block.INDESTRUCTIBLE_WALL);
-            list.add(Block.INDESTRUCTIBLE_WALL);
+        innerBlocksWalled.add(rowOfWall);
+        
+        for (List<Block> list : innerBlocks) {
+            List<Block> tempList = new ArrayList<>();
+            tempList.add(Block.INDESTRUCTIBLE_WALL);
+            tempList.addAll(list);
+            tempList.add(Block.INDESTRUCTIBLE_WALL);
+            innerBlocksWalled.add(tempList);
         }
 
-        innerBlocksCopied.add(0, rowOfWall);
-        innerBlocksCopied.add(rowOfWall);
+        innerBlocksWalled.add(rowOfWall);
 
-        return ofRows(innerBlocksCopied);
+        return ofRows(innerBlocksWalled);
     }
 
     /**
@@ -113,11 +115,9 @@ public final class Board {
 
         checkBlockMatrix(quadrantNWBlocks, QUADRANT_NW_BLOCKS_ROWS, QUADRANT_NW_BLOCKS_COLUMNS);
         
-        List<List<Block>> quadrantNWBlocksCopied = copyList(quadrantNWBlocks);
-
         List<List<Block>> quadrantNWBlocksWalled = new ArrayList<List<Block>>();
 
-        quadrantNWBlocksCopied.forEach(row -> quadrantNWBlocksWalled.add(Lists.mirrored(row)));
+        quadrantNWBlocks.forEach(row -> quadrantNWBlocksWalled.add(Lists.mirrored(row)));
 
         return ofInnerBlocksWalled(Lists.mirrored(quadrantNWBlocksWalled));
     }
@@ -139,7 +139,6 @@ public final class Board {
         if (matrix == null) {
             throw new IllegalArgumentException("L'objet est vide");
         } else if (matrix.size() != rows) {
-            System.out.println(matrix.size());
             throw new IllegalArgumentException("La liste doit contenir " + rows + " lignes.");
         } else {
             for (List<Block> list : matrix) {
@@ -195,10 +194,7 @@ public final class Board {
         List<List<T>> copiedList = new ArrayList<List<T>>();
 
         for (List<T> subList : l) {
-            List<T> temporarySubList = new ArrayList<T>();
-            temporarySubList.addAll(subList);
-            
-            copiedList.add(temporarySubList);
+            copiedList.add(new ArrayList<>(subList));
         }
 
         return copiedList;

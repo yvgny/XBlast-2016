@@ -1,5 +1,7 @@
 package ch.epfl.xblast;
 
+import java.util.NoSuchElementException;
+
 /**
  * Une sous-case d'une case du plateau de jeu
  * 
@@ -63,9 +65,7 @@ public final class SubCell {
      * @return vrai si la sous-case est une sous-case centrale, faux sinon
      */
     public boolean isCentral() {
-        SubCell centralSubCell = centralSubCellOf(containingCell());
-
-        return centralSubCell.equals(this);
+        return distanceToCentral() == 0;
     }
 
     /**
@@ -91,7 +91,7 @@ public final class SubCell {
             neighbor = new SubCell(x() - 1, y());
             break;
         default:
-            neighbor = new SubCell(x(), y());
+            throw new NoSuchElementException("Direction " + d + " does not exist.");
         }
 
         return neighbor;
@@ -160,7 +160,7 @@ public final class SubCell {
      */
     @Override
     public int hashCode() {
-        return COLUMNS * x() + y();
+        return COLUMNS * y() + x();
     }
 
 }

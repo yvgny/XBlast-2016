@@ -8,14 +8,17 @@ package ch.epfl.xblast.server;
  *
  */
 public enum Bonus {
+    
     /**
      * Le bonus bombe (rajoute 1 au nombre maximum de bombe que peut avoir le
      * joueur sur lui, jusqu'à 9 maximum)
      */
     INC_BOMB {
+        private final int MAX_BOMBS_CAPACITY = 9;
+        
         @Override
         public Player applyTo(Player player) {
-            return player.maxBombs() == 9 ? player : player.withMaxBombs(player.maxBombs() + 1);
+            return player.maxBombs() == MAX_BOMBS_CAPACITY ? player : player.withMaxBombs(player.maxBombs() + 1);
         }
     },
 
@@ -24,9 +27,11 @@ public enum Bonus {
      * maximum)
      */
     INC_RANGE {
+        private final int MAX_BOMBS_RANGE = 9;
+        
         @Override
         public Player applyTo(Player player) {
-            return player.bombRange() == 9 ? player : player.withBombRange(player.bombRange() + 1);
+            return player.bombRange() == MAX_BOMBS_RANGE ? player : player.withBombRange(player.bombRange() + 1);
         }
     };
 

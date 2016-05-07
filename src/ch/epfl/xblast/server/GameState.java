@@ -35,6 +35,7 @@ public final class GameState {
     private static final Random RANDOM = new Random(2016);
     private static final List<Block> APPEARABLE_BONUS = Collections.unmodifiableList(Arrays.asList(Block.BONUS_BOMB, Block.BONUS_RANGE, Block.FREE));
     private final int ticks;
+    private final int PLAYERS_NUMBER = 4;
     private final Board board;
     private final List<Player> players;
     private final List<Bomb> bombs;
@@ -69,7 +70,7 @@ public final class GameState {
         this.ticks = ArgumentChecker.requireNonNegative(ticks);
         this.board = Objects.requireNonNull(board, "board must not be null");
         this.players = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(players, "players must not be null")));
-        if (players.size() != 4) {
+        if (players.size() != PLAYERS_NUMBER) {
             throw new IllegalArgumentException("La liste de joueurs ne contient pas 4 éléments !");
         }
         this.explosions = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(explosions, "explosions must not be null")));
@@ -106,7 +107,7 @@ public final class GameState {
     private static <E> List<List<E>> createUnmodifiableView(List<List<E>> list) {
         List<List<E>> copiedList = new ArrayList<>();
         list.forEach(subList -> copiedList.add(Collections.unmodifiableList(subList)));
-    
+
         return Collections.unmodifiableList(copiedList);
     }
 
@@ -150,7 +151,7 @@ public final class GameState {
     private static Map<Cell, Bomb> bombedCells(List<Bomb> bombs) {
         Map<Cell, Bomb> bombedCellsMap = new HashMap<>();
         bombs.forEach(bomb -> bombedCellsMap.put(bomb.position(), bomb));
-    
+
         return bombedCellsMap;
     }
 
@@ -173,13 +174,13 @@ public final class GameState {
      */
     private static Set<Cell> blastedCells(List<Sq<Cell>> blasts) {
         Set<Cell> blastedCells = new HashSet<>();
-    
+
         for (Sq<Cell> sq : blasts) {
             if (!sq.isEmpty()) {
                 blastedCells.add(sq.head());
             }
         }
-    
+
         return blastedCells;
     }
 
@@ -297,40 +298,36 @@ public final class GameState {
     private static Board nextBoard(Board board0, Set<Cell> consumedBonuses, Set<Cell> blastedCells1) {
         List<Sq<Block>> blocksList = new ArrayList<Sq<Block>>();
         Block tempBlock;
-        Cell currentPosition;
 
-        for (int y = 0; y < Cell.ROWS; y++) {
-            for (int x = 0; x < Cell.COLUMNS; x++) {
-                currentPosition = new Cell(x, y);
-                tempBlock = board0.blockAt(currentPosition);
+        for (Cell currentPosition : Cell.ROW_MAJOR_ORDER) {
+            tempBlock = board0.blockAt(currentPosition);
 
-                // Enlève les bonus consumés par les joueurs
-                if (consumedBonuses.contains(currentPosition)) {
-                    blocksList.add(Sq.constant(Block.FREE));
+            // Enlève les bonus consumés par les joueurs
+            if (consumedBonuses.contains(currentPosition)) {
+                blocksList.add(Sq.constant(Block.FREE));
 
-                    // Transforme les murs destructible atteints par une
-                    // explosion en mur en train de se détruire
-                } else if (tempBlock == Block.DESTRUCTIBLE_WALL && blastedCells1.contains(currentPosition)) {
-                    Sq<Block> crumblingWall = Sq.repeat(Ticks.WALL_CRUMBLING_TICKS, Block.CRUMBLING_WALL);
+                // Transforme les murs destructible atteints par une
+                // explosion en mur en train de se détruire
+            } else if (tempBlock == Block.DESTRUCTIBLE_WALL && blastedCells1.contains(currentPosition)) {
+                Sq<Block> crumblingWall = Sq.repeat(Ticks.WALL_CRUMBLING_TICKS, Block.CRUMBLING_WALL);
 
-                    // Concaténation avec une séquence infinie d'un bloc pris au
-                    // hasard dans la liste de bonus/case libre disponible
-                    Block chosenBlock = APPEARABLE_BONUS.get(RANDOM.nextInt(APPEARABLE_BONUS.size()));
+                // Concaténation avec une séquence infinie d'un bloc pris au
+                // hasard dans la liste de bonus/case libre disponible
+                Block chosenBlock = APPEARABLE_BONUS.get(RANDOM.nextInt(APPEARABLE_BONUS.size()));
 
-                    crumblingWall = crumblingWall.concat(Sq.constant(chosenBlock));
+                crumblingWall = crumblingWall.concat(Sq.constant(chosenBlock));
 
-                    blocksList.add(crumblingWall);
+                blocksList.add(crumblingWall);
 
-                } else if (tempBlock.isBonus() && blastedCells1.contains(currentPosition)) {
-                    Sq<Block> disappearingBonus = board0.blocksAt(currentPosition).limit(Ticks.BONUS_DISAPPEARING_TICKS);
-                    disappearingBonus = disappearingBonus.concat(Sq.constant(Block.FREE));
-                    blocksList.add(disappearingBonus);
+            } else if (tempBlock.isBonus() && blastedCells1.contains(currentPosition)) {
+                Sq<Block> disappearingBonus = board0.blocksAt(currentPosition).limit(Ticks.BONUS_DISAPPEARING_TICKS);
+                disappearingBonus = disappearingBonus.concat(Sq.constant(Block.FREE));
+                blocksList.add(disappearingBonus);
 
-                } else {
-                    blocksList.add(board0.blocksAt(currentPosition).tail());
-                }
-
+            } else {
+                blocksList.add(board0.blocksAt(currentPosition).tail());
             }
+
         }
 
         return new Board(blocksList);
@@ -544,12 +541,6 @@ public final class GameState {
                         bombAlreadyHere = true;
                     }
                 }
-                
-                for (Bomb bomb : bombs0) {
-                    if (bomb.position().equals(playerPosition)) {
-                        bombAlreadyHere = true;
-                    }
-                }
 
                 if (!bombAlreadyHere) {
                     bombs1.add(player.newBomb());
@@ -597,7 +588,7 @@ public final class GameState {
      */
     public double remainingTime() {
         double remainingTime = (Ticks.TOTAL_TICKS - ticks()) / (double) Ticks.TICKS_PER_SECOND;
-    
+
         return remainingTime < 0.0 ? 0.0 : remainingTime;
     }
 
