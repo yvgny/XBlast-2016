@@ -82,14 +82,14 @@ public final class ExplosionPainter {
         Set<Cell> blastedCells = gameState.blastedCells();
         Board board = gameState.board();
         Block currentBlock = board.blockAt(cell);
-
+        
         if (!currentBlock.isFree() || !blastedCells.contains(cell))
             return BYTE_FOR_EMPTY;
 
-        boolean northCellIsBlasted = blastedCells.contains(board.blockAt(cell.neighbor(Direction.N)));
-        boolean eastCellIsBlasted = blastedCells.contains(board.blockAt(cell.neighbor(Direction.E)));
-        boolean southCellIsBlasted = blastedCells.contains(board.blockAt(cell.neighbor(Direction.S)));
-        boolean westCellIsBlasted = blastedCells.contains(board.blockAt(cell.neighbor(Direction.W)));
+        boolean northCellIsBlasted = blastedCells.contains(cell.neighbor(Direction.N));
+        boolean eastCellIsBlasted = blastedCells.contains(cell.neighbor(Direction.E));
+        boolean southCellIsBlasted = blastedCells.contains(cell.neighbor(Direction.S));
+        boolean westCellIsBlasted = blastedCells.contains(cell.neighbor(Direction.W));
 
         return byteForBlast(northCellIsBlasted, eastCellIsBlasted, southCellIsBlasted, westCellIsBlasted);
     }
