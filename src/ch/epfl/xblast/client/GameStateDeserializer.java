@@ -116,6 +116,8 @@ public final class GameStateDeserializer {
             deserializedScores.add(scoreImageCollection.image(11)); // add filling for text
         }
         
+        deserializedScores.addAll(6, Collections.nCopies(8, scoreImageCollection.image(12)));
+        
         return deserializedScores;
     }
 
