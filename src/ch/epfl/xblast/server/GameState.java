@@ -552,7 +552,7 @@ public final class GameState {
                 }
 
                 if (!bombAlreadyHere) {
-                    bombs1.add(new Bomb(player.id(), playerPosition, Ticks.BOMB_FUSE_TICKS, player.bombRange()));
+                    bombs1.add(player.newBomb());
                 }
 
             }
