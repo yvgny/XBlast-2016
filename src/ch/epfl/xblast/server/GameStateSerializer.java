@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import ch.epfl.xblast.Cell;
 import ch.epfl.xblast.RunLengthEncoder;
-import ch.epfl.xblast.Test3;
 
 /**
  * Représente un sérialiseur d'état de jeu
