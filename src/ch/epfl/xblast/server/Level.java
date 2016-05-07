@@ -17,6 +17,7 @@ import ch.epfl.xblast.PlayerID;
  *
  */
 public final class Level {
+    @SuppressWarnings("javadoc")
     public final static Level DEFAULT_LEVEL = generateDefaultLevel();
     private final GameState gameState;
     private final BoardPainter boardPainter;
