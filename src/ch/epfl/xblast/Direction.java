@@ -62,11 +62,7 @@ public enum Direction {
      * @return vrai si la direction est horizontale, faux sinon
      */
     public boolean isHorizontal() {
-        if (this == E || this == W) {
-            return true;
-        }
-
-        return false;
+        return this == E || this == W;
 
     }
 
@@ -81,11 +77,7 @@ public enum Direction {
      *         faux sinon
      */
     public boolean isParallelTo(Direction that) {
-        if (this == that || this.opposite() == that) {
-            return true;
-        }
-
-        return false;
+        return this == that || this.opposite() == that;
     }
 
 }
