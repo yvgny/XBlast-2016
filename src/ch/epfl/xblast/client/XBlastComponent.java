@@ -11,12 +11,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 import javax.swing.JComponent;
 
 import ch.epfl.xblast.Cell;
 import ch.epfl.xblast.PlayerID;
 import ch.epfl.xblast.client.GameState.Player;
+import sun.print.resources.serviceui;
 
 /**
  * Composant Swing affichant l'état du'une partie de XBlast
@@ -27,10 +29,17 @@ import ch.epfl.xblast.client.GameState.Player;
  */
 @SuppressWarnings("serial")
 public final class XBlastComponent extends JComponent {
+    private final static int DEFAULT_IMAGE_WIDTH = 64;
+    private final static int DEFAULT_IMAGE_HEIGHT = 48;
+    private final static Font ARIAL_BOLD = new Font("Arial", Font.BOLD, 25);
+    private final static int PLAYER_LIVE_VERTICAL_POSITION = 659;
+    private final static int[] PLAYER_LIVE_HORIZONTAL_POSITIONS = { 96, 240, 768, 912 };
+    private final static int WINDOW_WIDTH = 960;
+    private final static int WINDOWS_HEIGHT = 688;
+    private static final Function<Integer, Integer> X_PLAYER_IMAGE_POSITION = x -> (4 * x) - 24;
+    private static final Function<Integer, Integer> Y_PLAYER_IMAGE_POSITION = y -> (3 * y) - 52;
     private GameState gameState;
     private PlayerID playerID;
-    private final int IMAGE_WIDTH = 64;
-    private final int IMAGE_HEIGHT = 48;
 
     /*
      * (non-Javadoc)
@@ -39,11 +48,14 @@ public final class XBlastComponent extends JComponent {
      */
     @Override
     protected void paintComponent(Graphics g0) {
+        if (gameState == null) {
+            return;
+        }
+
         Graphics2D g = (Graphics2D) g0;
 
-        Font arialBold = new Font("Arial", Font.BOLD, 25);
         g.setColor(Color.WHITE);
-        g.setFont(arialBold);
+        g.setFont(ARIAL_BOLD);
 
         List<Image> boardImages = gameState.board();
         List<Image> explosionImages = gameState.explosions();
@@ -68,19 +80,19 @@ public final class XBlastComponent extends JComponent {
                 boardImage = boardImages.get(index);
                 explosionImage = explosionImages.get(index);
 
-                g.drawImage(boardImage, x * IMAGE_WIDTH, y * IMAGE_HEIGHT, null);
+                g.drawImage(boardImage, x * DEFAULT_IMAGE_WIDTH, y * DEFAULT_IMAGE_HEIGHT, null);
 
                 if (explosionImage != null)
-                    g.drawImage(explosionImage, x * IMAGE_WIDTH, y * IMAGE_HEIGHT, null);
+                    g.drawImage(explosionImage, x * DEFAULT_IMAGE_WIDTH, y * DEFAULT_IMAGE_HEIGHT, null);
             }
         }
-        
+
         //
         // Dessin de la ligne des scores
         //
         int xWidth = 0;
         for (Image image : scoreImages) {
-            g.drawImage(image, xWidth, 13 * IMAGE_HEIGHT, null);
+            g.drawImage(image, xWidth, Cell.ROWS * DEFAULT_IMAGE_HEIGHT, null);
             xWidth += image.getWidth(null);
         }
 
@@ -88,11 +100,10 @@ public final class XBlastComponent extends JComponent {
         // Dessin des joueurs et nombres de vies
         //
         for (Player player : players) {
-            g.drawImage(player.image(), 4 * player.position().x() - 24, 3 * player.position().y() - 52, null);
+            g.drawImage(player.image(), X_PLAYER_IMAGE_POSITION.apply(player.position().x()), Y_PLAYER_IMAGE_POSITION.apply(player.position().y()), null);
 
-            // Dessin nombre de vie
-            int[] positions = { 96, 240, 768, 912 };
-            g.drawString(Integer.toString(player.lives()), positions[player.playerID().ordinal()], 659);
+            // Dessin du nombre de vie
+            g.drawString(Integer.toString(player.lives()), PLAYER_LIVE_HORIZONTAL_POSITIONS[player.playerID().ordinal()], PLAYER_LIVE_VERTICAL_POSITION);
         }
 
         //
@@ -100,7 +111,7 @@ public final class XBlastComponent extends JComponent {
         //
         xWidth = 0;
         for (Image image : timeImages) {
-            g.drawImage(image, xWidth, 14 * IMAGE_HEIGHT, null);
+            g.drawImage(image, xWidth, (Cell.ROWS + 1) * DEFAULT_IMAGE_HEIGHT, null);
             xWidth += image.getWidth(null);
         }
     }
@@ -112,7 +123,7 @@ public final class XBlastComponent extends JComponent {
      */
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(960, 688);
+        return new Dimension(WINDOW_WIDTH, WINDOWS_HEIGHT);
     }
 
     /**

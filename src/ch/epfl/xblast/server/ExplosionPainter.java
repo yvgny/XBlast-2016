@@ -17,6 +17,8 @@ public final class ExplosionPainter {
      * Identifiant à utiliser pour les cases dénuées de particules d'explosions
      */
     public static final byte BYTE_FOR_EMPTY = 16;
+    private static final byte BYTE_FOR_WHITE_BOMB = 21;
+    private static final byte BYTE_FOR_BLACK_BOMB = 20;
 
     private ExplosionPainter() {
         // Non-instanciable
@@ -31,7 +33,7 @@ public final class ExplosionPainter {
      * @return L'identifiant de l'image, sous forme de byte
      */
     public static byte byteForBomb(Bomb bomb) {
-        return (byte) (Integer.bitCount(bomb.fuseLength()) == 1 ? 21 : 20);
+        return (byte) (Integer.bitCount(bomb.fuseLength()) == 1 ? BYTE_FOR_WHITE_BOMB : BYTE_FOR_BLACK_BOMB);
     }
 
     /**
