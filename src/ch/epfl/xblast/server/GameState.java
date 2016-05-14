@@ -93,7 +93,7 @@ public final class GameState {
      */
     public GameState(Board board,
             List<Player> players) throws IllegalArgumentException, NullPointerException {
-
+        
         this(0, board, players, new ArrayList<Bomb>(), new ArrayList<Sq<Sq<Cell>>>(), new ArrayList<Sq<Cell>>());
     }
 
@@ -242,7 +242,7 @@ public final class GameState {
         for (Bomb bomb : bombsToCheck) {
             if (blastedCells1.contains(bomb.position())) {
                 explosions1.addAll(bomb.explosion());
-            } else if (bomb.fuseLength() <= 1) {
+            } else if (bomb.fuseLengths().tail().isEmpty()) {
                 explosions1.addAll(bomb.explosion());
             } else {
                 bombs1.add(new Bomb(bomb.ownerId(), bomb.position(), bomb.fuseLengths().tail(), bomb.range()));

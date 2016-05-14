@@ -40,13 +40,13 @@ public final class GameStateSerializer {
         // Ajout du plateau de jeu (compressé)
         List<Byte> boardSerialized = RunLengthEncoder.encode(serializeBoard(boardPainter, gameState.board()));
         
-        boardSerialized.add(0, (byte) boardSerialized.size());
+        serialized.add((byte) boardSerialized.size());
         
         serialized.addAll(boardSerialized);
         
         // Ajout des bombes et des explosions (compressés)
         List<Byte> bombsExplosionsSerialized = RunLengthEncoder.encode(serializeBombsExplosions(boardPainter, gameState));
-        bombsExplosionsSerialized.add(0, (byte) bombsExplosionsSerialized.size());
+        serialized.add((byte) bombsExplosionsSerialized.size());
         
         serialized.addAll(bombsExplosionsSerialized);
         
