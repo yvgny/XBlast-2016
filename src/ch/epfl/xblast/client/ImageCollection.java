@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
  */
 public final class ImageCollection {
 
+    private static final int IMAGE_NUMBER_PREFIX_SIZE = 3;
     private final Map<Integer, Image> imageCollection;
 
     /**
@@ -41,11 +42,11 @@ public final class ImageCollection {
             for (File file : dir.listFiles()) {
                 try {
                     name = file.getName();
-                    id = Integer.parseInt(name.substring(0, 3));
+                    id = Integer.parseInt(name.substring(0, IMAGE_NUMBER_PREFIX_SIZE));
                     image = ImageIO.read(file);
                     imageCollectionBuilder.put(id, image);
                 } catch (Exception e) {
-                    // Ignore this file TODO tester avec continue
+                    // Ignore this file
                 }
             }
 
