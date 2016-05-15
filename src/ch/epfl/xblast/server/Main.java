@@ -1,9 +1,13 @@
 package ch.epfl.xblast.server;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.StandardProtocolFamily;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.HashMap;
@@ -12,7 +16,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
+
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import ch.epfl.xblast.Direction;
 import ch.epfl.xblast.PlayerAction;
@@ -21,8 +30,9 @@ import ch.epfl.xblast.PlayerID;
 public final class Main {
     private static final int PORT = 2016;
     private static final int NANOSECONDS_PER_MILLISECOND = 1_000_000;
+    private static XBlastComponent XBC;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, InvocationTargetException {
 
         //
         // Connections des joueurs
@@ -30,25 +40,31 @@ public final class Main {
         int minPlayerToStart = args.length == 0 ? 4 : Integer.parseInt(args[0]);
 
         DatagramChannel channel = DatagramChannel.open(StandardProtocolFamily.INET);
+        InetAddress localIP = Inet4Address.getLocalHost();
         channel.bind(new InetSocketAddress(PORT));
         ByteBuffer buffer = ByteBuffer.allocate(1);
+        Map<SocketAddress, PlayerID> players = new HashMap<>();
 
         PlayerID[] playerIDs = PlayerID.values();
 
-        Map<SocketAddress, PlayerID> players = new HashMap<>();
-
         SocketAddress senderAddress;
+
+        SwingUtilities.invokeAndWait(() -> createUI(localIP, PORT));
         
+        XBC.setMaximumPlayers(minPlayerToStart);
+
         System.out.println("Waiting for connections... (" + minPlayerToStart + " player(s) needed)\n");
- 
+
         while (players.size() < minPlayerToStart) {
             senderAddress = channel.receive(buffer);
 
             buffer.rewind();
 
             if (buffer.get() == PlayerAction.JOIN_GAME.ordinal()) {
-                if (players.putIfAbsent(senderAddress, playerIDs[players.size()]) == null)
+                if (players.putIfAbsent(senderAddress, playerIDs[players.size()]) == null) {
                     System.out.println(playerIDs[players.size() - 1] + " connected from " + senderAddress);
+                    SwingUtilities.invokeLater(() -> XBC.incrementPlayers());
+                }
             }
 
             buffer.clear();
@@ -73,6 +89,8 @@ public final class Main {
         PlayerID currentPlayer;
 
         while (!gameState.isGameOver()) {
+            XBC.setTicks(gameState.ticks());
+
             sendGameState(players, Level.DEFAULT_LEVEL.boardPainter(), gameState, channel);
 
             currentTime = System.nanoTime();
@@ -80,7 +98,7 @@ public final class Main {
 
             if (waitingTime > 0)
                 Thread.sleep(Math.floorDiv(waitingTime, NANOSECONDS_PER_MILLISECOND), (int) Math.floorMod(waitingTime, NANOSECONDS_PER_MILLISECOND));
-            
+
             nextTickTime += Ticks.TICK_NANOSECOND_DURATION;
 
             //
@@ -135,9 +153,20 @@ public final class Main {
             buffer.put((byte) entry.getValue().ordinal());
             buffer.rewind();
             channel.send(buffer, entry.getKey());
-
         }
 
+    }
+
+    private static void createUI(InetAddress inetAddress, int port) {
+        JFrame window = new JFrame("XBlast Server");
+        XBC = new XBlastComponent(inetAddress, port);
+
+        window.setContentPane(XBC);
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setResizable(false);
+        window.pack();
+        window.setLocationRelativeTo(null);
+        window.setVisible(true);
     }
 
 }
