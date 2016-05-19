@@ -1,5 +1,6 @@
 package ch.epfl.xblast.server;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.Inet4Address;
@@ -31,6 +32,8 @@ public final class Main {
     private static final int PORT = 2016;
     private static final int NANOSECONDS_PER_MILLISECOND = 1_000_000;
     private static XBlastComponent XBC;
+    private static GameState gameState;
+    private static JFrame window;
 
     public static void main(String[] args) throws IOException, InterruptedException, InvocationTargetException {
 
@@ -48,7 +51,7 @@ public final class Main {
         PlayerID[] playerIDs = PlayerID.values();
 
         SocketAddress senderAddress;
-
+        
         SwingUtilities.invokeAndWait(() -> createUI(localIP, PORT));
         
         XBC.setMaximumPlayers(minPlayerToStart);
@@ -73,7 +76,7 @@ public final class Main {
         //
         // Itération de la partie
         //
-        GameState gameState = Level.DEFAULT_LEVEL.gameState();
+        gameState = Level.DEFAULT_LEVEL.gameState();
 
         // Variables de temps
         long startingTime = System.nanoTime();
@@ -89,7 +92,8 @@ public final class Main {
         PlayerID currentPlayer;
 
         while (!gameState.isGameOver()) {
-            XBC.setTicks(gameState.ticks());
+            XBC.setGameState(gameState);
+            window.pack();
 
             sendGameState(players, Level.DEFAULT_LEVEL.boardPainter(), gameState, channel);
 
@@ -158,12 +162,13 @@ public final class Main {
     }
 
     private static void createUI(InetAddress inetAddress, int port) {
-        JFrame window = new JFrame("XBlast Server");
+        window = new JFrame("XBlast Server");
         XBC = new XBlastComponent(inetAddress, port);
 
         window.setContentPane(XBC);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setResizable(false);
+        window.setResizable(true);
+        window.setMinimumSize(new Dimension(450, 0));
         window.pack();
         window.setLocationRelativeTo(null);
         window.setVisible(true);
