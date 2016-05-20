@@ -27,4 +27,9 @@ public interface Time {
      * Le nombre de nanosecondes par seconde
      */
     public static final int NS_PER_S = 1000 * US_PER_S;
+    
+    /**
+     * Le nombre de nanosecondes par millisecondes
+     */
+    public static final int NS_PER_MS = MS_PER_S * 1000;
 }
