@@ -8,15 +8,14 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 
 import ch.epfl.xblast.Cell;
-import ch.epfl.xblast.client.ImageCollection;
 
 public final class BoardCreatorComponent extends JComponent {
     private final static int NW_QUADRANT_CELL_WIDTH = 7;
@@ -68,8 +67,8 @@ public final class BoardCreatorComponent extends JComponent {
     public Dimension getPreferredSize() {
         return new Dimension(DEFAULT_IMAGE_WIDTH * NW_QUADRANT_CELL_WIDTH, DEFAULT_IMAGE_HEIGHT * NW_QUADRANT_CELL_HEIGHT);
     }
-    
-    public void nextBlockAt (int x, int y){
+
+    public void nextBlockAt(int x, int y) {
         board.get(y).set(x, blocks[(board.get(y).get(x).ordinal() + 1) % 3]);
         repaint();
     }
@@ -92,29 +91,35 @@ public final class BoardCreatorComponent extends JComponent {
 
         return ImageIO.read(image);
     }
-    
-    public Board board(){
+
+    public Board board() {
         return Board.ofQuadrantNWBlocksWalled(board);
     }
 
     private final static class BoardCreatorMouseListener extends MouseAdapter {
         private final BoardCreatorComponent BCC;
-        
+
         public BoardCreatorMouseListener(BoardCreatorComponent BCC) {
             this.BCC = BCC;
         }
 
-        /* (non-Javadoc)
-         * @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent)
          */
         @Override
         public void mouseClicked(MouseEvent e) {
             int x = e.getX() / DEFAULT_IMAGE_WIDTH;
             int y = e.getY() / DEFAULT_IMAGE_HEIGHT;
-            
-            BCC.nextBlockAt(x, y);
+            if (x == 0 && y == 0) {
+                JOptionPane.showMessageDialog(BCC, "Cannot modify cell (0,0) because this is the players spawn position", "Invalid action", JOptionPane.WARNING_MESSAGE);
+            } else {
+                BCC.nextBlockAt(x, y);
+            }
         }
-        
+
     }
-    
+
 }
