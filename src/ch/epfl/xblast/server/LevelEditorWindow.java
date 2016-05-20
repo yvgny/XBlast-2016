@@ -132,8 +132,16 @@ public class LevelEditorWindow extends JFrame {
         btnPlay.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 setVisible(false);
-                List<Player> defaultPlayers = Level.DEFAULT_LEVEL.gameState().players();
-                GameState gameState = new GameState(boardCreatorComponent.board(), defaultPlayers);
+                List<Player> defaultPlayers;
+                GameState gameState;
+                
+                if (rdbtnUseCustomLevel.isSelected()) {
+                    defaultPlayers = Level.DEFAULT_LEVEL.gameState().players();
+                    gameState = new GameState(boardCreatorComponent.board(), defaultPlayers);
+                } else {
+                    defaultPlayers = Level.DEFAULT_LEVEL.gameState().players();
+                    gameState = Level.DEFAULT_LEVEL.gameState();
+                }
                 Level level = new Level(gameState, Level.DEFAULT_LEVEL.boardPainter());
 
                 new Thread(new Runnable() {
