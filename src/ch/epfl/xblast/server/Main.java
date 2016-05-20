@@ -8,7 +8,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.StandardProtocolFamily;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.HashMap;
@@ -18,10 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.swing.BoxLayout;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import ch.epfl.xblast.Direction;
