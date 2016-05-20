@@ -31,12 +31,12 @@ public final class Main {
     private static GameState gameState;
     private static JFrame window;
 
-    public static void main(String[] args) throws IOException, InterruptedException, InvocationTargetException {
+    public static void startServer(Level level, int minPlayerToStart) throws IOException, InterruptedException, InvocationTargetException {
 
         //
         // Connections des joueurs
         //
-        int minPlayerToStart = args.length == 0 ? 4 : Integer.parseInt(args[0]);
+        // int minPlayerToStart = args.length == 0 ? 4 : Integer.parseInt(args[0]); //FIXME si retour : changer signature méthode et uncomment ca
 
         DatagramChannel channel = DatagramChannel.open(StandardProtocolFamily.INET);
         InetAddress localIP = Inet4Address.getLocalHost();
@@ -72,7 +72,7 @@ public final class Main {
         //
         // Itération de la partie
         //
-        gameState = Level.DEFAULT_LEVEL.gameState();
+        gameState = level.gameState();
 
         // Variables de temps
         long startingTime = System.nanoTime();
@@ -91,7 +91,7 @@ public final class Main {
             XBC.setGameState(gameState);
             window.pack();
 
-            sendGameState(players, Level.DEFAULT_LEVEL.boardPainter(), gameState, channel);
+            sendGameState(players, level.boardPainter(), gameState, channel);
 
             currentTime = System.nanoTime();
             waitingTime = nextTickTime - currentTime;

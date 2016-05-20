@@ -1,32 +1,36 @@
 package ch.epfl.xblast.server;
 
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.border.EmptyBorder;
 import javax.swing.SwingConstants;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import javax.swing.JLabel;
-import java.awt.Font;
-import java.awt.Point;
+import javax.swing.border.EmptyBorder;
+
 import org.eclipse.wb.swing.FocusTraversalOnArray;
+import java.awt.FlowLayout;
 
 public class LevelEditorWindow extends JFrame {
 
     private JPanel contentPane;
+    private JButton btnClear;
     private BoardCreatorComponent boardCreatorComponent;
+
     /**
-     * Launch the application.
+     * Créer l'éditeur de niveau
      */
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -45,80 +49,104 @@ public class LevelEditorWindow extends JFrame {
     }
 
     /**
-     * Create the frame.
+     * Créer la fenêtre de création de niveau
      */
     public LevelEditorWindow() {
-        setLocation(new Point(0, 0));
         setTitle("Level selection");
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(458, 0));
         setMaximumSize(new Dimension(458, 1000));
         contentPane = new JPanel();
-        contentPane.setMaximumSize(new Dimension(458, 32767));
+        contentPane.setMaximumSize(new Dimension(448, 1000));
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
-        
+
         JRadioButton rdbtnUseDefaultLevel = new JRadioButton("Use default level");
+        contentPane.add(rdbtnUseDefaultLevel);
+        rdbtnUseDefaultLevel.setAlignmentX(JRadioButton.CENTER_ALIGNMENT);
         rdbtnUseDefaultLevel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 boardCreatorComponent.setVisible(false);
+                btnClear.setVisible(false);
                 repaint();
                 pack();
-                setLocationRelativeTo(null);
             }
         });
-        contentPane.add(rdbtnUseDefaultLevel);
         
+        ButtonGroup levelSelection = new ButtonGroup();
+
+        levelSelection.add(rdbtnUseDefaultLevel);
+
+        rdbtnUseDefaultLevel.setSelected(true);
+
+        JLabel lblDefaultLevelExplanation = new JLabel("Default level initialize players with three lives and two bombs");
+        contentPane.add(lblDefaultLevelExplanation);
+        lblDefaultLevelExplanation.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblDefaultLevelExplanation.setToolTipText("");
+        // lblDefaultLevelExplanation.setBorder(new EmptyBorder(0, 27, 10, 0));
+        lblDefaultLevelExplanation.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+
         JRadioButton rdbtnUseCustomLevel = new JRadioButton("Use custom level");
+        contentPane.add(rdbtnUseCustomLevel);
+        rdbtnUseCustomLevel.setAlignmentX(Component.CENTER_ALIGNMENT);
         rdbtnUseCustomLevel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 boardCreatorComponent.setVisible(true);
+                btnClear.setVisible(true);
                 repaint();
                 pack();
-                setLocationRelativeTo(null);
-                setMaximumSize(new Dimension(458, 1000));
             }
         });
-        
-        JLabel lblDefaultLevelExplanation = new JLabel("Default level initialize players with three lives and two bombs");
-        lblDefaultLevelExplanation.setVisible(false);
-        lblDefaultLevelExplanation.setBorder(new EmptyBorder(0, 27, 10, 0));
-        lblDefaultLevelExplanation.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
-        contentPane.add(lblDefaultLevelExplanation);
-        contentPane.add(rdbtnUseCustomLevel);
-        
-        ButtonGroup levelSelection = new ButtonGroup();
         levelSelection.add(rdbtnUseCustomLevel);
-        levelSelection.add(rdbtnUseDefaultLevel);
-        
-        rdbtnUseDefaultLevel.setSelected(true);
-        
-        boardCreatorComponent = new BoardCreatorComponent();
-        boardCreatorComponent.setMaximumSize(new Dimension(200, 200));
-        boardCreatorComponent.setSize(new Dimension(448, 288));
-        boardCreatorComponent.setVisible(false);
-        
+
         JLabel lblYouCanCustomize = new JLabel("You can customize your board by clicking on each cell");
-        lblYouCanCustomize.setVisible(false);
-        lblYouCanCustomize.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
-        lblYouCanCustomize.setBorder(new EmptyBorder(0, 27, 5, 0));
         contentPane.add(lblYouCanCustomize);
-        boardCreatorComponent.setBorder(new EmptyBorder(0, 0, 5, 0));
+        lblYouCanCustomize.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblYouCanCustomize.setFont(new Font("Lucida Grande", Font.ITALIC, 13));
+        // lblYouCanCustomize.setBorder(new EmptyBorder(0, 27, 5, 0));
+
+        boardCreatorComponent = new BoardCreatorComponent();
+        boardCreatorComponent.setBorder(null);
+        boardCreatorComponent.setMinimumSize(new Dimension(488, 288));
+        boardCreatorComponent.setMaximumSize(new Dimension(488, 288));
+        boardCreatorComponent.setVisible(false);
         contentPane.add(boardCreatorComponent);
-        
+
         JPanel playPanel = new JPanel();
-        playPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         contentPane.add(playPanel);
-        
+
         JButton btnPlay = new JButton("Play !");
         playPanel.add(btnPlay);
         btnPlay.setHorizontalAlignment(SwingConstants.CENTER);
-        contentPane.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{rdbtnUseDefaultLevel, lblDefaultLevelExplanation, rdbtnUseCustomLevel, lblYouCanCustomize, boardCreatorComponent, playPanel, btnPlay}));
+
+        btnClear = new JButton("Clear");
+        btnClear.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                boardCreatorComponent.clear();
+            }
+        });
+        btnClear.setVisible(false);
+        playPanel.add(btnClear);
         btnPlay.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+                List<Player> defaultPlayers = Level.DEFAULT_LEVEL.gameState().players();
+                GameState gameState = new GameState(boardCreatorComponent.board(), defaultPlayers);
+                Level level = new Level(gameState, Level.DEFAULT_LEVEL.boardPainter());
+
+                new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            Main.startServer(level, 4);
+                        } catch (InvocationTargetException | IOException | InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
             }
+
         });
     }
 

@@ -122,4 +122,14 @@ public final class BoardCreatorComponent extends JComponent {
 
     }
 
+    public void clear() {
+        for (List<Block> list : board) {
+            for (int i = 0; i < list.size(); i++) {
+                list.set(i, Block.FREE);
+            }
+        }
+        repaint();
+        
+    }
+
 }
