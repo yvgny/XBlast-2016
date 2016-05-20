@@ -54,10 +54,10 @@ public final class Level {
         // Ajout des joueurs
         ArrayList<Player> players = new ArrayList<>();
 
-        players.add(new Player(PlayerID.PLAYER_1, 5, new Cell(1, 1), 2, 3));
-        players.add(new Player(PlayerID.PLAYER_2, 5, new Cell(Cell.COLUMNS - 2, 1), 2, 3));
-        players.add(new Player(PlayerID.PLAYER_3, 5, new Cell(Cell.COLUMNS - 2, Cell.ROWS - 2), 2, 3));
-        players.add(new Player(PlayerID.PLAYER_4, 5, new Cell(1, Cell.ROWS - 2), 2, 3));
+        players.add(new Player(PlayerID.PLAYER_1, 3, new Cell(1, 1), 2, 3));
+        players.add(new Player(PlayerID.PLAYER_2, 3, new Cell(Cell.COLUMNS - 2, 1), 2, 3));
+        players.add(new Player(PlayerID.PLAYER_3, 3, new Cell(Cell.COLUMNS - 2, Cell.ROWS - 2), 2, 3));
+        players.add(new Player(PlayerID.PLAYER_4, 3, new Cell(1, Cell.ROWS - 2), 2, 3));
         
         // Création de l'état de jeu
         GameState defaultGameState = new GameState(board, players);
