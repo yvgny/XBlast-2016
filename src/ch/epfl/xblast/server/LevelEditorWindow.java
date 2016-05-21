@@ -8,11 +8,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -20,14 +23,21 @@ import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import org.eclipse.wb.swing.FocusTraversalOnArray;
-import java.awt.FlowLayout;
+import ch.epfl.xblast.Cell;
+import ch.epfl.xblast.PlayerID;
 
 public class LevelEditorWindow extends JFrame {
 
     private JPanel contentPane;
     private JButton btnClear;
     private BoardCreatorComponent boardCreatorComponent;
+    private JPanel playersSpecsEditor;
+    private Cell[] defaultPlayerPositions = {
+            new Cell(1, 1), 
+            new Cell(Cell.COLUMNS - 2, 1), 
+            new Cell(Cell.COLUMNS - 2, Cell.ROWS - 2), 
+            new Cell(1, Cell.ROWS - 2)
+            };
 
     /**
      * Créer l'éditeur de niveau
@@ -70,6 +80,7 @@ public class LevelEditorWindow extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 boardCreatorComponent.setVisible(false);
                 btnClear.setVisible(false);
+                playersSpecsEditor.setVisible(false);
                 repaint();
                 pack();
             }
@@ -95,6 +106,7 @@ public class LevelEditorWindow extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 boardCreatorComponent.setVisible(true);
                 btnClear.setVisible(true);
+                playersSpecsEditor.setVisible(true);
                 repaint();
                 pack();
             }
@@ -113,6 +125,35 @@ public class LevelEditorWindow extends JFrame {
         boardCreatorComponent.setMaximumSize(new Dimension(488, 288));
         boardCreatorComponent.setVisible(false);
         contentPane.add(boardCreatorComponent);
+        
+        playersSpecsEditor = new JPanel();
+        contentPane.add(playersSpecsEditor);
+        playersSpecsEditor.setVisible(false);
+        
+        JLabel lblLives = new JLabel("Lives :");
+        playersSpecsEditor.add(lblLives);
+        
+        JComboBox<Integer> comboBoxLives = new JComboBox<Integer>();
+        comboBoxLives.setModel(new DefaultComboBoxModel<Integer>(new Integer[] {1, 2, 3, 4, 5, 6, 7, 8, 9}));
+        comboBoxLives.setSelectedIndex(2);
+        playersSpecsEditor.add(comboBoxLives);
+        
+        JLabel lblBombs = new JLabel("Bombs :");
+        playersSpecsEditor.add(lblBombs);
+        
+        JComboBox<Integer> comboBoxBombs = new JComboBox<Integer>();
+        comboBoxBombs.setName("\n");
+        comboBoxBombs.setModel(new DefaultComboBoxModel<Integer>(new Integer[] {1, 2, 3, 4, 5, 6, 7, 8, 9}));
+        comboBoxBombs.setSelectedIndex(1);
+        playersSpecsEditor.add(comboBoxBombs);
+        
+        JLabel lblBombRange = new JLabel("Bomb range :");
+        playersSpecsEditor.add(lblBombRange);
+        
+        JComboBox<Integer> comboBoxBombsRange = new JComboBox<Integer>();
+        comboBoxBombsRange.setModel(new DefaultComboBoxModel<Integer>(new Integer[] {1, 2, 3, 4, 5, 6, 7, 8, 9}));
+        comboBoxBombsRange.setSelectedIndex(2);
+        playersSpecsEditor.add(comboBoxBombsRange);
 
         JPanel playPanel = new JPanel();
         contentPane.add(playPanel);
@@ -132,22 +173,31 @@ public class LevelEditorWindow extends JFrame {
         btnPlay.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 setVisible(false);
-                List<Player> defaultPlayers;
+                List<Player> players;
                 GameState gameState;
                 
                 if (rdbtnUseCustomLevel.isSelected()) {
-                    defaultPlayers = Level.DEFAULT_LEVEL.gameState().players();
-                    gameState = new GameState(boardCreatorComponent.board(), defaultPlayers);
+                    players = new ArrayList<>();
+                    for (PlayerID playerID : PlayerID.values()) {
+                        players.add(
+                                new Player(playerID, 
+                                (Integer)comboBoxLives.getSelectedItem(), 
+                                defaultPlayerPositions[playerID.ordinal()], 
+                                (Integer)comboBoxBombs.getSelectedItem(), 
+                                (Integer)comboBoxBombsRange.getSelectedItem()));
+                    }
+                    gameState = new GameState(boardCreatorComponent.board(), players);
                 } else {
-                    defaultPlayers = Level.DEFAULT_LEVEL.gameState().players();
+                    players = Level.DEFAULT_LEVEL.gameState().players();
                     gameState = Level.DEFAULT_LEVEL.gameState();
                 }
+                
                 Level level = new Level(gameState, Level.DEFAULT_LEVEL.boardPainter());
 
                 new Thread(new Runnable() {
                     public void run() {
                         try {
-                            Main.startServer(level, 4);
+                            Main.startServer(level, 1);
                         } catch (InvocationTargetException | IOException | InterruptedException e) {
                             e.printStackTrace();
                         }
