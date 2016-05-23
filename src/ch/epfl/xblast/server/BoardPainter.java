@@ -51,30 +51,12 @@ public final class BoardPainter {
             throws NoSuchElementException {
         Block block = board.blockAt(cell);
         Block leftNeighboorBlock = board.blockAt(cell.neighbor(Direction.W));
-
-        switch (block) {
-        case FREE:
-            return (byte) (leftNeighboorBlock.castsShadow() ? 1 : 0);
-
-        case INDESTRUCTIBLE_WALL:
-            return (byte) 2;
-
-        case DESTRUCTIBLE_WALL:
-            return (byte) 3;
-
-        case CRUMBLING_WALL:
-            return (byte) 4;
-
-        case BONUS_BOMB:
-            return (byte) 5;
-
-        case BONUS_RANGE:
-            return (byte) 6;
-
-        default:
-            throw new NoSuchElementException(
-                    "cannot find block " + block.name());
+        
+        if (block.isFree() && leftNeighboorBlock.castsShadow()) {
+            return (byte) blockFreeShadowed.ordinal();
         }
+        
+        return (byte) palette.get(block).ordinal();
 
     }
 }
