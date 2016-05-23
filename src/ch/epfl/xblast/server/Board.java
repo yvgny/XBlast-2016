@@ -84,7 +84,7 @@ public final class Board {
         List<Block> rowOfWall = Collections.nCopies(Cell.COLUMNS, Block.INDESTRUCTIBLE_WALL);
 
         innerBlocksWalled.add(rowOfWall);
-        
+
         for (List<Block> list : innerBlocks) {
             List<Block> tempList = new ArrayList<>();
             tempList.add(Block.INDESTRUCTIBLE_WALL);
@@ -114,7 +114,7 @@ public final class Board {
     public static Board ofQuadrantNWBlocksWalled(List<List<Block>> quadrantNWBlocks) throws IllegalArgumentException {
 
         checkBlockMatrix(quadrantNWBlocks, QUADRANT_NW_BLOCKS_ROWS, QUADRANT_NW_BLOCKS_COLUMNS);
-        
+
         List<List<Block>> quadrantNWBlocksWalled = new ArrayList<List<Block>>();
 
         quadrantNWBlocks.forEach(row -> quadrantNWBlocksWalled.add(Lists.mirrored(row)));
@@ -171,33 +171,4 @@ public final class Board {
     public Block blockAt(Cell c) {
         return blocksAt(c).head();
     }
-    
-    /**
-     * Copie la liste de liste passée en paramètre. Il faut toutefois faire
-     * attention que seul la référence l'objet de type T est copié, il ne s'agit
-     * donc pas de copie profonde
-     * 
-     * @param l
-     *            La liste de liste à copier
-     * @param <T>
-     *            Le type de la liste passée en paramètre
-     * @return Une nouvelle liste de liste de même contenu que celle passée en
-     *         paramètre
-     * @throws IllegalArgumentException
-     *             Si la liste est vide ou si l'objet est nul
-     */
-    private static <T> List<List<T>> copyList(List<List<T>> l) throws IllegalArgumentException {
-        if (l == null || l.isEmpty()) {
-            throw new IllegalArgumentException("List is empty or not inizializated !");
-        }
-
-        List<List<T>> copiedList = new ArrayList<List<T>>();
-
-        for (List<T> subList : l) {
-            copiedList.add(new ArrayList<>(subList));
-        }
-
-        return copiedList;
-    }
-
 }
