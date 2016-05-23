@@ -14,7 +14,7 @@ public enum Bonus {
      * joueur sur lui, jusqu'à 9 maximum)
      */
     INC_BOMB {
-        private final int MAX_BOMBS_CAPACITY = 9;
+        private final static int MAX_BOMBS_CAPACITY = 9;
         
         @Override
         public Player applyTo(Player player) {
@@ -27,7 +27,7 @@ public enum Bonus {
      * maximum)
      */
     INC_RANGE {
-        private final int MAX_BOMBS_RANGE = 9;
+        private final static int MAX_BOMBS_RANGE = 9;
         
         @Override
         public Player applyTo(Player player) {
