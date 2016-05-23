@@ -84,7 +84,7 @@ public final class Board {
         List<Block> rowOfWall = Collections.nCopies(Cell.COLUMNS, Block.INDESTRUCTIBLE_WALL);
 
         innerBlocksWalled.add(rowOfWall);
-        
+
         for (List<Block> list : innerBlocks) {
             List<Block> tempList = new ArrayList<>();
             tempList.add(Block.INDESTRUCTIBLE_WALL);
@@ -114,7 +114,7 @@ public final class Board {
     public static Board ofQuadrantNWBlocksWalled(List<List<Block>> quadrantNWBlocks) throws IllegalArgumentException {
 
         checkBlockMatrix(quadrantNWBlocks, QUADRANT_NW_BLOCKS_ROWS, QUADRANT_NW_BLOCKS_COLUMNS);
-        
+
         List<List<Block>> quadrantNWBlocksWalled = new ArrayList<List<Block>>();
 
         quadrantNWBlocks.forEach(row -> quadrantNWBlocksWalled.add(Lists.mirrored(row)));
@@ -171,5 +171,4 @@ public final class Board {
     public Block blockAt(Cell c) {
         return blocksAt(c).head();
     }
-
 }

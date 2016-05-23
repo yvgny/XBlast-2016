@@ -125,7 +125,7 @@ public final class Cell {
      */
     @Override
     public boolean equals(Object that) {
-        if (that.getClass() == Cell.class) {
+        if (that != null && that.getClass() == Cell.class) {
             if (((Cell) that).x() == x() && ((Cell) that).y() == y()) {
                 return true;
 

@@ -13,6 +13,7 @@ import java.util.List;
  *
  */
 public final class RunLengthEncoder {
+    private static final int MAX_SIGNED_BYTE_CAPACITY = 130;
 
     private RunLengthEncoder() {
         // Non-instanciable
@@ -38,7 +39,7 @@ public final class RunLengthEncoder {
             currentByte = byteList.get(j);
             ArgumentChecker.requireNonNegative(currentByte);
 
-            while (hasNext && currentByte == byteList.get(j + 1)) {
+            while (hasNext && currentByte.equals(byteList.get(j + 1))) {
                 numberOfRepetitions++;
                 continue loop;
             }
@@ -46,9 +47,9 @@ public final class RunLengthEncoder {
             int remainder = 0;
 
             while (numberOfRepetitions != 0) {
-                if (numberOfRepetitions > 130) {
-                    remainder = numberOfRepetitions - 130;
-                    numberOfRepetitions = 130;
+                if (numberOfRepetitions > MAX_SIGNED_BYTE_CAPACITY) {
+                    remainder = numberOfRepetitions - MAX_SIGNED_BYTE_CAPACITY;
+                    numberOfRepetitions = MAX_SIGNED_BYTE_CAPACITY;
                 } else {
                     remainder = 0;
                 }

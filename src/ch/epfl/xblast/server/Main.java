@@ -23,6 +23,7 @@ import javax.swing.SwingUtilities;
 import ch.epfl.xblast.Direction;
 import ch.epfl.xblast.PlayerAction;
 import ch.epfl.xblast.PlayerID;
+import ch.epfl.xblast.Time;
 
 public final class Main {
     private static final int PORT = 2016;
@@ -75,9 +76,7 @@ public final class Main {
         gameState = level.gameState();
 
         // Variables de temps
-        long startingTime = System.nanoTime();
-        long currentTime;
-        long nextTickTime = startingTime + Ticks.TICK_NANOSECOND_DURATION;
+        long nextTickTime = System.nanoTime() + Ticks.TICK_NANOSECOND_DURATION;
         long waitingTime;
 
         channel.configureBlocking(false);
@@ -93,12 +92,11 @@ public final class Main {
 
             sendGameState(players, level.boardPainter(), gameState, channel);
 
-            currentTime = System.nanoTime();
-            waitingTime = nextTickTime - currentTime;
+            waitingTime = nextTickTime - System.nanoTime();
 
             if (waitingTime > 0)
-                Thread.sleep(Math.floorDiv(waitingTime, NANOSECONDS_PER_MILLISECOND), (int) Math.floorMod(waitingTime, NANOSECONDS_PER_MILLISECOND));
-
+                Thread.sleep(Math.floorDiv(waitingTime, Time.NS_PER_MS), (int) Math.floorMod(waitingTime, Time.NS_PER_MS));
+            
             nextTickTime += Ticks.TICK_NANOSECOND_DURATION;
 
             //

@@ -17,7 +17,21 @@ import ch.epfl.xblast.PlayerID;
  *
  */
 public final class Level {
-    @SuppressWarnings("javadoc")
+    /**
+     * Liste des différentes positions par défaut des joueurs, triés dans l'ordre des PlayerIDs
+     */
+    public final static Cell[] DEFAULT_PLAYER_POSITIONS = {
+            new Cell(1, 1),
+            new Cell(Cell.COLUMNS - 2, 1),
+            new Cell(Cell.COLUMNS - 2, Cell.ROWS - 2),
+            new Cell(1, Cell.ROWS - 2)
+    };
+    private final static int DEFAULT_PLAYER_LIVES = 3;
+    private final static int DEFAULT_MAX_BOMBS_NUMBER = 2;
+    private final static int DEFAULT_MAX_BOMB_RANGE = 3;
+    /**
+     * Niveau par défaut du jeu
+     */
     public final static Level DEFAULT_LEVEL = generateDefaultLevel();
     private final GameState gameState;
     private final BoardPainter boardPainter;
@@ -54,10 +68,10 @@ public final class Level {
         // Ajout des joueurs
         ArrayList<Player> players = new ArrayList<>();
 
-        players.add(new Player(PlayerID.PLAYER_1, 3, new Cell(1, 1), 2, 3));
-        players.add(new Player(PlayerID.PLAYER_2, 3, new Cell(Cell.COLUMNS - 2, 1), 2, 3));
-        players.add(new Player(PlayerID.PLAYER_3, 3, new Cell(Cell.COLUMNS - 2, Cell.ROWS - 2), 2, 3));
-        players.add(new Player(PlayerID.PLAYER_4, 3, new Cell(1, Cell.ROWS - 2), 2, 3));
+        for (PlayerID playerID : PlayerID.values()) {
+            players.add(new Player(playerID, DEFAULT_PLAYER_LIVES, DEFAULT_PLAYER_POSITIONS[playerID.ordinal()], DEFAULT_MAX_BOMBS_NUMBER, DEFAULT_MAX_BOMB_RANGE));
+        }
+
         
         // Création de l'état de jeu
         GameState defaultGameState = new GameState(board, players);
