@@ -12,6 +12,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import ch.epfl.cs108.Sq;
 import ch.epfl.xblast.ArgumentChecker;
@@ -32,10 +34,10 @@ import ch.epfl.xblast.server.Player.LifeState;
  */
 public final class GameState {
     private static final List<List<PlayerID>> PLAYER_ID_PERMUTATIONS = createUnmodifiableView(Lists.permutations(Arrays.asList(PlayerID.values())));
-    private static final Random RANDOM = new Random(2016);
+    private static final Random RANDOM = new Random();
     private static final List<Block> APPEARABLE_BONUS = Collections.unmodifiableList(Arrays.asList(Block.BONUS_BOMB, Block.BONUS_RANGE, Block.FREE));
+    private static final int PLAYERS_NUMBER = 4;
     private final int ticks;
-    private final int PLAYERS_NUMBER = 4;
     private final Board board;
     private final List<Player> players;
     private final List<Bomb> bombs;
@@ -123,14 +125,10 @@ public final class GameState {
      * @return Les joueurs vivants, c-à-d ceux ayant au moins une vie
      */
     public List<Player> alivePlayers() {
-        ArrayList<Player> alivePlayers = new ArrayList<Player>();
-        for (Player player : players()) {
-            if (player.isAlive()) {
-                alivePlayers.add(player);
-            }
-        }
-
-        return alivePlayers;
+        return players()
+                .stream()
+                .filter(x -> x.isAlive())
+                .collect(Collectors.toList());
     }
 
     /**
@@ -149,10 +147,9 @@ public final class GameState {
      * 
      */
     private static Map<Cell, Bomb> bombedCells(List<Bomb> bombs) {
-        Map<Cell, Bomb> bombedCellsMap = new HashMap<>();
-        bombs.forEach(bomb -> bombedCellsMap.put(bomb.position(), bomb));
-
-        return bombedCellsMap;
+        return bombs
+                .stream()
+                .collect(Collectors.toMap(Bomb::position, b -> b));
     }
 
     /**
@@ -173,15 +170,11 @@ public final class GameState {
      *         d'explosion
      */
     private static Set<Cell> blastedCells(List<Sq<Cell>> blasts) {
-        Set<Cell> blastedCells = new HashSet<>();
-
-        for (Sq<Cell> sq : blasts) {
-            if (!sq.isEmpty()) {
-                blastedCells.add(sq.head());
-            }
-        }
-
-        return blastedCells;
+        return blasts
+                .stream()
+                .filter(sq -> !sq.isEmpty())
+                .map(sq -> sq.head())
+                .collect(Collectors.toSet());
     }
 
     /**
