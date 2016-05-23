@@ -38,7 +38,7 @@ public final class RunLengthEncoder {
             currentByte = byteList.get(j);
             ArgumentChecker.requireNonNegative(currentByte);
 
-            while (hasNext && currentByte == byteList.get(j + 1)) {
+            while (hasNext && currentByte.equals(byteList.get(j + 1))) {
                 numberOfRepetitions++;
                 continue loop;
             }

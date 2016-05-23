@@ -142,7 +142,7 @@ public final class XBlastComponent extends JComponent {
 
     private void sortPlayers(List<Player> players) {
         List<PlayerID> playerIDs = Arrays.asList(PlayerID.values());
-        Collections.rotate(playerIDs, PlayerID.values().length - (playerID.ordinal() + 1));
+        Collections.rotate(playerIDs, playerIDs.size() - (playerID.ordinal() + 1));
         Collections.reverse(players);
 
         Comparator<Player> ySort = Comparator.comparingInt(player -> player.position().y());

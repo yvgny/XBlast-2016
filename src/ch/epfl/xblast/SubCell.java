@@ -135,7 +135,7 @@ public final class SubCell {
      */
     @Override
     public boolean equals(Object that) {
-        if (that.getClass() == SubCell.class) {
+        if (that != null && that.getClass() == SubCell.class) {
             if (((SubCell) that).x() == x() && ((SubCell) that).y() == y())
                 return true;
         }
