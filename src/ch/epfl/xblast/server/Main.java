@@ -27,7 +27,6 @@ import ch.epfl.xblast.Time;
 
 public final class Main {
     private static final int PORT = 2016;
-    private static final int NANOSECONDS_PER_MILLISECOND = 1_000_000;
     private static XBlastComponent XBC;
     private static GameState gameState;
     private static JFrame window;
