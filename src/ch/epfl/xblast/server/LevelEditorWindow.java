@@ -138,7 +138,7 @@ public class LevelEditorWindow extends JFrame {
         boardCreatorComponent.setVisible(false);
         boardPanel.setVisible(false);
         boardButtonSettings.setVisible(false);
-        playersSpecsEditor.setVisible(false);
+        playersSpecsEditor.setVisible(true);
         boardListComponent.setVisible(true);
         separator.setVisible(true);
         repaint();
@@ -167,8 +167,8 @@ public class LevelEditorWindow extends JFrame {
     boardCreatorComponent.setMaximumSize(new Dimension(488, 288));
 
     boardButtonSettings = new JPanel();
-    boardButtonSettings.setVisible(false);
     boardPanel.add(boardButtonSettings);
+    boardButtonSettings.setVisible(false);
     boardButtonSettings.setLayout(new BoxLayout(boardButtonSettings, BoxLayout.X_AXIS));
 
     JButton btnClear = new JButton("Clear");
@@ -255,7 +255,7 @@ public class LevelEditorWindow extends JFrame {
         setVisible(false);
         List<Player> players = new ArrayList<>();
         GameState gameState;
-        
+
         if (rdbtnUseDefaultLevel.isSelected()) {
           players = Level.DEFAULT_LEVEL.gameState().players();
         } else {
@@ -263,7 +263,7 @@ public class LevelEditorWindow extends JFrame {
             players.add(new Player(playerID, (Integer) comboBoxLives.getSelectedItem(), defaultPlayerPositions[playerID.ordinal()], (Integer) comboBoxBombs.getSelectedItem(), (Integer) comboBoxBombsRange.getSelectedItem()));
           }
         }
-        
+
         if (rdbtnUseCustomLevel.isSelected()) {
           gameState = new GameState(boardCreatorComponent.boardOfQuadrantNWBlocksWalled(), players);
         } else if (rdbtnUseDefaultLevel.isSelected()) {
@@ -276,17 +276,16 @@ public class LevelEditorWindow extends JFrame {
 
         new Thread(new Runnable() {
           public void run() {
-            
+
             try {
               Main.startServer(level, 1);
             } catch (InvocationTargetException | IOException | InterruptedException e) {
               e.printStackTrace();
             }
-            
+
           }
         }).start();
-        
-        
+
       }
 
     });
