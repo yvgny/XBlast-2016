@@ -36,7 +36,7 @@ public class BoardListComponent extends JPanel {
     DefaultListModel<String> listModel = new DefaultListModel<String>();
     
     for (Map.Entry<String, List<List<Block>>> entry : levels.entrySet()) {
-      listModel.addElement(entry.getKey());
+      listModel.addElement(entry.getKey().replaceAll("_", " "));
     }
     
     levelList = new JList<String>(listModel);
@@ -76,7 +76,7 @@ public class BoardListComponent extends JPanel {
   }
   
   public Board getBoard() {
-    return Board.ofQuadrantNWBlocksWalled(levels.get(levelList.getSelectedValue()));
+    return Board.ofQuadrantNWBlocksWalled(levels.get(levelList.getSelectedValue().replaceAll(" ", "_")));
   }
 
   
