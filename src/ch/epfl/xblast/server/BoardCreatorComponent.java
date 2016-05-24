@@ -92,8 +92,12 @@ public final class BoardCreatorComponent extends JComponent {
         return ImageIO.read(image);
     }
 
-    public Board board() {
+    public Board boardOfQuadrantNWBlocksWalled() {
         return Board.ofQuadrantNWBlocksWalled(board);
+    }
+    
+    public List<List<Block>> board() {
+      return board;
     }
 
     private final static class BoardCreatorMouseListener extends MouseAdapter {
