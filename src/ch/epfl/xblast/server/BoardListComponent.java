@@ -62,7 +62,6 @@ public class BoardListComponent extends JPanel {
       for (File file : levelsDirectory.listFiles()) {
         try {
           name = file.getName();
-          name.replaceAll("_", " ");
           objectInputStream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
           levels.put(name, (List<List<Block>>) objectInputStream.readObject());
           objectInputStream.close();
