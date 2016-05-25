@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -24,8 +25,8 @@ import ch.epfl.xblast.client.ImageCollection;
 import javafx.scene.control.ScrollPane;
 
 public class BoardListComponent extends JPanel {
-  private static final int COMPONENT_WIDTH = 488;
-  private static final int COMPONENT_HEIGHT = 288;
+  private static final int COMPONENT_WIDTH = 160;
+  private static final int COMPONENT_HEIGHT = 200;
   private static final String LEVEL_RELATIVE_PATH_FOLDER = "game_data/levels";
   private DefaultListModel<String> listModel;
   private Map<String, List<List<Block>>> levels;
@@ -45,15 +46,16 @@ public class BoardListComponent extends JPanel {
     levelList.setLayoutOrientation(JList.VERTICAL_WRAP);
 
     JScrollPane scrollPane = new JScrollPane(levelList);
-    scrollPane.setPreferredSize(new Dimension(120, 200));
+    scrollPane.setPreferredSize(new Dimension(COMPONENT_WIDTH, COMPONENT_HEIGHT));
     add(scrollPane);
 
   }
 
   private Map<String, List<List<Block>>> fillWithLevel(File levelsDirectory) {
-    ObjectInputStream ois;
+    ObjectInputStream objectInputStream;
     String name;
     Map<String, List<List<Block>>> levels = new HashMap<>();
+    new File(LEVEL_RELATIVE_PATH_FOLDER).mkdirs();
 
     try {
 
@@ -61,9 +63,9 @@ public class BoardListComponent extends JPanel {
         try {
           name = file.getName();
           name.replaceAll("_", " ");
-          ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
-          levels.put(name, (List<List<Block>>) ois.readObject());
-          ois.close();
+          objectInputStream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
+          levels.put(name, (List<List<Block>>) objectInputStream.readObject());
+          objectInputStream.close();
         } catch (Exception e) {
           e.printStackTrace();
         }
@@ -82,24 +84,27 @@ public class BoardListComponent extends JPanel {
 
   public void refresh() throws URISyntaxException {
     listModel.clear();
-    
+
     levels = fillWithLevel(new File(LEVEL_RELATIVE_PATH_FOLDER));
-    
+
     for (Map.Entry<String, List<List<Block>>> entry : levels.entrySet()) {
       listModel.addElement(entry.getKey().replaceAll("_", " "));
     }
-    
+
     repaint();
   }
-  
-  public void removeSelected() throws URISyntaxException{
+
+  public void removeSelected() throws URISyntaxException {
+    if (levelList.isSelectionEmpty()){
+      JOptionPane.showMessageDialog(null, "You didn't select any level !", "Error", JOptionPane.WARNING_MESSAGE);
+      return;
+    }
     String levelName = levelList.getSelectedValue().replaceAll(" ", "_");
-    
-    File file = new File (LEVEL_RELATIVE_PATH_FOLDER + "/" + levelName);
+
+    File file = new File(LEVEL_RELATIVE_PATH_FOLDER + "/" + levelName);
     file.delete();
-    
     refresh();
-    
+
   }
 
 }
