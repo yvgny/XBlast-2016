@@ -25,85 +25,86 @@ import ch.epfl.xblast.client.ImageCollection;
 import javafx.scene.control.ScrollPane;
 
 public class BoardListComponent extends JPanel {
-  private static final int COMPONENT_WIDTH = 160;
-  private static final int COMPONENT_HEIGHT = 200;
-  private static final String LEVEL_RELATIVE_PATH_FOLDER = "game_data/levels";
-  private DefaultListModel<String> listModel;
-  private Map<String, List<List<Block>>> levels;
-  private JList<String> levelList;
+    private static final int COMPONENT_WIDTH = 160;
+    private static final int COMPONENT_HEIGHT = 200;
+    private static final String LEVEL_RELATIVE_PATH_FOLDER = "game_data/levels";
+    private DefaultListModel<String> listModel;
+    private Map<String, List<List<Block>>> levels;
+    private JList<String> levelList;
 
-  /**
-   * Create the panel.
-   * 
-   * @throws URISyntaxException
-   */
-  public BoardListComponent() throws URISyntaxException {
-    listModel = new DefaultListModel<String>();
-    refresh();
+    /**
+     * Create the panel.
+     * 
+     * @throws URISyntaxException
+     */
+    public BoardListComponent() throws URISyntaxException {
+        listModel = new DefaultListModel<String>();
+        refresh();
 
-    levelList = new JList<String>(listModel);
-    levelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    levelList.setLayoutOrientation(JList.VERTICAL_WRAP);
+        levelList = new JList<String>(listModel);
+        levelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        levelList.setLayoutOrientation(JList.VERTICAL_WRAP);
 
-    JScrollPane scrollPane = new JScrollPane(levelList);
-    scrollPane.setPreferredSize(new Dimension(COMPONENT_WIDTH, COMPONENT_HEIGHT));
-    add(scrollPane);
+        JScrollPane scrollPane = new JScrollPane(levelList);
+        scrollPane.setPreferredSize(new Dimension(COMPONENT_WIDTH, COMPONENT_HEIGHT));
+        add(scrollPane);
 
-  }
+    }
 
-  private Map<String, List<List<Block>>> fillWithLevel(File levelsDirectory) {
-    ObjectInputStream objectInputStream;
-    String name;
-    Map<String, List<List<Block>>> levels = new HashMap<>();
-    new File(LEVEL_RELATIVE_PATH_FOLDER).mkdirs();
+    private Map<String, List<List<Block>>> fillWithLevel(File levelsDirectory) {
+        ObjectInputStream objectInputStream;
+        String name;
+        Map<String, List<List<Block>>> levels = new HashMap<>();
+        new File(LEVEL_RELATIVE_PATH_FOLDER).mkdirs();
 
-    try {
-
-      for (File file : levelsDirectory.listFiles()) {
         try {
-          name = file.getName();
-          objectInputStream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
-          levels.put(name, (List<List<Block>>) objectInputStream.readObject());
-          objectInputStream.close();
-        } catch (Exception e) {
-          e.printStackTrace();
+
+            for (File file : levelsDirectory.listFiles()) {
+                try {
+                    name = file.getName();
+                    objectInputStream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
+                    levels.put(name, (List<List<Block>>) objectInputStream.readObject());
+                    objectInputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        } catch (Exception e) { // On catch une Exception pour gérer le cas du
+                                // NullPointerException
+            throw new Error("Cannot find folder \"" + levelsDirectory.getName() + "\".");
         }
-      }
 
-    } catch (Exception e) { // On catch une Exception pour gérer le cas du NullPointerException
-      throw new Error("Cannot find folder \"" + levelsDirectory.getName() + "\".");
+        return levels;
     }
 
-    return levels;
-  }
-
-  public Board getBoard() {
-    return Board.ofQuadrantNWBlocksWalled(levels.get(levelList.getSelectedValue().replaceAll(" ", "_")));
-  }
-
-  public void refresh() throws URISyntaxException {
-    listModel.clear();
-
-    levels = fillWithLevel(new File(LEVEL_RELATIVE_PATH_FOLDER));
-
-    for (Map.Entry<String, List<List<Block>>> entry : levels.entrySet()) {
-      listModel.addElement(entry.getKey().replaceAll("_", " "));
+    public Board getBoard() {
+        return Board.ofQuadrantNWBlocksWalled(levels.get(levelList.getSelectedValue().replaceAll(" ", "_")));
     }
 
-    repaint();
-  }
+    public void refresh() throws URISyntaxException {
+        listModel.clear();
 
-  public void removeSelected() throws URISyntaxException {
-    if (levelList.isSelectionEmpty()){
-      JOptionPane.showMessageDialog(null, "You didn't select any level !", "Error", JOptionPane.WARNING_MESSAGE);
-      return;
+        levels = fillWithLevel(new File(LEVEL_RELATIVE_PATH_FOLDER));
+
+        for (Map.Entry<String, List<List<Block>>> entry : levels.entrySet()) {
+            listModel.addElement(entry.getKey().replaceAll("_", " "));
+        }
+
+        repaint();
     }
-    String levelName = levelList.getSelectedValue().replaceAll(" ", "_");
 
-    File file = new File(LEVEL_RELATIVE_PATH_FOLDER + "/" + levelName);
-    file.delete();
-    refresh();
+    public void removeSelected() throws URISyntaxException {
+        if (levelList.isSelectionEmpty()) {
+            JOptionPane.showMessageDialog(null, "You didn't select any level !", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String levelName = levelList.getSelectedValue().replaceAll(" ", "_");
 
-  }
+        File file = new File(LEVEL_RELATIVE_PATH_FOLDER + "/" + levelName);
+        file.delete();
+        refresh();
+
+    }
 
 }
