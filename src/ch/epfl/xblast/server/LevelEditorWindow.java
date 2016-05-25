@@ -35,13 +35,14 @@ import ch.epfl.xblast.Cell;
 import ch.epfl.xblast.PlayerID;
 
 public class LevelEditorWindow extends JFrame {
-
+  private static final String LEVEL_FOLDER_RELATIVE_PATH = "game_data/levels/";
   private JPanel contentPane;
   private JPanel boardPanel;
   private JPanel boardButtonSettings;
-  private JSeparator separator;
+  private JSeparator bottomSeparator;
   private BoardCreatorComponent boardCreatorComponent;
   private JPanel playersSpecsEditor;
+  private JPanel levelListPanel;
   private BoardListComponent boardListComponent;
   private Cell[] defaultPlayerPositions = { new Cell(1, 1), new Cell(Cell.COLUMNS - 2, 1), new Cell(Cell.COLUMNS - 2, Cell.ROWS - 2), new Cell(1, Cell.ROWS - 2) };
 
@@ -86,11 +87,11 @@ public class LevelEditorWindow extends JFrame {
     rdbtnUseDefaultLevel.setAlignmentX(JRadioButton.CENTER_ALIGNMENT);
     rdbtnUseDefaultLevel.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        boardListComponent.setVisible(false);
         boardCreatorComponent.setVisible(false);
+        levelListPanel.setVisible(false);
         boardPanel.setVisible(false);
         playersSpecsEditor.setVisible(false);
-        separator.setVisible(false);
+        bottomSeparator.setVisible(false);
         repaint();
         pack();
       }
@@ -115,12 +116,12 @@ public class LevelEditorWindow extends JFrame {
     rdbtnUseCustomLevel.setAlignmentX(Component.CENTER_ALIGNMENT);
     rdbtnUseCustomLevel.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        boardListComponent.setVisible(false);
+        levelListPanel.setVisible(false);
         boardCreatorComponent.setVisible(true);
         boardPanel.setVisible(true);
         boardButtonSettings.setVisible(true);
         playersSpecsEditor.setVisible(true);
-        separator.setVisible(true);
+        bottomSeparator.setVisible(true);
         repaint();
         pack();
       }
@@ -135,12 +136,17 @@ public class LevelEditorWindow extends JFrame {
     JRadioButton rdbtnLoadCostumLevel = new JRadioButton("Load costum level");
     rdbtnLoadCostumLevel.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        try {
+          boardListComponent.refresh();
+        } catch (URISyntaxException e1) {
+          e1.printStackTrace();
+        }
         boardCreatorComponent.setVisible(false);
         boardPanel.setVisible(false);
+        levelListPanel.setVisible(true);
         boardButtonSettings.setVisible(false);
         playersSpecsEditor.setVisible(true);
-        boardListComponent.setVisible(true);
-        separator.setVisible(true);
+        bottomSeparator.setVisible(true);
         repaint();
         pack();
       }
@@ -177,43 +183,80 @@ public class LevelEditorWindow extends JFrame {
     JButton btnSaveAs = new JButton("Save as...");
     btnSaveAs.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        // TODO finir !
         ObjectOutputStream oos;
         String levelName = null;
 
-        while (levelName == null || levelName.length() == 0) {
-          levelName = JOptionPane.showInputDialog("Please enter level name : ");
-        }
-        try {
-          oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(new File("game_data/levels/" + levelName.replaceAll(" ", "_")))));
-          oos.writeObject(boardCreatorComponent.board());
-          oos.close();
-        } catch (FileNotFoundException e1) {
-          e1.printStackTrace();
-        } catch (IOException e1) {
-          e1.printStackTrace();
-        }
+        do {
+          levelName = JOptionPane.showInputDialog(null, "Please enter level name : ", "Level name", JOptionPane.PLAIN_MESSAGE);
+          if (levelName == null) {
+            return;
+          } else if (levelName.length() == 0) {
+            JOptionPane.showMessageDialog(null, "Please enter a name !", "Level name invalid", JOptionPane.ERROR_MESSAGE);
+          } else {
+            try {
+              oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(new File(LEVEL_FOLDER_RELATIVE_PATH + levelName.replaceAll(" ", "_")))));
+              oos.writeObject(boardCreatorComponent.board());
+              oos.close();
+            } catch (FileNotFoundException e1) {
+              e1.printStackTrace();
+            } catch (IOException e1) {
+              e1.printStackTrace();
+            }
+          }
+        } while (levelName.length() == 0);
 
       }
     });
+
+    JButton btnReset = new JButton("Reset");
+    boardButtonSettings.add(btnReset);
     boardButtonSettings.add(btnSaveAs);
     btnClear.addActionListener(new ActionListener() {
+
       public void actionPerformed(ActionEvent e) {
         boardCreatorComponent.clear();
       }
     });
     boardCreatorComponent.setVisible(false);
 
-    JPanel levelListPanel = new JPanel();
+    levelListPanel = new JPanel();
     contentPane.add(levelListPanel);
+    levelListPanel.setVisible(false);
 
     boardListComponent = new BoardListComponent();
-    boardListComponent.setVisible(false);
     levelListPanel.add(boardListComponent);
 
-    separator = new JSeparator();
-    contentPane.add(separator);
-    separator.setVisible(false);
+    JPanel boardListSettings = new JPanel();
+    levelListPanel.add(boardListSettings);
+    boardListSettings.setLayout(new BoxLayout(boardListSettings, BoxLayout.Y_AXIS));
+
+    JButton btnDelete = new JButton("Delete board");
+    btnDelete.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        try {
+          boardListComponent.removeSelected();
+        } catch (URISyntaxException e1) {
+          e1.printStackTrace();
+        }
+      }
+    });
+    boardListSettings.add(btnDelete);
+
+    JButton btnRefresh = new JButton("Refresh list");
+    btnRefresh.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        try {
+          boardListComponent.refresh();
+        } catch (URISyntaxException e1) {
+          e1.printStackTrace();
+        }
+      }
+    });
+    boardListSettings.add(btnRefresh);
+
+    bottomSeparator = new JSeparator();
+    contentPane.add(bottomSeparator);
+    bottomSeparator.setVisible(false);
 
     playersSpecsEditor = new JPanel();
     contentPane.add(playersSpecsEditor);

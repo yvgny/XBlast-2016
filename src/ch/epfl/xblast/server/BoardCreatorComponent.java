@@ -97,7 +97,7 @@ public final class BoardCreatorComponent extends JComponent {
     }
     
     public List<List<Block>> board() {
-      return board;
+      return new ArrayList<>(board);
     }
 
     private final static class BoardCreatorMouseListener extends MouseAdapter {

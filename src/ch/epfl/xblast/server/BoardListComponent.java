@@ -26,23 +26,24 @@ import javafx.scene.control.ScrollPane;
 public class BoardListComponent extends JPanel {
   private static final int COMPONENT_WIDTH = 488;
   private static final int COMPONENT_HEIGHT = 288;
-  private Map<String, List<List<Block>>> levels = fillWithLevel(new File(ImageCollection.class.getClassLoader().getResource("levels").toURI()));
+  private static final String LEVEL_RELATIVE_PATH_FOLDER = "game_data/levels";
+  private DefaultListModel<String> listModel;
+  private Map<String, List<List<Block>>> levels;
   private JList<String> levelList;
+
   /**
    * Create the panel.
-   * @throws URISyntaxException 
+   * 
+   * @throws URISyntaxException
    */
   public BoardListComponent() throws URISyntaxException {
-    DefaultListModel<String> listModel = new DefaultListModel<String>();
-    
-    for (Map.Entry<String, List<List<Block>>> entry : levels.entrySet()) {
-      listModel.addElement(entry.getKey().replaceAll("_", " "));
-    }
-    
+    listModel = new DefaultListModel<String>();
+    refresh();
+
     levelList = new JList<String>(listModel);
     levelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     levelList.setLayoutOrientation(JList.VERTICAL_WRAP);
-    
+
     JScrollPane scrollPane = new JScrollPane(levelList);
     scrollPane.setPreferredSize(new Dimension(120, 200));
     add(scrollPane);
@@ -53,7 +54,7 @@ public class BoardListComponent extends JPanel {
     ObjectInputStream ois;
     String name;
     Map<String, List<List<Block>>> levels = new HashMap<>();
-    
+
     try {
 
       for (File file : levelsDirectory.listFiles()) {
@@ -71,13 +72,34 @@ public class BoardListComponent extends JPanel {
     } catch (Exception e) { // On catch une Exception pour gérer le cas du NullPointerException
       throw new Error("Cannot find folder \"" + levelsDirectory.getName() + "\".");
     }
-    
+
     return levels;
   }
-  
+
   public Board getBoard() {
     return Board.ofQuadrantNWBlocksWalled(levels.get(levelList.getSelectedValue().replaceAll(" ", "_")));
   }
 
+  public void refresh() throws URISyntaxException {
+    listModel.clear();
+    
+    levels = fillWithLevel(new File(LEVEL_RELATIVE_PATH_FOLDER));
+    
+    for (Map.Entry<String, List<List<Block>>> entry : levels.entrySet()) {
+      listModel.addElement(entry.getKey().replaceAll("_", " "));
+    }
+    
+    repaint();
+  }
   
+  public void removeSelected() throws URISyntaxException{
+    String levelName = levelList.getSelectedValue().replaceAll(" ", "_");
+    
+    File file = new File (LEVEL_RELATIVE_PATH_FOLDER + "/" + levelName);
+    file.delete();
+    
+    refresh();
+    
+  }
+
 }
