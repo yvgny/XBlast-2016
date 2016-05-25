@@ -45,7 +45,7 @@ public class LevelEditorWindow extends JFrame {
   private JPanel levelListPanel;
   private BoardListComponent boardListComponent;
   private Cell[] defaultPlayerPositions = { new Cell(1, 1), new Cell(Cell.COLUMNS - 2, 1), new Cell(Cell.COLUMNS - 2, Cell.ROWS - 2), new Cell(1, Cell.ROWS - 2) };
-
+  
   /**
    * Créer l'éditeur de niveau
    */
@@ -183,7 +183,7 @@ public class LevelEditorWindow extends JFrame {
     JButton btnSaveAs = new JButton("Save as...");
     btnSaveAs.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        ObjectOutputStream oos;
+        ObjectOutputStream objectOutputStream;
         String levelName = null;
 
         do {
@@ -194,9 +194,9 @@ public class LevelEditorWindow extends JFrame {
             JOptionPane.showMessageDialog(null, "Please enter a name !", "Level name invalid", JOptionPane.ERROR_MESSAGE);
           } else {
             try {
-              oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(new File(LEVEL_FOLDER_RELATIVE_PATH + levelName.replaceAll(" ", "_")))));
-              oos.writeObject(boardCreatorComponent.board());
-              oos.close();
+              objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(new File(LEVEL_FOLDER_RELATIVE_PATH + levelName.replaceAll(" ", "_")))));
+              objectOutputStream.writeObject(boardCreatorComponent.board());
+              objectOutputStream.close();
             } catch (FileNotFoundException e1) {
               e1.printStackTrace();
             } catch (IOException e1) {
@@ -209,6 +209,11 @@ public class LevelEditorWindow extends JFrame {
     });
 
     JButton btnReset = new JButton("Reset");
+    btnReset.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        boardCreatorComponent.reset();
+      }
+    });
     boardButtonSettings.add(btnReset);
     boardButtonSettings.add(btnSaveAs);
     btnClear.addActionListener(new ActionListener() {

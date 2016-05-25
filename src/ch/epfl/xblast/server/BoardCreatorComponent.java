@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -23,10 +24,10 @@ public final class BoardCreatorComponent extends JComponent {
     private final static int DEFAULT_IMAGE_WIDTH = 64;
     private final static int DEFAULT_IMAGE_HEIGHT = 48;
     private final Block[] blocks = Block.values();
-    private final List<List<Block>> board;
-
+    private final List<List<Block>> defaultBoardNWQuadrant;
+    private List<List<Block>> board;
     public BoardCreatorComponent() {
-        board = new ArrayList<>();
+        defaultBoardNWQuadrant = new ArrayList<>();
         Board defaultBoard = Level.DEFAULT_LEVEL.gameState().board();
         addMouseListener(new BoardCreatorMouseListener(this));
 
@@ -35,9 +36,12 @@ public final class BoardCreatorComponent extends JComponent {
             for (int x = 1; x <= NW_QUADRANT_CELL_WIDTH; x++) {
                 tempList.add(defaultBoard.blockAt(new Cell(x, y)));
             }
-            board.add(tempList);
+            defaultBoardNWQuadrant.add(tempList);
             tempList = new ArrayList<>();
         }
+        
+        // Copie profonde de la liste
+        board = new ArrayList<>(defaultBoardNWQuadrant.stream().map(list -> new ArrayList<>(list)).collect(Collectors.toList()));
     }
 
     /*
@@ -134,6 +138,12 @@ public final class BoardCreatorComponent extends JComponent {
         }
         repaint();
         
+    }
+    
+    public void reset(){
+      // Copie profonde de la liste
+      board = new ArrayList<>(defaultBoardNWQuadrant.stream().map(list -> new ArrayList<>(list)).collect(Collectors.toList()));
+      repaint();
     }
 
 }
