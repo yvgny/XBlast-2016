@@ -13,10 +13,15 @@ import ch.epfl.xblast.Direction;
  *
  */
 public final class ExplosionPainter {
+    private static final int BYTE_IF_FALSE = 0;
+
+    private static final int BYTE_IF_TRUE = 1;
+
     /**
      * Identifiant à utiliser pour les cases dénuées de particules d'explosions
      */
     public static final byte BYTE_FOR_EMPTY = 16;
+
     private static final byte BYTE_FOR_WHITE_BOMB = 21;
     private static final byte BYTE_FOR_BLACK_BOMB = 20;
 
@@ -60,7 +65,7 @@ public final class ExplosionPainter {
 
         for (int i = 0; i < neighboorBlast.length; i++) {
             byteForBlast = (byte) (byteForBlast << 1);
-            byteForBlast = (byte) (byteForBlast | (neighboorBlast[i] ? 1 : 0));
+            byteForBlast = (byte) (byteForBlast | (neighboorBlast[i] ? BYTE_IF_TRUE : BYTE_IF_FALSE));
         }
 
         return byteForBlast;
@@ -82,12 +87,12 @@ public final class ExplosionPainter {
      */
     public static byte byteForBlast(Cell cell, GameState gameState) {
         Set<Cell> blastedCells = gameState.blastedCells();
-        Board board = gameState.board();
-        Block currentBlock = board.blockAt(cell);
-        
-        if (!currentBlock.isFree() || !blastedCells.contains(cell))
-            return BYTE_FOR_EMPTY;
+        Block currentBlock = gameState.board().blockAt(cell);
 
+        if (!currentBlock.isFree() || !blastedCells.contains(cell)) {
+            return BYTE_FOR_EMPTY;
+        }
+        
         boolean northCellIsBlasted = blastedCells.contains(cell.neighbor(Direction.N));
         boolean eastCellIsBlasted = blastedCells.contains(cell.neighbor(Direction.E));
         boolean southCellIsBlasted = blastedCells.contains(cell.neighbor(Direction.S));

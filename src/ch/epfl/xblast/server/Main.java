@@ -38,9 +38,9 @@ public final class Main {
         Map<SocketAddress, PlayerID> players = new HashMap<>();
 
         SocketAddress senderAddress;
-        
+
         System.out.println("Waiting for connections... (" + minPlayerToStart + " player(s) needed)\n");
- 
+
         while (players.size() < minPlayerToStart) {
             senderAddress = channel.receive(buffer);
 
@@ -77,7 +77,7 @@ public final class Main {
 
             if (waitingTime > 0)
                 Thread.sleep(Math.floorDiv(waitingTime, Time.NS_PER_MS), (int) Math.floorMod(waitingTime, Time.NS_PER_MS));
-            
+
             nextTickTime += Ticks.TICK_NANOSECOND_DURATION;
 
             //
@@ -114,14 +114,17 @@ public final class Main {
 
         }
 
-        System.out.println(gameState.winner().isPresent() ? "\nThe winner is " + gameState.winner().get() + " !" : "\nTime elapsed without any  winner !");
+        // Envoi du tout dernier état de jeu (pas besoin d'attendre puisque le
+        // jeu ets deja fini, les actions des joueurs ne changent plus rien)
+        sendGameState(players, Level.DEFAULT_LEVEL.boardPainter(), gameState, channel);
+        System.out.println("\n" + (gameState.winner().isPresent() ? "The winner is " + gameState.winner().get() + " !" : "Time elapsed without any  winner !"));
 
     }
 
     private static void sendGameState(Map<SocketAddress, PlayerID> players, BoardPainter boardPainter, GameState gameState, DatagramChannel channel) throws IOException {
         List<Byte> serializedGameState = GameStateSerializer.serialize(boardPainter, gameState);
         ByteBuffer buffer = ByteBuffer.allocate(serializedGameState.size() + 1);
-        buffer.put((byte) 0); // arbritraire, jutse pour avancer d'une case
+        buffer.get(); // arbritraire, juste pour avancer d'une position
 
         for (Byte byte1 : serializedGameState) {
             buffer.put(byte1);

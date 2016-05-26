@@ -15,6 +15,8 @@ import ch.epfl.xblast.RunLengthEncoder;
  *
  */
 public final class GameStateSerializer {
+    private static final int TIME_MUTLIPLE_INTEGERS_PER_SECONDS = 2;
+
     private GameStateSerializer() {
         // Non-instanciable
     }
@@ -54,7 +56,7 @@ public final class GameStateSerializer {
         serialized.addAll(serializePlayers(gameState.players(), gameState.ticks()));
         
         // Ajout du temps restant
-        serialized.add((byte) Math.ceil(gameState.remainingTime() / 2));
+        serialized.add((byte) Math.ceil(gameState.remainingTime() / TIME_MUTLIPLE_INTEGERS_PER_SECONDS));
         
         return serialized;
     }

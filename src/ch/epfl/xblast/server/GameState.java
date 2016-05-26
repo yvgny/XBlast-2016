@@ -36,7 +36,6 @@ public final class GameState {
     private static final List<List<PlayerID>> PLAYER_ID_PERMUTATIONS = createUnmodifiableView(Lists.permutations(Arrays.asList(PlayerID.values())));
     private static final Random RANDOM = new Random();
     private static final List<Block> APPEARABLE_BONUS = Collections.unmodifiableList(Arrays.asList(Block.BONUS_BOMB, Block.BONUS_RANGE, Block.FREE));
-    private static final int PLAYERS_NUMBER = 4;
     private final int ticks;
     private final Board board;
     private final List<Player> players;
@@ -71,11 +70,11 @@ public final class GameState {
 
         this.ticks = ArgumentChecker.requireNonNegative(ticks);
         this.board = Objects.requireNonNull(board, "board must not be null");
-        this.players = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(players, "players must not be null")));
-        if (players.size() != PLAYERS_NUMBER) {
+        if (players.size() != PlayerID.values().length) {
             throw new IllegalArgumentException("La liste de joueurs ne contient pas 4 éléments !");
         }
         this.explosions = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(explosions, "explosions must not be null")));
+        this.players = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(players, "players must not be null")));
         this.blasts = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(blasts, "blasts must not be null")));
         this.bombs = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(bombs, "bombs must not be null")));
     }
@@ -95,7 +94,7 @@ public final class GameState {
      */
     public GameState(Board board,
             List<Player> players) throws IllegalArgumentException, NullPointerException {
-        
+
         this(0, board, players, new ArrayList<Bomb>(), new ArrayList<Sq<Sq<Cell>>>(), new ArrayList<Sq<Cell>>());
     }
 
@@ -107,8 +106,9 @@ public final class GameState {
      * @return La liste non-modifiable de liste(s) non-modifibale(s)
      */
     private static <E> List<List<E>> createUnmodifiableView(List<List<E>> list) {
-        List<List<E>> copiedList = new ArrayList<>();
-        list.forEach(subList -> copiedList.add(Collections.unmodifiableList(subList)));
+        // On utilise des flots pour créer une liste non-modifiable de chaque
+        // sous-liste
+        List<List<E>> copiedList = new ArrayList<>(list.stream().map(subList -> Collections.unmodifiableList(subList)).collect(Collectors.toList()));
 
         return Collections.unmodifiableList(copiedList);
     }
@@ -125,10 +125,7 @@ public final class GameState {
      * @return Les joueurs vivants, c-à-d ceux ayant au moins une vie
      */
     public List<Player> alivePlayers() {
-        return players()
-                .stream()
-                .filter(x -> x.isAlive())
-                .collect(Collectors.toList());
+        return players().stream().filter(x -> x.isAlive()).collect(Collectors.toList());
     }
 
     /**
@@ -147,9 +144,7 @@ public final class GameState {
      * 
      */
     private static Map<Cell, Bomb> bombedCells(List<Bomb> bombs) {
-        return bombs
-                .stream()
-                .collect(Collectors.toMap(Bomb::position, b -> b));
+        return bombs.stream().collect(Collectors.toMap(Bomb::position, b -> b));
     }
 
     /**
@@ -170,11 +165,7 @@ public final class GameState {
      *         d'explosion
      */
     private static Set<Cell> blastedCells(List<Sq<Cell>> blasts) {
-        return blasts
-                .stream()
-                .filter(sq -> !sq.isEmpty())
-                .map(sq -> sq.head())
-                .collect(Collectors.toSet());
+        return blasts.stream().filter(sq -> !sq.isEmpty()).map(sq -> sq.head()).collect(Collectors.toSet());
     }
 
     /**

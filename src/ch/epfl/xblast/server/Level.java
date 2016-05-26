@@ -18,9 +18,14 @@ import ch.epfl.xblast.PlayerID;
  */
 public final class Level {
     /**
+     * Niveau par défaut du jeu
+     */
+    public final static Level DEFAULT_LEVEL = generateDefaultLevel();
+    
+    /**
      * Liste des différentes positions par défaut des joueurs, triés dans l'ordre des PlayerIDs
      */
-    public final static Cell[] DEFAULT_PLAYER_POSITIONS = {
+    private final static Cell[] DEFAULT_PLAYER_POSITIONS = {
             new Cell(1, 1),
             new Cell(Cell.COLUMNS - 2, 1),
             new Cell(Cell.COLUMNS - 2, Cell.ROWS - 2),
@@ -29,10 +34,6 @@ public final class Level {
     private final static int DEFAULT_PLAYER_LIVES = 3;
     private final static int DEFAULT_MAX_BOMBS_NUMBER = 2;
     private final static int DEFAULT_MAX_BOMB_RANGE = 3;
-    /**
-     * Niveau par défaut du jeu
-     */
-    public final static Level DEFAULT_LEVEL = generateDefaultLevel();
     private final GameState gameState;
     private final BoardPainter boardPainter;
 
