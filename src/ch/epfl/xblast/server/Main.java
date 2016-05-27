@@ -16,12 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-<<<<<<< HEAD
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-=======
->>>>>>> master
 
 import ch.epfl.xblast.Direction;
 import ch.epfl.xblast.PlayerAction;
