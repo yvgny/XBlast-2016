@@ -5,6 +5,7 @@ import java.awt.event.KeyListener;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import ch.epfl.xblast.PlayerAction;
@@ -31,8 +32,8 @@ public final class KeyboardEventHandler implements KeyListener {
      */
     public KeyboardEventHandler(Map<Integer, PlayerAction> actions,
             Consumer<PlayerAction> actionConsumer) {
-        this.actions = Collections.unmodifiableMap(new HashMap<>(actions));
-        this.actionConsumer = actionConsumer;
+        this.actions = Collections.unmodifiableMap(new HashMap<>(Objects.requireNonNull(actions)));
+        this.actionConsumer = Objects.requireNonNull(actionConsumer);
     }
 
     @Override

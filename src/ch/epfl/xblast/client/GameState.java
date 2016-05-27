@@ -60,10 +60,9 @@ public final class GameState {
      */
     private List<Image> spiralToRowMajor(List<Image> list) {
         Image[] rowMajorOrder = new Image[list.size()];
-
-        int i = 0;
-        for (Cell cell : Cell.SPIRAL_ORDER) {
-            rowMajorOrder[cell.rowMajorIndex()] = list.get(i++);
+        
+        for (int i = 0; i < Cell.SPIRAL_ORDER.size(); i++) {
+            rowMajorOrder[Cell.SPIRAL_ORDER.get(i).rowMajorIndex()] = list.get(i);
         }
 
         return Arrays.asList(rowMajorOrder);

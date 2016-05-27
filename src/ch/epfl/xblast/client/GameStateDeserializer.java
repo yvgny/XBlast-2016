@@ -4,6 +4,7 @@ import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import ch.epfl.xblast.PlayerID;
 import ch.epfl.xblast.RunLengthEncoder;
@@ -19,10 +20,21 @@ import ch.epfl.xblast.client.GameState.Player;
  */
 public final class GameStateDeserializer {
 
-    private static ImageCollection blockImageCollection = new ImageCollection("block");
-    private static ImageCollection explosionImageCollection = new ImageCollection("explosion");
-    private static ImageCollection playerImageCollection = new ImageCollection("player");
-    private static ImageCollection scoreImageCollection = new ImageCollection("score");
+    private static final int BOARD_SIZE_INDEX = 0;
+    private static final int PLAYER_FACE_UNIT = 2;
+    private static final int PLAYER_FACE_ALIVE = 0;
+    private static final int PLAYER_FACE_DEAD = 1;
+    private static final int PLAYER_VOID_TILE_WIDTH = 8;
+    private static final int PLAYER_TILE_VOID_IMAGE = 12;
+    private static final int PLAYER_TEXT_RIGHT_IMAGE = 11;
+    private static final int PLAYER_TEXT_MIDDLE_IMAGE = 10;
+    private static final int TIMELINE_FILLED_RECTANGLE_IMAGE = 21;
+    private static final int TIMELINE_EMPTY_RECTANGLE_IMAGE = 20;
+    private static final int TIMELINE_IMAGE_WIDTH = 60;
+    private static final ImageCollection blockImageCollection = new ImageCollection("block");
+    private static final ImageCollection explosionImageCollection = new ImageCollection("explosion");
+    private static final ImageCollection playerImageCollection = new ImageCollection("player");
+    private static final ImageCollection scoreImageCollection = new ImageCollection("score");
         
     private GameStateDeserializer() {
         // Non-instanciable
@@ -36,7 +48,9 @@ public final class GameStateDeserializer {
      * @return Le jeu désérialisé, sous forme de GameState
      */
     public static GameState deserializeGameState(List<Byte> serializedGameState) {
-        int boardSize = Byte.toUnsignedInt(serializedGameState.get(0));
+        Objects.requireNonNull(serializedGameState, "serializedGameState should not be null");
+        
+        int boardSize = Byte.toUnsignedInt(serializedGameState.get(BOARD_SIZE_INDEX));
         int boardStartIndex = 1;
         int boardExclusiveEndIndex = boardStartIndex + boardSize;
         int explosionsSize = Byte.toUnsignedInt(serializedGameState.get(boardExclusiveEndIndex));
@@ -83,7 +97,7 @@ public final class GameStateDeserializer {
         int lives, positionX, positionY, image;
         int index = 0;
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < playerIDs.length; i++) {
             lives = Byte.toUnsignedInt(serializedPlayers.get(index++));
             positionX = Byte.toUnsignedInt(serializedPlayers.get(index++));
             positionY = Byte.toUnsignedInt(serializedPlayers.get(index++));
@@ -99,8 +113,8 @@ public final class GameStateDeserializer {
         int remainingTime = Byte.toUnsignedInt(serializedTime);
         List<Image> deserializedTime = new ArrayList<>();
         
-        deserializedTime.addAll(Collections.nCopies(remainingTime, scoreImageCollection.image(21)));
-        deserializedTime.addAll(Collections.nCopies(60 - remainingTime, scoreImageCollection.image(20)));
+        deserializedTime.addAll(Collections.nCopies(remainingTime, scoreImageCollection.image(TIMELINE_FILLED_RECTANGLE_IMAGE)));
+        deserializedTime.addAll(Collections.nCopies(TIMELINE_IMAGE_WIDTH - remainingTime, scoreImageCollection.image(TIMELINE_EMPTY_RECTANGLE_IMAGE)));
         
         return deserializedTime;
     }
@@ -111,12 +125,16 @@ public final class GameStateDeserializer {
         
         for (Player player : players) {
             id = player.playerID();
-            deserializedScores.add(scoreImageCollection.image((player.lives() > 0 ? 0 : 1) + (id.ordinal() * 2))); // add face
-            deserializedScores.add(scoreImageCollection.image(10)); // add filling
-            deserializedScores.add(scoreImageCollection.image(11)); // add filling for text
+            deserializedScores.add(scoreImageCollection.image((player.lives() > 0 ? PLAYER_FACE_ALIVE : PLAYER_FACE_DEAD) + (id.ordinal() * PLAYER_FACE_UNIT))); // add face
+            deserializedScores.add(scoreImageCollection.image(PLAYER_TEXT_MIDDLE_IMAGE)); // add filling
+            deserializedScores.add(scoreImageCollection.image(PLAYER_TEXT_RIGHT_IMAGE)); // add filling for text
+            
+            if (id == PlayerID.PLAYER_2) {
+              deserializedScores.addAll(Collections.nCopies(PLAYER_VOID_TILE_WIDTH, scoreImageCollection.image(PLAYER_TILE_VOID_IMAGE)));
+            }
+            
         }
         
-        deserializedScores.addAll(6, Collections.nCopies(8, scoreImageCollection.image(12)));
         
         return deserializedScores;
     }

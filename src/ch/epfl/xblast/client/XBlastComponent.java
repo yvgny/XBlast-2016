@@ -18,7 +18,6 @@ import javax.swing.JComponent;
 import ch.epfl.xblast.Cell;
 import ch.epfl.xblast.PlayerID;
 import ch.epfl.xblast.client.GameState.Player;
-import sun.print.resources.serviceui;
 
 /**
  * Composant Swing affichant l'état du'une partie de XBlast
@@ -29,13 +28,13 @@ import sun.print.resources.serviceui;
  */
 @SuppressWarnings("serial")
 public final class XBlastComponent extends JComponent {
-    private final static int DEFAULT_IMAGE_WIDTH = 64;
-    private final static int DEFAULT_IMAGE_HEIGHT = 48;
-    private final static Font ARIAL_BOLD = new Font("Arial", Font.BOLD, 25);
-    private final static int PLAYER_LIVE_VERTICAL_POSITION = 659;
-    private final static int[] PLAYER_LIVE_HORIZONTAL_POSITIONS = { 96, 240, 768, 912 };
-    private final static int WINDOW_WIDTH = 960;
-    private final static int WINDOWS_HEIGHT = 688;
+    private static final int DEFAULT_IMAGE_WIDTH = 64;
+    private static final int DEFAULT_IMAGE_HEIGHT = 48;
+    private static final int PLAYER_LIVE_VERTICAL_POSITION = 659;
+    private static final int[] PLAYER_LIVE_HORIZONTAL_POSITIONS = { 96, 240, 768, 912 };
+    private static final int WINDOW_WIDTH = 960;
+    private static final int WINDOWS_HEIGHT = 688;
+    private static final Font ARIAL_BOLD = new Font("Arial", Font.BOLD, 25);
     private static final Function<Integer, Integer> X_PLAYER_IMAGE_POSITION = x -> (4 * x) - 24;
     private static final Function<Integer, Integer> Y_PLAYER_IMAGE_POSITION = y -> (3 * y) - 52;
     private GameState gameState;

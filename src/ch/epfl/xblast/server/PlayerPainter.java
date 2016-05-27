@@ -4,12 +4,13 @@ import ch.epfl.xblast.server.Player.LifeState.State;
 
 /**
  * Représente un peintre de joueur
- * TODO remove more magic numbers
  * @author Sacha Kozma, 260391
  * @author Alexia Bogaert, 258330
  *
  */
 public final class PlayerPainter {
+    private static final int LEFT_FOOT_AHEAD_IMAGE = 2;
+    private static final int RIGHT_FOOT_AHEAD_IMAGE = 1;
     private static final byte BYTE_FOR_DEAD = 15;
     private static final byte UNIT_PER_PLAYER = 20;
     private static final byte UNIT_PER_DIRECTION = 3;
@@ -40,7 +41,7 @@ public final class PlayerPainter {
 
         if (player.lifeState().canMove()) {
             // Vérification s'il faut utiliser le set blanc
-            if (playerState == State.INVULNERABLE && ((tick & 1) == 1))
+            if (playerState == State.INVULNERABLE && ((tick & 1) == 1)) // Test si le nombre de ticks est pair
                 byteForPlayer = WHITE_PLAYER_SET_ID * UNIT_PER_PLAYER;
             
             // Si le joueur est vulnérable ou invulnérable, sélection selon la
@@ -50,11 +51,11 @@ public final class PlayerPainter {
             // Sélection selon la position (pour les pieds, etc)
             switch (player.direction().isHorizontal() ? player.position().x() % PLAYER_STEP_FRAME_NUMBER : player.position().y() % PLAYER_STEP_FRAME_NUMBER) {
             case 1:
-                byteForPlayer += 1;
+                byteForPlayer += RIGHT_FOOT_AHEAD_IMAGE;
                 break;
 
             case 3:
-                byteForPlayer += 2;
+                byteForPlayer += LEFT_FOOT_AHEAD_IMAGE;
                 break;
 
             default:

@@ -216,7 +216,7 @@ public final class Player {
      * @author Alexia Bogaert, 258330
      *
      */
-    public final static class LifeState {
+    public static final class LifeState {
         private final int lives;
         private final State state;
 
@@ -305,7 +305,7 @@ public final class Player {
      * @author Alexia Bogaert, 258330
      *
      */
-    public final static class DirectedPosition {
+    public static final class DirectedPosition {
         private final SubCell position;
         private final Direction direction;
 

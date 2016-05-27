@@ -16,23 +16,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+<<<<<<< HEAD
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+=======
+>>>>>>> master
 
 import ch.epfl.xblast.Direction;
 import ch.epfl.xblast.PlayerAction;
 import ch.epfl.xblast.PlayerID;
 import ch.epfl.xblast.Time;
 
+/**
+ * 
+ * @author Sacha Kozma, 260391
+ * @author Alexia Bogaert, 258330
+ *
+ */
 public final class Main {
+    private static final int DEFAULT_MIN_REQUIRED_CONNECTIONS = 4;
     private static final int PORT = 2016;
     private static XBlastComponent XBC;
     private static GameState gameState;
     private static JFrame window;
 
     public static void startServer(Level level, int minPlayerToStart) throws IOException, InterruptedException, InvocationTargetException {
-
         //
         // Connections des joueurs
         //
@@ -47,10 +56,11 @@ public final class Main {
         PlayerID[] playerIDs = PlayerID.values();
 
         SocketAddress senderAddress;
-        
+		        
         SwingUtilities.invokeAndWait(() -> createUI(localIP, PORT));
         
         XBC.setMaximumPlayers(minPlayerToStart);
+
 
         System.out.println("Waiting for connections... (" + minPlayerToStart + " player(s) needed)\n");
 
@@ -95,7 +105,7 @@ public final class Main {
 
             if (waitingTime > 0)
                 Thread.sleep(Math.floorDiv(waitingTime, Time.NS_PER_MS), (int) Math.floorMod(waitingTime, Time.NS_PER_MS));
-            
+
             nextTickTime += Ticks.TICK_NANOSECOND_DURATION;
 
             //
@@ -132,14 +142,19 @@ public final class Main {
 
         }
 
-        System.out.println(gameState.winner().isPresent() ? "\nThe winner is " + gameState.winner().get() + " !" : "\nTime elapsed without any  winner !");
+        // Envoi du tout dernier état de jeu (pas besoin d'attendre puisque le
+        // jeu ets deja fini, les actions des joueurs ne changent plus rien)
+        sendGameState(players, Level.DEFAULT_LEVEL.boardPainter(), gameState, channel);
+        System.out.println("\n" + (gameState.winner().isPresent() ? "The winner is " + gameState.winner().get() + " !" : "Time elapsed without any  winner !"));
 
+        channel.close();
+        
     }
 
     private static void sendGameState(Map<SocketAddress, PlayerID> players, BoardPainter boardPainter, GameState gameState, DatagramChannel channel) throws IOException {
         List<Byte> serializedGameState = GameStateSerializer.serialize(boardPainter, gameState);
         ByteBuffer buffer = ByteBuffer.allocate(serializedGameState.size() + 1);
-        buffer.put((byte) 0); // arbritraire, jutse pour avancer d'une case
+        buffer.get(); // arbritraire, juste pour avancer d'une position
 
         for (Byte byte1 : serializedGameState) {
             buffer.put(byte1);
