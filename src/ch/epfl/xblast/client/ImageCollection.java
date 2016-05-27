@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
  */
 public final class ImageCollection {
 
+    private static final int IMAGE_NUMBER_INDEX = 0;
     private static final int IMAGE_NUMBER_PREFIX_SIZE = 3;
     private final Map<Integer, Image> imageCollection;
 
@@ -30,19 +31,19 @@ public final class ImageCollection {
      *            créée
      */
     public ImageCollection(String dirName) {
-        File dir;
-        String name;
+        File imageDirectory;
+        String fileName;
         Integer id;
         Image image;
         Map<Integer, Image> imageCollectionBuilder = new HashMap<>();
 
         try {
-            dir = new File(ImageCollection.class.getClassLoader().getResource(dirName).toURI());
+            imageDirectory = new File(ImageCollection.class.getClassLoader().getResource(dirName).toURI());
 
-            for (File file : dir.listFiles()) {
+            for (File file : imageDirectory.listFiles()) {
                 try {
-                    name = file.getName();
-                    id = Integer.parseInt(name.substring(0, IMAGE_NUMBER_PREFIX_SIZE));
+                    fileName = file.getName();
+                    id = Integer.parseInt(fileName.substring(IMAGE_NUMBER_INDEX, IMAGE_NUMBER_INDEX + IMAGE_NUMBER_PREFIX_SIZE));
                     image = ImageIO.read(file);
                     imageCollectionBuilder.put(id, image);
                 } catch (Exception e) {

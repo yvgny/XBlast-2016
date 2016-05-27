@@ -12,22 +12,42 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 
 import ch.epfl.xblast.Direction;
 import ch.epfl.xblast.PlayerAction;
 import ch.epfl.xblast.PlayerID;
 import ch.epfl.xblast.Time;
 
+/**
+ * 
+ * @author Sacha Kozma, 260391
+ * @author Alexia Bogaert, 258330
+ *
+ */
 public final class Main {
+    private static final int DEFAULT_MIN_REQUIRED_CONNECTIONS = 4;
     private static final int PORT = 2016;
 
+    /**
+     * Lance un serveur serveur XBLast avec le niveau par défaut. Si le nombre
+     * de client minimum nécessaire au démarrage de la partie n'est pas précisé,
+     * une valeur de quatre est utilisée
+     * 
+     * @param args
+     *            Prend un seul argument, le nombre de client minimum qui
+     *            doivent se connecter avant de commencer la partie
+     * @throws IOException
+     *             Si une erreur apparait lors de l'utilistaion d'un flot
+     * @throws InterruptedException
+     *             Si un fil d'éxectuion arrête ce fil d'exécution
+     * 
+     */
     public static void main(String[] args) throws IOException, InterruptedException {
 
         //
         // Connections des joueurs
         //
-        int minPlayerToStart = args.length == 0 ? 4 : Integer.parseInt(args[0]);
+        int minPlayerToStart = args.length == 0 ? DEFAULT_MIN_REQUIRED_CONNECTIONS : Integer.parseInt(args[0]);
 
         DatagramChannel channel = DatagramChannel.open(StandardProtocolFamily.INET);
         channel.bind(new InetSocketAddress(PORT));
@@ -119,6 +139,8 @@ public final class Main {
         sendGameState(players, Level.DEFAULT_LEVEL.boardPainter(), gameState, channel);
         System.out.println("\n" + (gameState.winner().isPresent() ? "The winner is " + gameState.winner().get() + " !" : "Time elapsed without any  winner !"));
 
+        channel.close();
+        
     }
 
     private static void sendGameState(Map<SocketAddress, PlayerID> players, BoardPainter boardPainter, GameState gameState, DatagramChannel channel) throws IOException {

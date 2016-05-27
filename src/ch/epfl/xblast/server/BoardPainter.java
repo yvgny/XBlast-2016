@@ -1,6 +1,5 @@
 package ch.epfl.xblast.server;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +40,7 @@ public final class BoardPainter {
      * 
      * @param board
      *            La plateau à utiliser
-     * @param cell  
+     * @param cell
      *            La cellule à représenter
      * @return L'image représentant la cellule, sous forme de byte
      * @throws NoSuchElementException

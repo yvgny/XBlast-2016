@@ -16,8 +16,8 @@ import ch.epfl.xblast.Lists;
  */
 public final class Board {
 
-    private final static int QUADRANT_NW_BLOCKS_ROWS = (((Cell.ROWS - 2) / 2) + 1);
-    private final static int QUADRANT_NW_BLOCKS_COLUMNS = (((Cell.COLUMNS - 2) / 2) + 1);
+    private static final int QUADRANT_NW_BLOCKS_ROWS = (((Cell.ROWS - 2) / 2) + 1);
+    private static final int QUADRANT_NW_BLOCKS_COLUMNS = (((Cell.COLUMNS - 2) / 2) + 1);
     private final List<Sq<Block>> boardList;
 
     /**

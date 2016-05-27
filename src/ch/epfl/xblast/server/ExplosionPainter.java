@@ -13,15 +13,12 @@ import ch.epfl.xblast.Direction;
  *
  */
 public final class ExplosionPainter {
-    private static final int BYTE_IF_FALSE = 0;
-
-    private static final int BYTE_IF_TRUE = 1;
-
     /**
      * Identifiant à utiliser pour les cases dénuées de particules d'explosions
      */
     public static final byte BYTE_FOR_EMPTY = 16;
-
+    private static final int BYTE_IF_FALSE = 0;
+    private static final int BYTE_IF_TRUE = 1;
     private static final byte BYTE_FOR_WHITE_BOMB = 21;
     private static final byte BYTE_FOR_BLACK_BOMB = 20;
 
@@ -92,7 +89,7 @@ public final class ExplosionPainter {
         if (!currentBlock.isFree() || !blastedCells.contains(cell)) {
             return BYTE_FOR_EMPTY;
         }
-        
+
         boolean northCellIsBlasted = blastedCells.contains(cell.neighbor(Direction.N));
         boolean eastCellIsBlasted = blastedCells.contains(cell.neighbor(Direction.E));
         boolean southCellIsBlasted = blastedCells.contains(cell.neighbor(Direction.S));

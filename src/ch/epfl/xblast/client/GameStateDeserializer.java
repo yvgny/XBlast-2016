@@ -4,6 +4,9 @@ import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
+import org.omg.CORBA.Object;
 
 import ch.epfl.xblast.PlayerID;
 import ch.epfl.xblast.RunLengthEncoder;
@@ -30,10 +33,10 @@ public final class GameStateDeserializer {
     private static final int TIMELINE_FILLED_RECTANGLE_IMAGE = 21;
     private static final int TIMELINE_EMPTY_RECTANGLE_IMAGE = 20;
     private static final int TIMELINE_IMAGE_WIDTH = 60;
-    private static ImageCollection blockImageCollection = new ImageCollection("block");
-    private static ImageCollection explosionImageCollection = new ImageCollection("explosion");
-    private static ImageCollection playerImageCollection = new ImageCollection("player");
-    private static ImageCollection scoreImageCollection = new ImageCollection("score");
+    private static final ImageCollection blockImageCollection = new ImageCollection("block");
+    private static final ImageCollection explosionImageCollection = new ImageCollection("explosion");
+    private static final ImageCollection playerImageCollection = new ImageCollection("player");
+    private static final ImageCollection scoreImageCollection = new ImageCollection("score");
         
     private GameStateDeserializer() {
         // Non-instanciable
@@ -47,6 +50,8 @@ public final class GameStateDeserializer {
      * @return Le jeu désérialisé, sous forme de GameState
      */
     public static GameState deserializeGameState(List<Byte> serializedGameState) {
+        Objects.requireNonNull(serializedGameState, "serializedGameState should not be null");
+        
         int boardSize = Byte.toUnsignedInt(serializedGameState.get(BOARD_SIZE_INDEX));
         int boardStartIndex = 1;
         int boardExclusiveEndIndex = boardStartIndex + boardSize;

@@ -20,18 +20,41 @@ import javax.swing.SwingUtilities;
 import ch.epfl.xblast.PlayerAction;
 import ch.epfl.xblast.PlayerID;
 
+/**
+ * 
+ * @author Sacha Kozma, 260391
+ * @author Alexia Bogaert, 258330
+ *
+ */
 public final class Main {
+    private static final int SERIALIZED_PLAYER_ID_INDEX = 0;
     private static final int MAX_BUFFER_ALLOCATION = 409;
     private static final int PORT = 2016;
     private static final int TIME_BETWEEN_CONNECTION_TRY = 1000;
     private static XBlastComponent XBC;
 
+    /**
+     * Lance un client XBlast
+     * 
+     * @param args
+     *            Prend un seul argument, l'adresse IP du serveur auquel se
+     *            connecter. Si aucune adresse n'est spécifié, l'adresse locale
+     *            est utilisée
+     * @throws IOException
+     *             Si une erreur survient lors de l'utilisation d'un flot de
+     *             données
+     * @throws InterruptedException
+     *             Si un fil d'exécution arrête ce fil d'exécution
+     * @throws InvocationTargetException
+     *             Si une exception est lancée lors la créeation de l'interface
+     *             graphique
+     */
     public static void main(String[] args) throws IOException, InterruptedException, InvocationTargetException {
         DatagramChannel channel = DatagramChannel.open(StandardProtocolFamily.INET);
-        SocketAddress serverAddress = new InetSocketAddress(args.length == 0 ? "localhost" : args[0], PORT);
+        SocketAddress serverAddress = new InetSocketAddress(args.length == 0 ? "128.179.138.137" : args[0], PORT);
         List<Byte> serializedGameState;
         GameState gameState;
-        
+
         ByteBuffer buffer = ByteBuffer.allocate(MAX_BUFFER_ALLOCATION);
         ByteBuffer connectionBuffer = ByteBuffer.allocate(1);
 
@@ -44,7 +67,7 @@ public final class Main {
             channel.send(connectionBuffer, serverAddress);
             System.out.println("Connection attempt on " + serverAddress);
         } while (channel.receive(buffer) == null);
-        
+
         System.out.println("Connected to " + serverAddress + " !");
 
         channel.configureBlocking(true);
@@ -58,19 +81,19 @@ public final class Main {
                 serializedGameState.add(buffer.get());
             }
 
-            gameState = GameStateDeserializer.deserializeGameState(serializedGameState.subList(1, serializedGameState.size()));
+            gameState = GameStateDeserializer.deserializeGameState(serializedGameState.subList(SERIALIZED_PLAYER_ID_INDEX + 1, serializedGameState.size()));
 
-            XBC.setGameState(gameState, PlayerID.values()[serializedGameState.get(0)]);
+            XBC.setGameState(gameState, PlayerID.values()[serializedGameState.get(SERIALIZED_PLAYER_ID_INDEX)]);
 
             buffer.clear();
 
         } while (channel.receive(buffer) != null);
-        
+
         System.out.println("\nGame finished !");
 
     }
 
-    public static void createUI(DatagramChannel channel, SocketAddress adress) {
+    private static void createUI(DatagramChannel channel, SocketAddress adress) {
         Map<Integer, PlayerAction> keyBindings = new HashMap<>();
         ByteBuffer actionBuffer = ByteBuffer.allocate(1);
 
