@@ -51,7 +51,7 @@ public final class Main {
      */
     public static void main(String[] args) throws IOException, InterruptedException, InvocationTargetException {
         DatagramChannel channel = DatagramChannel.open(StandardProtocolFamily.INET);
-        SocketAddress serverAddress = new InetSocketAddress(args.length == 0 ? "128.179.138.137" : args[0], PORT);
+        SocketAddress serverAddress = new InetSocketAddress(args.length == 0 ? "localhost" : args[0], PORT);
         List<Byte> serializedGameState;
         GameState gameState;
 
