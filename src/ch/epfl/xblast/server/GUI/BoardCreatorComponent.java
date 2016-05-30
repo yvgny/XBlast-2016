@@ -5,18 +5,18 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import ch.epfl.xblast.Cell;
+import ch.epfl.xblast.client.ImageCollection;
 import ch.epfl.xblast.server.Block;
 import ch.epfl.xblast.server.Board;
 import ch.epfl.xblast.server.Level;
@@ -30,10 +30,14 @@ import ch.epfl.xblast.server.Level;
  */
 @SuppressWarnings("serial")
 public final class BoardCreatorComponent extends JComponent {
+    private final static int DESTRUCTIBLE_BLOCK_IMAGE_INDEX = 3;
+    private final static int INDESTRUCTIBLE_BLOCK_IMAGE_INDEX = 2;
+    private final static int FREE_BLOCK_IMAGE_INDEX = 0;
     private final static int NW_QUADRANT_CELL_WIDTH = 7;
     private final static int NW_QUADRANT_CELL_HEIGHT = 6;
     private final static int DEFAULT_IMAGE_WIDTH = 64;
     private final static int DEFAULT_IMAGE_HEIGHT = 48;
+    private final static ImageCollection blockImages = new ImageCollection("block");
     private final Block[] blocks = Block.values();
     private final List<List<Block>> defaultBoardNWQuadrant;
     private List<List<Block>> board;
@@ -104,22 +108,23 @@ public final class BoardCreatorComponent extends JComponent {
     }
 
     private Image imageForBlock(Block block) throws IOException, URISyntaxException {
-        File image = null;
+        Image image = null;
 
         switch (block) {
         case FREE:
-            image = new File(getClass().getClassLoader().getResource("block/000_iron_floor.png").toURI());
-            break;
-        case DESTRUCTIBLE_WALL:
-            image = new File(getClass().getClassLoader().getResource("block/003_extra.png").toURI());
+            image = blockImages.image(FREE_BLOCK_IMAGE_INDEX);
             break;
         case INDESTRUCTIBLE_WALL:
-            image = new File(getClass().getClassLoader().getResource("block/002_dark_block.png").toURI());
-        default:
+            image = blockImages.image(INDESTRUCTIBLE_BLOCK_IMAGE_INDEX);
             break;
+        case DESTRUCTIBLE_WALL:
+            image = blockImages.image(DESTRUCTIBLE_BLOCK_IMAGE_INDEX);
+            break;
+        default:
+            throw new NoSuchElementException("cannot find block " + block);
         }
 
-        return ImageIO.read(image);
+        return image;
     }
 
     /**
