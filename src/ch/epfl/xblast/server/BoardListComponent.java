@@ -39,16 +39,16 @@ public class BoardListComponent extends JPanel {
      */
     public BoardListComponent() throws URISyntaxException {
         listModel = new DefaultListModel<String>();
-        refresh();
 
         levelList = new JList<String>(listModel);
         levelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         levelList.setLayoutOrientation(JList.VERTICAL_WRAP);
 
-        JScrollPane scrollPane = new JScrollPane(levelList);
+        JScrollPane scrollPane = new JScrollPane(levelList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setPreferredSize(new Dimension(COMPONENT_WIDTH, COMPONENT_HEIGHT));
         add(scrollPane);
 
+        refresh();
     }
 
     private Map<String, List<List<Block>>> fillWithLevel(File levelsDirectory) {
@@ -90,6 +90,8 @@ public class BoardListComponent extends JPanel {
         for (Map.Entry<String, List<List<Block>>> entry : levels.entrySet()) {
             listModel.addElement(entry.getKey().replaceAll("_", " "));
         }
+        
+        levelList.setVisibleRowCount(listModel.size());
 
         repaint();
     }
