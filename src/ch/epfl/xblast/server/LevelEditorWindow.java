@@ -326,7 +326,7 @@ public class LevelEditorWindow extends JFrame {
           public void run() {
 
             try {
-              Main.startServer(level, 1);
+              XBlastServer.startServer(level, 1);
             } catch (InvocationTargetException | IOException | InterruptedException e) {
               e.printStackTrace();
             }

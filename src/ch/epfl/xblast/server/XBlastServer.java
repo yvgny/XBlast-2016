@@ -31,7 +31,7 @@ import ch.epfl.xblast.Time;
  * @author Alexia Bogaert, 258330
  *
  */
-public final class Main {
+public final class XBlastServer {
     private static final int DEFAULT_MIN_REQUIRED_CONNECTIONS = 4;
     private static final int PORT = 2016;
     private static XBlastComponent XBC;
