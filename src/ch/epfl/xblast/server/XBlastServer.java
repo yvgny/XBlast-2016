@@ -24,7 +24,7 @@ import ch.epfl.xblast.Direction;
 import ch.epfl.xblast.PlayerAction;
 import ch.epfl.xblast.PlayerID;
 import ch.epfl.xblast.Time;
-import ch.epfl.xblast.server.GUI.XBlastComponent;
+import ch.epfl.xblast.server.GUI.ServerStatusComponent;
 
 /**
  * 
@@ -33,18 +33,29 @@ import ch.epfl.xblast.server.GUI.XBlastComponent;
  *
  */
 public final class XBlastServer {
-    private static final int DEFAULT_MIN_REQUIRED_CONNECTIONS = 4;
+    private static final int SERVER_STATUS_UI_WIDTH = 450;
     private static final int PORT = 2016;
-    private static XBlastComponent XBC;
+    private static ServerStatusComponent XBC;
     private static GameState gameState;
     private static JFrame window;
 
+    /**
+     * Lancer un serveur XBlast, accompagné de son interface graphique
+     * permettant de voir l'avancement des connections puis de la partie
+     * 
+     * @param level
+     *            Le niveau le serveur doit être lancé
+     * @param minPlayerToStart
+     *            Le nombre minimum de joueurs connectés nécessaire pour le
+     *            lancement du serveur. Utile pour le debug
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws InvocationTargetException
+     */
     public static void startServer(Level level, int minPlayerToStart) throws IOException, InterruptedException, InvocationTargetException {
         //
         // Connections des joueurs
         //
-        // int minPlayerToStart = args.length == 0 ? 4 : Integer.parseInt(args[0]); //FIXME si retour : changer signature méthode et uncomment ca
-
         DatagramChannel channel = DatagramChannel.open(StandardProtocolFamily.INET);
         InetAddress localIP = Inet4Address.getLocalHost();
         channel.bind(new InetSocketAddress(PORT));
@@ -54,11 +65,10 @@ public final class XBlastServer {
         PlayerID[] playerIDs = PlayerID.values();
 
         SocketAddress senderAddress;
-		        
-        SwingUtilities.invokeAndWait(() -> createUI(localIP, PORT));
-        
-        XBC.setMaximumPlayers(minPlayerToStart);
 
+        SwingUtilities.invokeAndWait(() -> createUI(localIP, PORT));
+
+        XBC.setMaximumPlayers(minPlayerToStart);
 
         System.out.println("Waiting for connections... (" + minPlayerToStart + " player(s) needed)\n");
 
@@ -146,7 +156,7 @@ public final class XBlastServer {
         System.out.println("\n" + (gameState.winner().isPresent() ? "The winner is " + gameState.winner().get() + " !" : "Time elapsed without any  winner !"));
 
         channel.close();
-        
+
     }
 
     private static void sendGameState(Map<SocketAddress, PlayerID> players, BoardPainter boardPainter, GameState gameState, DatagramChannel channel) throws IOException {
@@ -169,12 +179,12 @@ public final class XBlastServer {
 
     private static void createUI(InetAddress inetAddress, int port) {
         window = new JFrame("XBlast Server");
-        XBC = new XBlastComponent(inetAddress, port);
+        XBC = new ServerStatusComponent(inetAddress, port);
 
         window.setContentPane(XBC);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(true);
-        window.setMinimumSize(new Dimension(450, 0));
+        window.setMinimumSize(new Dimension(SERVER_STATUS_UI_WIDTH, 0));
         window.pack();
         window.setLocationRelativeTo(null);
         window.setVisible(true);
