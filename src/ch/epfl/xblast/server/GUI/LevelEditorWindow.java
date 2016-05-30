@@ -2,7 +2,6 @@ package ch.epfl.xblast.server.GUI;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -50,9 +49,11 @@ import ch.epfl.xblast.server.XBlastServer;
  */
 @SuppressWarnings("serial")
 public class LevelEditorWindow extends JFrame {
+    private static final DefaultComboBoxModel<Integer> DEFAULT_VALUE_SELECTOR_MODEL = new DefaultComboBoxModel<Integer>(new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
     private static final int BORDER_SIZE = 5;
     private static final int COMPONENENT_WIDTH = 458;
     private static final String LEVEL_FOLDER_RELATIVE_PATH = "game_data/levels/";
+    private int minConnectedPlayerToStart = 4;
     private JPanel contentPane;
     private JPanel boardPanel;
     private JPanel boardButtonSettings;
@@ -64,25 +65,6 @@ public class LevelEditorWindow extends JFrame {
     private Cell[] defaultPlayerPositions = { new Cell(1, 1), new Cell(Cell.COLUMNS - 2, 1), new Cell(Cell.COLUMNS - 2, Cell.ROWS - 2), new Cell(1, Cell.ROWS - 2) };
 
     /**
-     * Créer l'éditeur de niveau
-     */
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    LevelEditorWindow frame = new LevelEditorWindow();
-                    frame.setVisible(true);
-                    frame.setResizable(false);
-                    frame.pack();
-                    frame.setLocationRelativeTo(null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    /**
      * Créer la fenêtre de création de niveau
      * 
      * @throws URISyntaxException
@@ -92,9 +74,9 @@ public class LevelEditorWindow extends JFrame {
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(COMPONENENT_WIDTH, 0));
-        setMaximumSize(new Dimension(COMPONENENT_WIDTH, 1000));
+        setMaximumSize(new Dimension(COMPONENENT_WIDTH, Integer.MAX_VALUE));
         contentPane = new JPanel();
-        contentPane.setMaximumSize(new Dimension(COMPONENENT_WIDTH - 2 * BORDER_SIZE, 1000));
+        contentPane.setMaximumSize(new Dimension(COMPONENENT_WIDTH - 2 * BORDER_SIZE, Integer.MAX_VALUE));
         contentPane.setBorder(new EmptyBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE));
         setContentPane(contentPane);
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
@@ -283,7 +265,7 @@ public class LevelEditorWindow extends JFrame {
         playersSpecsEditor.add(lblLives);
 
         JComboBox<Integer> comboBoxLives = new JComboBox<Integer>();
-        comboBoxLives.setModel(new DefaultComboBoxModel<Integer>(new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }));
+        comboBoxLives.setModel(DEFAULT_VALUE_SELECTOR_MODEL);
         comboBoxLives.setSelectedIndex(2);
         playersSpecsEditor.add(comboBoxLives);
 
@@ -292,7 +274,7 @@ public class LevelEditorWindow extends JFrame {
 
         JComboBox<Integer> comboBoxBombs = new JComboBox<Integer>();
         comboBoxBombs.setName("\n");
-        comboBoxBombs.setModel(new DefaultComboBoxModel<Integer>(new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }));
+        comboBoxBombs.setModel(DEFAULT_VALUE_SELECTOR_MODEL);
         comboBoxBombs.setSelectedIndex(1);
         playersSpecsEditor.add(comboBoxBombs);
 
@@ -300,7 +282,7 @@ public class LevelEditorWindow extends JFrame {
         playersSpecsEditor.add(lblBombRange);
 
         JComboBox<Integer> comboBoxBombsRange = new JComboBox<Integer>();
-        comboBoxBombsRange.setModel(new DefaultComboBoxModel<Integer>(new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }));
+        comboBoxBombsRange.setModel(DEFAULT_VALUE_SELECTOR_MODEL);
         comboBoxBombsRange.setSelectedIndex(2);
         playersSpecsEditor.add(comboBoxBombsRange);
 
@@ -338,7 +320,7 @@ public class LevelEditorWindow extends JFrame {
                     public void run() {
 
                         try {
-                            XBlastServer.startServer(level, 1); // FIXME
+                            XBlastServer.startServer(level, minConnectedPlayerToStart);
                         } catch (InvocationTargetException | IOException | InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -349,5 +331,15 @@ public class LevelEditorWindow extends JFrame {
             }
 
         });
+    }
+
+    /**
+     * Permet de spécifier le nombre de joueurs minimum nécessaires avant le
+     * lancement du serveur. Utile pour le debug
+     * 
+     * @param playerNumber
+     */
+    public void setMinimumPlayerToStart(int playerNumber) {
+        this.minConnectedPlayerToStart = playerNumber;
     }
 }
