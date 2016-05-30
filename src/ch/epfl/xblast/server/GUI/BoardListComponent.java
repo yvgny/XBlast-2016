@@ -29,7 +29,11 @@ import ch.epfl.xblast.server.Block;
  */
 @SuppressWarnings("serial")
 public class BoardListComponent extends JPanel {
+    /**
+     * Chemin relatif du dossier de sauvagerdes des niveaux
+     */
     public static final String LEVEL_RELATIVE_PATH_FOLDER = "game_data/levels";
+    
     private static final int COMPONENT_WIDTH = 160;
     private static final int COMPONENT_HEIGHT = 200;
     private DefaultListModel<String> listModel;
