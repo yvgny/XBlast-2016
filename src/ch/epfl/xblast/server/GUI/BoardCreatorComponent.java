@@ -16,7 +16,7 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import ch.epfl.xblast.Cell;
-import ch.epfl.xblast.client.ImageCollection;
+import ch.epfl.xblast.ImageCollection;
 import ch.epfl.xblast.server.Block;
 import ch.epfl.xblast.server.Board;
 import ch.epfl.xblast.server.Level;

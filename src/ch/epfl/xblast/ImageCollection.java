@@ -1,4 +1,4 @@
-package ch.epfl.xblast.client;
+package ch.epfl.xblast;
 
 import java.awt.Image;
 import java.io.File;

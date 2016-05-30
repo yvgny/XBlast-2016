@@ -9,7 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import ch.epfl.xblast.client.ImageCollection;
+import ch.epfl.xblast.ImageCollection;
 
 public class TestImageCollectionAfficher extends JFrame{
     /**
