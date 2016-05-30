@@ -21,6 +21,14 @@ import ch.epfl.xblast.server.Block;
 import ch.epfl.xblast.server.Board;
 import ch.epfl.xblast.server.Level;
 
+/**
+ * Composant d'édition de niveau
+ * 
+ * @author Sacha Kozma, 260391
+ * @author Alexia Bogaert, 258330
+ *
+ */
+@SuppressWarnings("serial")
 public final class BoardCreatorComponent extends JComponent {
     private final static int NW_QUADRANT_CELL_WIDTH = 7;
     private final static int NW_QUADRANT_CELL_HEIGHT = 6;
@@ -29,6 +37,13 @@ public final class BoardCreatorComponent extends JComponent {
     private final Block[] blocks = Block.values();
     private final List<List<Block>> defaultBoardNWQuadrant;
     private List<List<Block>> board;
+
+    /**
+     * Créer un composant Swing permettant de modifier le plateau de jeu. Le
+     * quadrant nord ouest est affiché et peut être modifié. Cela permet ensuite
+     * de générer un plateau symétrique, entouré de mur indestrucible
+     * facilement.
+     */
     public BoardCreatorComponent() {
         defaultBoardNWQuadrant = new ArrayList<>();
         Board defaultBoard = Level.DEFAULT_LEVEL.gameState().board();
@@ -42,7 +57,7 @@ public final class BoardCreatorComponent extends JComponent {
             defaultBoardNWQuadrant.add(tempList);
             tempList = new ArrayList<>();
         }
-        
+
         // Copie profonde de la liste
         board = new ArrayList<>(defaultBoardNWQuadrant.stream().map(list -> new ArrayList<>(list)).collect(Collectors.toList()));
     }
@@ -75,6 +90,14 @@ public final class BoardCreatorComponent extends JComponent {
         return new Dimension(DEFAULT_IMAGE_WIDTH * NW_QUADRANT_CELL_WIDTH, DEFAULT_IMAGE_HEIGHT * NW_QUADRANT_CELL_HEIGHT);
     }
 
+    /**
+     * Permet de passer au bloc "suivant" dans le plateau de jeu.
+     * 
+     * @param x
+     *            La coordonnée x de la case a changer
+     * @param y
+     *            La coordonnée y de la case à changer
+     */
     public void nextBlockAt(int x, int y) {
         board.get(y).set(x, blocks[(board.get(y).get(x).ordinal() + 1) % 3]);
         repaint();
@@ -99,12 +122,22 @@ public final class BoardCreatorComponent extends JComponent {
         return ImageIO.read(image);
     }
 
-    public Board boardOfQuadrantNWBlocksWalled() {
-        return Board.ofQuadrantNWBlocksWalled(board);
+    /**
+     * 
+     * @return Le quadrant nord ouest du plateau de jeu
+     */
+    public List<List<Block>> boardNWQuadrant() {
+        return new ArrayList<>(board.stream().map(sublist -> new ArrayList<>(sublist)).collect(Collectors.toList()));
     }
-    
-    public List<List<Block>> board() {
-      return new ArrayList<>(board);
+
+    /**
+     * Modifie le plateau de jeu utilisé par l'éditeur de niveau
+     * 
+     * @param board
+     *            Le board à utiliser
+     */
+    public void setBoard(List<List<Block>> board) {
+        this.board = new ArrayList<>(board.stream().map(sublist -> new ArrayList<>(sublist)).collect(Collectors.toList()));
     }
 
     private final static class BoardCreatorMouseListener extends MouseAdapter {
@@ -133,6 +166,9 @@ public final class BoardCreatorComponent extends JComponent {
 
     }
 
+    /**
+     * Remplit l'éditeur de niveau avec des blocs vides
+     */
     public void clear() {
         for (List<Block> list : board) {
             for (int i = 0; i < list.size(); i++) {
@@ -140,13 +176,16 @@ public final class BoardCreatorComponent extends JComponent {
             }
         }
         repaint();
-        
+
     }
-    
-    public void reset(){
-      // Copie profonde de la liste
-      board = new ArrayList<>(defaultBoardNWQuadrant.stream().map(list -> new ArrayList<>(list)).collect(Collectors.toList()));
-      repaint();
+
+    /**
+     * Remplit l'éditeur de niveua avec le plateau de jeu par défaut
+     */
+    public void reset() {
+        // Copie profonde de la liste
+        board = new ArrayList<>(defaultBoardNWQuadrant.stream().map(list -> new ArrayList<>(list)).collect(Collectors.toList()));
+        repaint();
     }
 
 }

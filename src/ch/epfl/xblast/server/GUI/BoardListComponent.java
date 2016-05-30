@@ -6,26 +6,28 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 
-import com.sun.org.apache.bcel.internal.generic.RETURN;
-
-import ch.epfl.xblast.client.ImageCollection;
 import ch.epfl.xblast.server.Block;
-import ch.epfl.xblast.server.Board;
-import javafx.scene.control.ScrollPane;
 
+/**
+ * 
+ * @author Sacha Kozma, 260391
+ * @author Alexia Bogaert, 258330
+ *
+ */
+@SuppressWarnings("serial")
 public class BoardListComponent extends JPanel {
     private static final int COMPONENT_WIDTH = 160;
     private static final int COMPONENT_HEIGHT = 200;
@@ -35,7 +37,8 @@ public class BoardListComponent extends JPanel {
     private JList<String> levelList;
 
     /**
-     * Create the panel.
+     * Créer un composant de choix de niveau. Ce composant offre une liste
+     * affichant tous les niveaux sauvegardés, chargés depuis des fichiers.
      * 
      * @throws URISyntaxException
      */
@@ -46,13 +49,14 @@ public class BoardListComponent extends JPanel {
         levelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         levelList.setLayoutOrientation(JList.VERTICAL_WRAP);
 
-        JScrollPane scrollPane = new JScrollPane(levelList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane scrollPane = new JScrollPane(levelList);
         scrollPane.setPreferredSize(new Dimension(COMPONENT_WIDTH, COMPONENT_HEIGHT));
         add(scrollPane);
 
         refresh();
     }
 
+    @SuppressWarnings("unchecked")
     private Map<String, List<List<Block>>> fillWithLevel(File levelsDirectory) {
         ObjectInputStream objectInputStream;
         String name;
@@ -80,11 +84,19 @@ public class BoardListComponent extends JPanel {
         return levels;
     }
 
-    public Board getBoard() {
-        return Board.ofQuadrantNWBlocksWalled(levels.get(levelList.getSelectedValue().replaceAll(" ", "_")));
+    /**
+     * 
+     * @return Le plateau de jeu (seuelement le quadrant nord ouest, non muré)
+     *         selectionné dans la liste
+     */
+    public List<List<Block>> boardNWQuadrant() {
+        return new ArrayList<>(levels.get(levelList.getSelectedValue().replaceAll(" ", "_")).stream().map(sublist -> new ArrayList<>(sublist)).collect(Collectors.toList()));
     }
 
-    public void refresh() throws URISyntaxException {
+    /**
+     * Raffraichit la liste et permet de trouver les nouveau fichiers
+     */
+    public void refresh() {
         listModel.clear();
 
         levels = fillWithLevel(new File(LEVEL_RELATIVE_PATH_FOLDER));
@@ -92,13 +104,16 @@ public class BoardListComponent extends JPanel {
         for (Map.Entry<String, List<List<Block>>> entry : levels.entrySet()) {
             listModel.addElement(entry.getKey().replaceAll("_", " "));
         }
-        
+
         levelList.setVisibleRowCount(listModel.size());
 
         repaint();
     }
 
-    public void removeSelected() throws URISyntaxException {
+    /**
+     * Supprime l'entrée selectionnée, et supprime donc le fichier associé
+     */
+    public void removeSelected() {
         if (levelList.isSelectionEmpty()) {
             JOptionPane.showMessageDialog(null, "You didn't select any level !", "Error", JOptionPane.WARNING_MESSAGE);
             return;
