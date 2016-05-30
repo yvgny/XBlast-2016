@@ -1,7 +1,6 @@
 package ch.epfl.xblast.server.GUI;
 
 import java.awt.Color;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 
 import javax.swing.BorderFactory;
@@ -9,20 +8,14 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JButton;
 import javax.swing.SwingConstants;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import ch.epfl.xblast.server.GameState;
 import ch.epfl.xblast.server.Ticks;
-
-import javax.swing.border.LineBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.CompoundBorder;
 
 public final class XBlastComponent extends JPanel {
     private int connectedPlayers;
