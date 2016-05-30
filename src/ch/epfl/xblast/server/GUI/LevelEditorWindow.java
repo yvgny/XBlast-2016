@@ -52,7 +52,6 @@ public class LevelEditorWindow extends JFrame {
     private static final DefaultComboBoxModel<Integer> DEFAULT_VALUE_SELECTOR_MODEL = new DefaultComboBoxModel<Integer>(new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
     private static final int BORDER_SIZE = 5;
     private static final int COMPONENENT_WIDTH = 458;
-    private static final String LEVEL_FOLDER_RELATIVE_PATH = "game_data/levels/";
     private int minConnectedPlayerToStart = 4;
     private JPanel contentPane;
     private JPanel boardPanel;
@@ -180,14 +179,16 @@ public class LevelEditorWindow extends JFrame {
                 String levelName = null;
 
                 do {
-                    levelName = JOptionPane.showInputDialog(null, "Please enter level name : ", "Level name", JOptionPane.PLAIN_MESSAGE);
+                    levelName = JOptionPane.showInputDialog(null, "Please enter level name (be careful, if the level already exists, it will be replaced !) : ", "Level name", JOptionPane.PLAIN_MESSAGE);
                     if (levelName == null) {
                         return;
                     } else if (levelName.length() == 0) {
                         JOptionPane.showMessageDialog(null, "Please enter a name !", "Level name invalid", JOptionPane.ERROR_MESSAGE);
                     } else {
                         try {
-                            objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(new File(LEVEL_FOLDER_RELATIVE_PATH + levelName.replaceAll(" ", "_")))));
+                            // Sérialize le quadrant de jeu dans un fichier portant le nom désiré
+                            
+                            objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(new File(BoardListComponent.LEVEL_RELATIVE_PATH_FOLDER + levelName.replaceAll(" ", "_")))));
                             objectOutputStream.writeObject(boardCreatorComponent.boardNWQuadrant());
                             objectOutputStream.close();
                         } catch (FileNotFoundException e1) {
