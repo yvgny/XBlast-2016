@@ -23,7 +23,7 @@ import ch.epfl.xblast.PlayerID;
 import ch.epfl.xblast.client.GameState;
 import ch.epfl.xblast.client.GameStateDeserializer;
 import ch.epfl.xblast.client.KeyboardEventHandler;
-import ch.epfl.xblast.client.XBlastComponent;
+import ch.epfl.xblast.client.GUI.XBlastComponent;
 
 /**
  * 

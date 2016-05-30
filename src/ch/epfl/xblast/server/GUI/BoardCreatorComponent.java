@@ -1,4 +1,4 @@
-package ch.epfl.xblast.server;
+package ch.epfl.xblast.server.GUI;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -17,6 +17,9 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import ch.epfl.xblast.Cell;
+import ch.epfl.xblast.server.Block;
+import ch.epfl.xblast.server.Board;
+import ch.epfl.xblast.server.Level;
 
 public final class BoardCreatorComponent extends JComponent {
     private final static int NW_QUADRANT_CELL_WIDTH = 7;

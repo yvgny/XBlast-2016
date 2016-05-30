@@ -1,4 +1,4 @@
-package ch.epfl.xblast.server;
+package ch.epfl.xblast.server.GUI;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -33,6 +33,10 @@ import javax.swing.border.EmptyBorder;
 
 import ch.epfl.xblast.Cell;
 import ch.epfl.xblast.PlayerID;
+import ch.epfl.xblast.server.GameState;
+import ch.epfl.xblast.server.Level;
+import ch.epfl.xblast.server.Player;
+import ch.epfl.xblast.server.XBlastServer;
 
 public class LevelEditorWindow extends JFrame {
   private static final String LEVEL_FOLDER_RELATIVE_PATH = "game_data/levels/";

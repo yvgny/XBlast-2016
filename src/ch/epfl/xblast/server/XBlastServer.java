@@ -24,6 +24,7 @@ import ch.epfl.xblast.Direction;
 import ch.epfl.xblast.PlayerAction;
 import ch.epfl.xblast.PlayerID;
 import ch.epfl.xblast.Time;
+import ch.epfl.xblast.server.GUI.XBlastComponent;
 
 /**
  * 

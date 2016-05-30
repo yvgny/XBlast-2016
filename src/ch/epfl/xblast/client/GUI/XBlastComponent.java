@@ -1,4 +1,4 @@
-package ch.epfl.xblast.client;
+package ch.epfl.xblast.client.GUI;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -17,6 +17,7 @@ import javax.swing.JComponent;
 
 import ch.epfl.xblast.Cell;
 import ch.epfl.xblast.PlayerID;
+import ch.epfl.xblast.client.GameState;
 import ch.epfl.xblast.client.GameState.Player;
 
 /**

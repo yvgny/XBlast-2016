@@ -1,4 +1,4 @@
-package ch.epfl.xblast.server;
+package ch.epfl.xblast.server.GUI;
 
 import java.awt.Dimension;
 import java.io.BufferedInputStream;
@@ -22,6 +22,8 @@ import javax.swing.ListSelectionModel;
 import com.sun.org.apache.bcel.internal.generic.RETURN;
 
 import ch.epfl.xblast.client.ImageCollection;
+import ch.epfl.xblast.server.Block;
+import ch.epfl.xblast.server.Board;
 import javafx.scene.control.ScrollPane;
 
 public class BoardListComponent extends JPanel {

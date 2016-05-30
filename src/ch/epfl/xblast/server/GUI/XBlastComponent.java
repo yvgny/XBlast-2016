@@ -1,4 +1,4 @@
-package ch.epfl.xblast.server;
+package ch.epfl.xblast.server.GUI;
 
 import java.awt.Color;
 import java.net.Inet4Address;
@@ -16,6 +16,10 @@ import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.border.TitledBorder;
+
+import ch.epfl.xblast.server.GameState;
+import ch.epfl.xblast.server.Ticks;
+
 import javax.swing.border.LineBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.CompoundBorder;
