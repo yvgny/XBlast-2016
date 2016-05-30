@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.swing.JComponent;
@@ -142,6 +143,7 @@ public final class BoardCreatorComponent extends JComponent {
      *            Le board à utiliser
      */
     public void setBoard(List<List<Block>> board) {
+        Objects.requireNonNull(board);
         this.board = new ArrayList<>(board.stream().map(sublist -> new ArrayList<>(sublist)).collect(Collectors.toList()));
     }
 

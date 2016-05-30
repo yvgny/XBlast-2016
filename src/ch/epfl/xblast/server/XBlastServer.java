@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -53,6 +54,8 @@ public final class XBlastServer {
      * @throws InvocationTargetException
      */
     public static void startServer(Level level, int minPlayerToStart) throws IOException, InterruptedException, InvocationTargetException {
+        Objects.requireNonNull(level);
+        
         //
         // Connections des joueurs
         //

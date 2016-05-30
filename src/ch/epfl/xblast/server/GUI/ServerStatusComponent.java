@@ -3,6 +3,7 @@ package ch.epfl.xblast.server.GUI;
 import java.awt.Color;
 import java.awt.Font;
 import java.net.InetAddress;
+import java.util.Objects;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -47,6 +48,8 @@ public final class ServerStatusComponent extends JPanel {
      *            Le port du serveur
      */
     public ServerStatusComponent(InetAddress inetAddress, int port) {
+        Objects.requireNonNull(inetAddress);
+        
         setBorder(BorderFactory.createEmptyBorder(DEFAULT_BORDER_SIZE, DEFAULT_BORDER_SIZE, DEFAULT_BORDER_SIZE, DEFAULT_BORDER_SIZE));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -105,7 +108,7 @@ public final class ServerStatusComponent extends JPanel {
      * @param gameState
      */
     public void setGameState(GameState gameState) {
-        this.gameState = gameState;
+        this.gameState = Objects.requireNonNull(gameState);
         gameProgess.setVisible(true);
         updateGameStateStatus();
         repaint();
