@@ -96,7 +96,8 @@ public final class BoardCreatorComponent extends JComponent {
     }
 
     /**
-     * Permet de passer au bloc "suivant" dans le plateau de jeu.
+     * Permet de passer au bloc "suivant" dans l'énumération Block (en ne
+     * considérant que les blocs libres, indestructible et destructible).
      * 
      * @param x
      *            La coordonnée x de la case a changer
@@ -104,6 +105,7 @@ public final class BoardCreatorComponent extends JComponent {
      *            La coordonnée y de la case à changer
      */
     public void nextBlockAt(int x, int y) {
+        // Permet de changer le bloc en prenant le bloc suivant
         board.get(y).set(x, blocks[(board.get(y).get(x).ordinal() + 1) % 3]);
         repaint();
     }
@@ -132,7 +134,7 @@ public final class BoardCreatorComponent extends JComponent {
      * 
      * @return Le quadrant nord ouest du plateau de jeu
      */
-    public List<List<Block>> boardNWQuadrant() {
+    public List<List<Block>> getBoardNWQuadrant() {
         return new ArrayList<>(board.stream().map(sublist -> new ArrayList<>(sublist)).collect(Collectors.toList()));
     }
 
@@ -142,7 +144,7 @@ public final class BoardCreatorComponent extends JComponent {
      * @param board
      *            Le board à utiliser
      */
-    public void setBoard(List<List<Block>> board) {
+    public void setBoardNWQuadrant(List<List<Block>> board) {
         Objects.requireNonNull(board);
         this.board = new ArrayList<>(board.stream().map(sublist -> new ArrayList<>(sublist)).collect(Collectors.toList()));
     }

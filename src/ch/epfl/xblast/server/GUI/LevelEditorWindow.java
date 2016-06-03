@@ -69,6 +69,7 @@ public class LevelEditorWindow extends JFrame {
      * @throws URISyntaxException
      */
     public LevelEditorWindow() throws URISyntaxException {
+        // paramètres générauy de la fenêtre
         setTitle("Level selection");
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -187,9 +188,8 @@ public class LevelEditorWindow extends JFrame {
                     } else {
                         try {
                             // Sérialize le quadrant de jeu dans un fichier portant le nom désiré
-                            
                             objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(new File(BoardListComponent.LEVEL_RELATIVE_PATH_FOLDER + levelName.replaceAll(" ", "_")))));
-                            objectOutputStream.writeObject(boardCreatorComponent.boardNWQuadrant());
+                            objectOutputStream.writeObject(boardCreatorComponent.getBoardNWQuadrant());
                             objectOutputStream.close();
                         } catch (FileNotFoundException e1) {
                             e1.printStackTrace();
@@ -239,7 +239,7 @@ public class LevelEditorWindow extends JFrame {
         JButton btnOpenInEditor = new JButton("Open in editor");
         btnOpenInEditor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                boardCreatorComponent.setBoard(boardListComponent.boardNWQuadrant());
+                boardCreatorComponent.setBoardNWQuadrant(boardListComponent.getBoardNWQuadrant());
                 rdbtnUseCustomLevel.doClick();
             }
         });
@@ -299,6 +299,7 @@ public class LevelEditorWindow extends JFrame {
                 List<Player> players = new ArrayList<>();
                 GameState gameState;
 
+                // Création de la liste des joueurs selon le choix de l'utilisateur
                 if (rdbtnUseDefaultLevel.isSelected()) {
                     players = Level.DEFAULT_LEVEL.gameState().players();
                 } else {
@@ -307,16 +308,18 @@ public class LevelEditorWindow extends JFrame {
                     }
                 }
 
+                // Création du plateau de jeu selon le choix de l'utilisateur
                 if (rdbtnUseCustomLevel.isSelected()) {
-                    gameState = new GameState(Board.ofQuadrantNWBlocksWalled(boardCreatorComponent.boardNWQuadrant()), players);
+                    gameState = new GameState(Board.ofQuadrantNWBlocksWalled(boardCreatorComponent.getBoardNWQuadrant()), players);
                 } else if (rdbtnUseDefaultLevel.isSelected()) {
                     gameState = Level.DEFAULT_LEVEL.gameState();
                 } else {
-                    gameState = new GameState(Board.ofQuadrantNWBlocksWalled(boardListComponent.boardNWQuadrant()), players);
+                    gameState = new GameState(Board.ofQuadrantNWBlocksWalled(boardListComponent.getBoardNWQuadrant()), players);
                 }
 
                 Level level = new Level(gameState, Level.DEFAULT_LEVEL.boardPainter());
 
+                // Lancement de la partie
                 new Thread(new Runnable() {
                     public void run() {
 

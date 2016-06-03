@@ -53,13 +53,13 @@ public final class ServerStatusComponent extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(DEFAULT_BORDER_SIZE, DEFAULT_BORDER_SIZE, DEFAULT_BORDER_SIZE, DEFAULT_BORDER_SIZE));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        // Create server infos
+        // Création des informations des joueurs
         serverInfo = new JLabel("Server address : " + inetAddress.getHostAddress() + ":" + port);
         serverInfo.setBorder(BorderFactory.createEmptyBorder(0, 0, DEFAULT_BORDER_SIZE, 0));
         getFont();
         serverInfo.setFont(getFont().deriveFont(Font.BOLD));
 
-        // Create connectes players info
+        // Création des informations du nombres de joueurs connectés
         connectedPlayers = 0;
         connectedPlayersLabel = new JLabel();
         connectedPlayersLabel.setHorizontalAlignment(SwingConstants.LEFT);
@@ -80,7 +80,7 @@ public final class ServerStatusComponent extends JPanel {
         gameProgess.setLayout(new BoxLayout(gameProgess, BoxLayout.Y_AXIS));
         gameProgess.setVisible(false);
 
-        // Create game progress bar
+        // Crlation de la barre de progression du jeu
         gameProgressBar = new JProgressBar();
         gameProgess.add(gameProgressBar);
         gameProgressBar.setMaximum(Ticks.TOTAL_TICKS);
@@ -94,7 +94,7 @@ public final class ServerStatusComponent extends JPanel {
     }
 
     /**
-     * Increment le nombre de joueur connectés
+     * Incremente le nombre de joueur connectés
      */
     public void incrementPlayers() {
         connectedPlayers++;
@@ -120,7 +120,7 @@ public final class ServerStatusComponent extends JPanel {
      * @param maximumPlayers
      */
     public void setMaximumPlayers(int maximumPlayers) {
-        this.maxPlayers = maximumPlayers;
+        maxPlayers = maximumPlayers;
         updateConnectedPlayers();
     }
     

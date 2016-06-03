@@ -6,7 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import ch.epfl.xblast.server.GUI.LevelEditorWindow;
 
 /**
- * Créer le lanceur de serveur, qui permet d configurer els différentes options
+ * Créer le lanceur de serveur, qui permet de configurer les différentes options
  * (carte, nombres de joueur, de bombes, etc..) du serveur avant de démarrer
  * 
  * @author Sacha Kozma, 260391

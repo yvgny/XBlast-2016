@@ -32,7 +32,7 @@ public class BoardListComponent extends JPanel {
     /**
      * Chemin relatif du dossier de sauvagerdes des niveaux
      */
-    public static final String LEVEL_RELATIVE_PATH_FOLDER = "game_data/levels";
+    public static final String LEVEL_RELATIVE_PATH_FOLDER = "game_data/levels/";
     
     private static final int COMPONENT_WIDTH = 160;
     private static final int COMPONENT_HEIGHT = 200;
@@ -93,12 +93,12 @@ public class BoardListComponent extends JPanel {
      * @return Le plateau de jeu (seuelement le quadrant nord ouest, non muré)
      *         selectionné dans la liste
      */
-    public List<List<Block>> boardNWQuadrant() {
+    public List<List<Block>> getBoardNWQuadrant() {
         return new ArrayList<>(levels.get(levelList.getSelectedValue().replaceAll(" ", "_")).stream().map(sublist -> new ArrayList<>(sublist)).collect(Collectors.toList()));
     }
 
     /**
-     * Raffraichit la liste et permet de trouver les nouveau fichiers
+     * Raffraichit la liste en trouvant les nouveau fichiers de sauvegarde
      */
     public void refresh() {
         listModel.clear();
@@ -122,6 +122,7 @@ public class BoardListComponent extends JPanel {
             JOptionPane.showMessageDialog(null, "You didn't select any level !", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
+        
         String levelName = levelList.getSelectedValue().replaceAll(" ", "_");
 
         File file = new File(LEVEL_RELATIVE_PATH_FOLDER + "/" + levelName);
